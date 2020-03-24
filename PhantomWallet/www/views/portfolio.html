@@ -1329,7 +1329,8 @@ function getPortfolioChart(timeframe) {
   $("#loader-historical").show();
 
   // start url pricing
-  urlforcombined = 'https://api.o3.network/v1/price/SOUL?source=cryptocompare&currency=' + currency;
+  //urlforcombined = 'https://api.o3.network/v1/price/SOUL?source=cryptocompare&currency=' + currency;
+  urlforcombined = 'https://api.o3.network/v1/price/GOST?source=cryptocompare&currency=' + currency;
   arraygraph = [];
   params = [];
   // build params for contract call
