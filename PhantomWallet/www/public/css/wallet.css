@@ -1523,6 +1523,7 @@ ul.nav.nav-pills {
     display: block;
     margin: 0 2em;
     margin-bottom: 1em;
+    height: 20vh;
 }
 
 .parameters-input {

@@ -12,7 +12,7 @@
               <div class="category sell-nft" id="sell-nft" style="opacity:0" onclick="initiateSell()">Sell NFT</div>
               <div class="referral-nft" id="sell-nft-tooltip" style="opacity:0;margin-top:1em;">No fees for seller, 2% fees for buyer!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_fees"></i></div>
             </div>
-            <div class="col-md-6 center container-prize" style="margin-top:-6em;">
+            <div class="col-md-6 center container-prize" style="opacity:0;margin-top:-6em;">
               <h3 style="margin-bottom:0;">Total Items</h3>
               <div class="prizepool" style="display:inline-block;" id="prizepool">XXX NFTs</div><i class="tooltip fas fa-info-circle" id="tooltip-stats-container" style="display:none;margin-left:1em;width:1em;vertical-align:super;" data-tooltip-content="#tooltip_stats"></i>
             </div>
@@ -23,7 +23,7 @@
                 <div id="current-balance-kcal" style="display:inline-block;margin-left:1em;"><img src="img/kcal_logo.png" alt="KCAL" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX KCAL</div>
                 <div id="current-balance-goati" style="display:inline-block;margin-left:1em;"><img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX GOATI</div>
               </div>
-              <div class="wrapper-filters">
+              <div class="wrapper-filters" style="opacity:0">
                 <div>Filter by</div>
                 <div id="nft-category">
                   <div class="category" id="filter-all-items" onclick="filterCategory(this.id)">All items</div>
@@ -33,7 +33,7 @@
                   <div class="category" id="filter-vehicles" onclick="filterCategory(this.id)"><i class="fas fa-car"></i>Vehicles</div>
                 </div>
               </div>
-              <div class="wrapper-sorters" style="margin-left:1em;">
+              <div class="wrapper-sorters" style="opacity:0;margin-left:1em;">
                 <div>Sort by</div>
                 <div id="nft-category">
                   <div class="category sort" id="sort-price" data-sort="priceFilter" onclick="sortCategory(this.id)"><i class="fas fa-dollar-sign"></i>Price</div>
@@ -256,8 +256,8 @@ $(document).ready(function() {
 
       };
 
-      $("#sell-nft").fadeTo("slow", 1);
-      $("#sell-nft-tooltip").fadeTo("slow", 1);
+      //$("#sell-nft").fadeTo("slow", 1);
+      //$("#sell-nft-tooltip").fadeTo("slow", 1);
 
     })
 
@@ -661,19 +661,23 @@ function getStats() {
 
 function getAuctions() {
 
-  $.get(auctionsCountURL,
+//  $.get(auctionsCountURL,
 
-    function (data) {
+//    function (data) {
 
       // fix issue on rpc proxy api calls
-      data = parseFloat(data)
+//      data = parseFloat(data)
 
-      arrayAuctions = [];
-      for (i = 0; i < (data/50); i++) {
-          arrayAuctions.push(getAuctionsPerPage([i+1]));
-      }
-      Promise.all(arrayAuctions)
-      .then(data => {
+//      arrayAuctions = [];
+//      for (i = 0; i < (data/50); i++) {
+//          arrayAuctions.push(getAuctionsPerPage([i+1]));
+//      }
+//      Promise.all(arrayAuctions)
+//      .then(data => {
+
+  $.get('https://seed.neoeconomy.io/phantasma/auctionsmarketplace.json',
+
+    function (data) {
 
         mergedAuctionsFinal = Array.prototype.concat.apply([], data.map(function(res) {
             return res
@@ -806,7 +810,13 @@ function getAuctions() {
           $("#no-nft").show();
         }
 
-      })
+      }).fail(function( jqXHR, textStatus, errorThrown ) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown );
+        $("#loader-nftlist").hide();
+        $("#no-nft").show();
+      });
 
       async function getAuctionsPerPage(page) {
 
@@ -837,11 +847,11 @@ function getAuctions() {
 
       }
 
-    }
-  ).fail(function() {
-    $("#loader-nftlist").hide();
-    $("#no-nft").show();
-  })
+//    }
+//  ).fail(function() {
+//    $("#loader-nftlist").hide();
+//    $("#no-nft").show();
+//  })
 }
 
 // function refresh auctions
@@ -1111,6 +1121,16 @@ function refreshAuctions() {
       side: 'top'
     });
 
+    // init sell button
+    $("#sell-nft").fadeTo("slow", 1);
+    $("#sell-nft-tooltip").fadeTo("slow", 1);
+
+    // init filters & prizepool
+    $(".wrapper-filters").fadeTo("slow", 1);
+    $(".wrapper-sorters").fadeTo("slow", 1);
+    $(".container-prize").fadeTo("slow", 1);
+
+
 }
 
 // function format season
@@ -1307,8 +1327,8 @@ function initiateSell() {
         return;
   }
 
-  fetchSellNFTDropdown = '<select style="margin: .5em auto;" id="select-nft">';
-  fetchSellNFTDropdown += '<option value="">Select NFT to sell</option>'
+  fetchSellNFTDropdown = '<select multiple style="margin: .5em auto;" id="select-nft">';
+  //fetchSellNFTDropdown += '<option value="">Select NFT to sell</option>'
   for (i = 0; i < sellCustomNFT.length; i ++) {
     fetchSellNFTDropdown += '<option value="' + sellCustomNFT[i].id + '" data-image="' + sellCustomNFT[i].image + '" class="filter-type filter-type-' + sellCustomNFT[i].type + ' filter-rarity filter-rarity-' + formatRarity(sellCustomNFT[i].rarity) + '">' + sellCustomNFT[i].name + ' • Mint #' + sellCustomNFT[i].mint + ' • Minted on ' + sellCustomNFT[i].mint_date + ' • ' + formatRarity(sellCustomNFT[i].rarity) + '</option>'
   }
@@ -1316,11 +1336,12 @@ function initiateSell() {
 
   $('#sendSpinner').show();
 
-  contentBootbox = '1) Select the NFT you would like to sell:<br><br>'
+  contentBootbox = '1) Select the NFT(s) you would like to sell:<br><br>'
                 + '<div class="filter-results">Filter by type: <select style="margin-left:1em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="sell-type-filter"><option value="any">Any</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
                 + 'Filter by rarity: <select style="margin-left:1em;height: 2.5em;text-transform:uppercase;" id="sell-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
-                + '<div class="filter-results-count">You have <strong><span id="available-nfts">' + sellCustomNFT.length + '</span> NFTs available</strong> matching these filters.</div><br>'
-                + fetchSellNFTDropdown + '<br>'
+                + '<div class="filter-results-count">You have <strong><span id="available-nfts">' + sellCustomNFT.length + '</span> NFTs available</strong> matching these filters.</div>'
+                + fetchSellNFTDropdown
+                + '<div class="filter-results-count" id="filter-results-count">You have selected <strong><span id="selected-nfts">0</span> NFTs </strong> to be sold.</div><br>'
                 + '2) Specify amount, currency and duration of your sale:<br><br>'
                 + '<div class="center"><input type="text" class="form-control" name="sell-amount" style="width:60%;display:inline-block" id="sell-amount">'
                 + '<select style="margin-left:2em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="sell-currency"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
@@ -1352,14 +1373,22 @@ function initiateSell() {
           var e = document.getElementById("sell-currency");
           sellCurrency = e.options[e.selectedIndex].value;
           var f = document.getElementById("select-nft");
-          idNFT = f.options[f.selectedIndex].value;
+          //idNFT = f.options[f.selectedIndex].value;
+          bulkdIdNFT = $('#select-nft').val()
           var g = document.getElementById("sell-enddate");
           endDate = g.options[g.selectedIndex].value;
           results = {};
           results.fieldname1 = dialog[0].querySelector("[name=sell-amount]").value;
           sellAmount = results.fieldname1
 
-          confirmSellNFT(idNFT, sellAmount, sellCurrency, endDate)
+          nftIdArr = [];
+          for (var i = 0; i < bulkdIdNFT.length; i++) {
+            nftIdArr.push ({
+                id: bulkdIdNFT[i]
+            });
+          }
+
+          confirmSellNFT(nftIdArr, sellAmount, sellCurrency, endDate)
 
         } else {
           $('#sendSpinner').hide();
@@ -1377,6 +1406,13 @@ function initiateSell() {
               document.getElementById("sell-confirm").click();
           }
       });
+
+      // On select nft change event
+      $("#select-nft").click(function () {
+
+        document.getElementById("selected-nfts").innerHTML = $("#select-nft :checked").length;
+
+       });
 
       // On filter type change event
       $("#sell-type-filter").change(function () {
@@ -1408,6 +1444,13 @@ function initiateSell() {
           } else {
             $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").hide();
             document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length;
+          }
+          if (document.getElementById("available-nfts").innerHTML == '0') {
+            $("#select-nft").hide();
+            $("#filter-results-count").hide();
+          } else {
+            $("#select-nft").show();
+            $("#filter-results-count").show();
           }
 
           // show first val after filters
@@ -1457,6 +1500,13 @@ function initiateSell() {
               document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length;
             }
           }
+          if (document.getElementById("available-nfts").innerHTML == '0') {
+            $("#select-nft").hide();
+            $("#filter-results-count").hide();
+          } else {
+            $("#select-nft").show();
+            $("#filter-results-count").show();
+          }
 
           // show first val after filters
           document.getElementById("select-nft").options[0].selected = true;
@@ -1470,7 +1520,7 @@ function initiateSell() {
 }
 
 // Confirm sell nft
-function confirmSellNFT(idNFT, priceNFT, quoteSymbol, endDate) {
+function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
 
   var now = new Date();
   endDateFormatted = now.getTime() + (endDate*86400000)
@@ -1478,26 +1528,29 @@ function confirmSellNFT(idNFT, priceNFT, quoteSymbol, endDate) {
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: ''  }
   params[1] = { name: 'baseSymbol', type: 'String', input: 'TTRS', info: '' },
   params[2] = { name: 'quoteSymbol', type: 'String', input: quoteSymbol, info: '' },
-  params[3] = { name: 'tokenID', type: 'Number', input: idNFT, info: '' },
+  params[3] = { name: 'tokenID', type: 'Number', input: nftIdArr[0].id, info: '' },
   params[4] = { name: 'price', type: 'Number', input: priceNFT*(Math.pow(10,formatDecimals(quoteSymbol))), info: '' },
   //params[5] = { name: 'endDate', type: 'Timestamp', input: '03/07/2020 00:00:00', info: '' }
   params[5] = { name: 'endDate', type: 'TimestampEpoch', input: endDateFormatted, info: '' }
 
-  $.post('/contract/tx',
-     {
+  //$.post('/contract/tx',
+  $.post('/confirmsellnft',
+     /*{
          chain: 'main',
          contract: 'market',
          method: 'SellToken',
          params: JSON.stringify({
            params
          })
+     },*/
+     {
+         chain: 'main', contract: 'market', method: 'SellToken', params: JSON.stringify({params}), id: JSON.stringify(nftIdArr)
      },
      function (returnedData) {
          if (returnedData !== "") {
-           //window.location.replace("/waiting/" + returnedData);
            window.location.replace("/marketplace");
          } else {
-             window.location.replace("/error");
+           window.location.replace("/error");
          }
          console.log(returnedData);
      }).fail(function() {
