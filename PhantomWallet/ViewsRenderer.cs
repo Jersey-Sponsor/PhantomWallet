@@ -251,6 +251,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/sendmultiplenft", RouteSendMultipleNFT);
 
+            TemplateEngine.Server.Post("/confirmsellnft", RouteConfirmSellNFT);
+
             foreach (var entry in MenuEntries)
             {
                 var url = $"/{entry.Id}";
@@ -538,6 +540,42 @@ namespace Phantom.Wallet
             string result;
 
             result = AccountController.TransferMultipleNFT(keyPair, addressTo, chainName, symbol, id, isName).Result;
+
+            ResetSessionSendFields(request);
+
+            if (!SendUtils.IsTxHashValid(result))
+            {
+                PushError(request, result);
+                Log.Information("No valid result");
+                return "";
+            }
+
+            return result;
+        }
+
+        private object RouteConfirmSellNFT(HTTPRequest request)
+        {
+
+            var chainName = request.GetVariable("chain");
+            var contractName = request.GetVariable("contract");
+            var methodName = request.GetVariable("method");
+
+            var param = request.GetVariable("params");
+            var id = request.GetVariable("id");
+
+            if (param == null)
+            {
+                PushError(request, "Parameters cannot be null!");
+                return null;
+            }
+
+            List<object> paramList = SendUtils.BuildParamList(param);
+
+            var keyPair = GetLoginKey(request);
+            InvalidateCache(keyPair.Address);
+            string result;
+
+            result = AccountController.ConfirmSellNFT(keyPair, chainName, contractName, methodName, paramList.ToArray(), id).Result;
 
             ResetSessionSendFields(request);
 
