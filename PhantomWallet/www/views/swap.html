@@ -1068,7 +1068,7 @@
                                 }
                             } else {
                                 if ((JSON.parse(returnedDataTX).error) != undefined) {
-                                  if (((returnedDataTX).error).startsWith('invalid transaction hash')) {
+                                  if ((JSON.parse(returnedDataTX).error).startsWith('invalid transaction hash')) {
                                       countersettle++;
                                       if (countersettle <= 5){
                                         setTimeout(loopSettle, 2000);
