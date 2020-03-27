@@ -1665,7 +1665,7 @@ ul.nav.nav-pills {
 }
 
 .dark-mode #container-auctions-list li:hover > a  {
-  background-color: #666 !important;
+  background-color: #666;
 }
 
 .filter-results, .filter-results-count {
