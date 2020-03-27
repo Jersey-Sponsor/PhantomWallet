@@ -711,7 +711,7 @@ function refreshAuctions() {
         +    '</form>'
         + '</div>'
 
-  fetchAuctions += '<ul class="pagination"></ul>'
+  fetchAuctions += '<ul class="paginationTop pagination"></ul>'
   fetchAuctions += '<ul class="list">'
 
     // start full details
@@ -853,6 +853,7 @@ function refreshAuctions() {
 
     // complete ul list for list js
     fetchAuctions += '</ul>'
+    fetchAuctions += '<ul class="paginationBottom pagination"></ul>'
 
     // fill auctions
     document.getElementById("auctions-list").innerHTML = fetchAuctions;
@@ -872,11 +873,32 @@ function refreshAuctions() {
       valueNames: [ 'item-filter', 'priceFilter', 'mint-number-filter', 'rarityFilter' ],
       page: 50,
       pagination: [{
+        name: "paginationTop",
+        paginationClass: "paginationTop",
         innerWindow: 2,
+        outerWindow: 1
+      }, {
+        innerWindow: 2,
+        name: "paginationBottom",
+        paginationClass: "paginationBottom",
         outerWindow: 1
       }]
     };
     var itemsList = new List('auctions-list', options);
+
+    itemsList.on('updated', function () {
+      // refresh tooltipster button
+      if ($('button.tooltip').tooltipster()) {
+          $('button.tooltip').tooltipster('destroy');
+      }
+
+      $('button.tooltip').tooltipster({
+        theme: 'tooltipster-noir',
+        contentCloning: true,
+        interactive: true,
+        side: 'top'
+      });
+    });
 
     // custom sort for rarity except initial load
     if (initialLoad == 1) {
@@ -930,6 +952,13 @@ function refreshAuctions() {
       }
     }
 
+    // hide pagination if single page
+    if ((itemsList.matchingItems).length <= itemsList.page) {
+      $('.paginationBottom').css('display', 'none');
+    } else {
+      $('.paginationBottom').css('display', 'block');
+    }
+
     // init filtering custom for initial load
     if (initialLoad == 0) {
       var cat1 = document.getElementById("filter-all-items");
@@ -957,6 +986,13 @@ function refreshAuctions() {
         el.dispatchEvent(new Event('keyup'));
         fetchValuesCount = (itemsList.matchingItems).length + ' items available';
         $('#count-search').html(fetchValuesCount);
+
+        // hide pagination if single page
+        if ((itemsList.matchingItems).length <= itemsList.page) {
+          $('.paginationBottom').css('display', 'none');
+        } else {
+          $('.paginationBottom').css('display', 'block');
+        }
     })
 
     // init items count search
