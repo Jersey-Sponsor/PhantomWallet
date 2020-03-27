@@ -1641,6 +1641,33 @@ ul.nav.nav-pills {
   margin: .5em 1em;
 }
 
+.dark-mode #container-auctions-list .pagination > li > a, .dark-mode #container-auctions-list .pagination > li > span {
+  color: #fff;
+  background-color: rgba(255,255,255,.13);
+  border: 1px solid rgba(255,255,255,.13);
+}
+
+.dark-mode #container-auctions-list .active a  {
+  background-color: #FFBF32 !important;
+}
+
+#container-auctions-list .pagination  {
+  margin: .5em 0;
+}
+
+#container-auctions-list .active a  {
+  background-color: #FFBF32;
+  border-color: #FFBF32;
+}
+
+#container-auctions-list .pagination > li > a {
+  color: #333;
+}
+
+.dark-mode #container-auctions-list li:hover > a  {
+  background-color: #666 !important;
+}
+
 .filter-results, .filter-results-count {
   margin: .5em auto;
   text-align: center;

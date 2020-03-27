@@ -80,10 +80,6 @@
 </div>
 
 <div class="tooltip_templates">
-    <div id="tooltip_"></div>
-</div>
-
-<div class="tooltip_templates">
     <span id="tooltip_stats">
     </span>
 </div>
@@ -94,13 +90,6 @@ $(document).ready(function() {
 
   $('#sendSpinner').hide();
 
-  customrestport = '{{rpcurl}}';
-  customrestport = customrestport.slice(0,-8) + '7078';
-
-  auctionsURL = customrestport + '/api/getAuctions?chainAddressOrName=main&symbol=TTRS'
-  auctionsCountURL = customrestport + '/api/getAuctionsCount?chainAddressOrName=main&symbol=TTRS'
-  //auctionsCountURL = 'http://207.148.17.86:7078/api/getAuctionsCount?chainAddressOrName=main&symbol=TTRS'
-  //auctionsURL = 'http://207.148.17.86:7078/api/getAuctions?chainAddressOrName=main&symbol=TTRS'
   nftURL = 'http://www.22series.com/api/store/nft';
 
   fetchSellNFTDropdown = '';
@@ -255,9 +244,6 @@ $(document).ready(function() {
         });
 
       };
-
-      //$("#sell-nft").fadeTo("slow", 1);
-      //$("#sell-nft-tooltip").fadeTo("slow", 1);
 
     })
 
@@ -661,25 +647,28 @@ function getStats() {
 
 function getAuctions() {
 
-//  $.get(auctionsCountURL,
+      $.when(
 
-//    function (data) {
+        $.get('https://seed.neoeconomy.io/phantasma/auctionsmarketplace.json',
 
-      // fix issue on rpc proxy api calls
-//      data = parseFloat(data)
+          function (data) {
+            //console.log(data)
+            dataAPIMain = data
+          }
 
-//      arrayAuctions = [];
-//      for (i = 0; i < (data/50); i++) {
-//          arrayAuctions.push(getAuctionsPerPage([i+1]));
-//      }
-//      Promise.all(arrayAuctions)
-//      .then(data => {
+        ),
+        $.get('https://seed.neoeconomy.io/phantasma/auctionsmarketplace-goati.json',
 
-  $.get('https://seed.neoeconomy.io/phantasma/auctionsmarketplace.json',
+          function (data) {
+            //console.log(data)
+            dataAPIGoati = data
+          }
 
-    function (data) {
+        )
 
-        mergedAuctionsFinal = Array.prototype.concat.apply([], data.map(function(res) {
+      ).then(function() {
+
+        mergedAuctionsFinal = Array.prototype.concat.apply([], dataAPIMain.map(function(res) {
             return res
         }));
 
@@ -700,158 +689,10 @@ function getAuctions() {
         // start marketplace stats
         getStats();
 
-        // Start building the tooltip
-        for (i = 0; i < lenAuctions; i += 1) {
-          document.getElementById("tooltip_").innerHTML += '<span id="tooltip_' + i + '"></span>';
-        }
+        // start refresh auctions
+        refreshAuctions();
 
-        auctionsDetails22RSNFTArray = []
-        arrayNFT = '';
-        arrayNFTFormat = '';
-        arrayNFTlength = 0;
-
-        for (i = 0; i <= ((lenAuctions)/100); i++) {
-          idList = 0;
-          window['arrayNFT' + i] = '';
-
-          for (j = 0; j < lenAuctions; j++) {
-
-            idList++
-            if (idList/100 >= i && idList/100 < (i+1)) {
-                window['arrayNFT' + i] += mergedAuctionsFinal[j].tokenId + ',';
-            }
-
-          }
-
-          window['arrayNFTFormat' + i] = (window['arrayNFT' + i]).substring(0, (window['arrayNFT' + i]).length - 1)
-
-        }
-        if (lenAuctions > 0) {
-
-          var arrayNFTFormatResultTotal = [];
-          for (i = 0; i <= ((lenAuctions)/100); i++) {
-              arrayNFTFormatResultTotal.push(getNFTIds(window['arrayNFTFormat' + i]));
-          }
-          Promise.all(arrayNFTFormatResultTotal)
-          .then(data => {
-            auctionsDetails22RSNFT = data.reduce(function(result, current) {
-              return Object.assign(result, current);
-            }, {});
-            Object.keys(auctionsDetails22RSNFT).forEach(key => {
-              if (auctionsDetails22RSNFT[key].item_info) {
-                name = auctionsDetails22RSNFT[key].item_info.name_english
-                type = auctionsDetails22RSNFT[key].item_info.display_type_english
-              } else {
-                name = 'goati server error';
-                type = 'goati server error';
-              }
-              if (auctionsDetails22RSNFT[key].img) {
-                img = auctionsDetails22RSNFT[key].img
-              } else {
-                img = '/img/nft_notfound.png';
-              }
-              auctionsDetails22RSNFTArray.push({
-                  id: key,
-                  item: auctionsDetails22RSNFT[key].item,
-                  mint: auctionsDetails22RSNFT[key].mint,
-                  mint_date: auctionsDetails22RSNFT[key].timestamp,
-                  season: auctionsDetails22RSNFT[key].item_info.season,
-                  mint_limit: auctionsDetails22RSNFT[key].item_info.mint_limit,
-                  rarity: auctionsDetails22RSNFT[key].item_info.rarity,
-                  description: auctionsDetails22RSNFT[key].item_info.description_english,
-                  image: img,
-                  type: type,
-                  name: ' • ' + name
-              });
-
-            });
-
-            auctionsDetails22RSNFTArray.sort(function(a, b) {
-              return b.item- a.item;
-            })
-
-            refreshAuctions();
-
-          })
-
-          async function getNFTIds(arrayids) {
-
-            let myPromise = new Promise((resolve, reject) => {
-
-            $.ajax({
-                xhrFields: {
-                    withCredentials: !1
-                },
-                cache: !1,
-                crossDomain: !0,
-                type: 'POST',
-                dataType: 'json',
-                data: JSON.stringify({ids: arrayids}),
-                url: nftURL,
-                success: function(returnedDataTX) {
-                  var dataNFT = returnedDataTX;
-                  resolve(dataNFT);
-                }
-              }).fail(function(){
-                console.log('goati api error')
-                $("#loader-nftlist").hide();
-                $("#no-provider").show();
-              })
-
-            });
-
-            let dataNFTdetail = await myPromise;
-            return dataNFTdetail;
-
-          }
-
-        } else {
-          $("#loader-nftlist").hide();
-          $("#no-nft").show();
-        }
-
-      }).fail(function( jqXHR, textStatus, errorThrown ) {
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown );
-        $("#loader-nftlist").hide();
-        $("#no-nft").show();
-      });
-
-      async function getAuctionsPerPage(page) {
-
-        let myPromise = new Promise((resolve, reject) => {
-
-          $.get(auctionsURL + '&page=' + page,
-
-            function (data) {
-
-              //console.log(data)
-
-              if ((typeof data) == 'string') {
-                var dataPage = JSON.parse(data).result;
-              } else {
-                var dataPage = data.result;
-              }
-
-              resolve(dataPage);
-
-            }).fail(function(){
-              console.log('error marketplace')
-            })
-
-        });
-
-        let dataPageDetail = await myPromise;
-        return dataPageDetail;
-
-      }
-
-//    }
-//  ).fail(function() {
-//    $("#loader-nftlist").hide();
-//    $("#no-nft").show();
-//  })
+  })
 }
 
 // function refresh auctions
@@ -870,12 +711,13 @@ function refreshAuctions() {
         +    '</form>'
         + '</div>'
 
+  fetchAuctions += '<ul class="pagination"></ul>'
   fetchAuctions += '<ul class="list">'
 
     // start full details
-    for (i = 0; i < lenAuctions; i++) {
+    for (i = 0, len = lenAuctions; i < lenAuctions; i++) {
 
-      singleDetailsAPINFT = auctionsDetails22RSNFTArray.filter(function (el) {
+      singleDetailsAPINFT = dataAPIGoati.filter(function (el) {
         return el.id == auctionsDetailsAPINFT[i].tokenId;
       });
 
@@ -982,8 +824,6 @@ function refreshAuctions() {
                       + '• <strong>Mint limit: </strong>' + mintLimit + '<br><br>'
                       + '• <strong>Details: </strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a><br><br>';
 
-          document.getElementById("tooltip_" + [i]).innerHTML = tooltipAuction;
-
           // auction contstruct
           fetchAuctions += '<li><div class="nft-class">'
             + '<div class="nft-image" style="width:24em;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
@@ -998,6 +838,7 @@ function refreshAuctions() {
             +       '<button class="nft-order price rarity-' + rarity.toLowerCase() + ' rarityFilter">' + rarity.toUpperCase() + '</button>'
             +       '<button class="tooltip nft-order info tooltipstered" data-tooltip-content="#tooltip_' + [i] + '">'
             +         '<i class="fas fa-info" style="width:1em;"></i>'
+            +         '<div class="tooltip_templates"><span id="tooltip_' + i + '">' + tooltipAuction + '</span></div>'
             +       '</button>'
             +     '</div>'
             +   '</div>'
@@ -1028,7 +869,12 @@ function refreshAuctions() {
 
     // start list js based on item-filter values
     var options = {
-      valueNames: [ 'item-filter', 'priceFilter', 'mint-number-filter', 'rarityFilter' ]
+      valueNames: [ 'item-filter', 'priceFilter', 'mint-number-filter', 'rarityFilter' ],
+      page: 50,
+      pagination: [{
+        innerWindow: 2,
+        outerWindow: 1
+      }]
     };
     var itemsList = new List('auctions-list', options);
 
@@ -1096,7 +942,15 @@ function refreshAuctions() {
     // show auctions
     $("#loader-nftlist").hide();
 
-    // on input search change char
+    // init sell button
+    $("#sell-nft").fadeTo("slow", 1);
+    $("#sell-nft-tooltip").fadeTo("slow", 1);
+
+    // init filters & prizepool
+    $(".wrapper-filters").fadeTo("slow", 1);
+    $(".wrapper-sorters").fadeTo("slow", 1);
+    $(".container-prize").fadeTo("slow", 1);
+
     $("#input-search").on("input", function() {
         // update items count
         var el = document.getElementById('input-search');
@@ -1120,16 +974,6 @@ function refreshAuctions() {
       interactive: true,
       side: 'top'
     });
-
-    // init sell button
-    $("#sell-nft").fadeTo("slow", 1);
-    $("#sell-nft-tooltip").fadeTo("slow", 1);
-
-    // init filters & prizepool
-    $(".wrapper-filters").fadeTo("slow", 1);
-    $(".wrapper-sorters").fadeTo("slow", 1);
-    $(".container-prize").fadeTo("slow", 1);
-
 
 }
 
@@ -1557,7 +1401,6 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
      $('#sendSpinner').hide();
      console.log("error marketplace");
      })
-
 
 }
 
