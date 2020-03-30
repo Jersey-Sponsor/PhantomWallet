@@ -1648,6 +1648,13 @@ function initiateBuy() {
 
       currency = 'SOUL';
 
+      var e = document.getElementById("buy-currency-filter");
+      currency = e.options[e.selectedIndex].value;
+
+      $("#select-nft-buy option.filter-currency").show();
+      $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").hide();
+      document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-currency-" + currency).length;
+
       // On select nft change event
       $("#select-nft-buy").bind("keydown change", function(){
 
