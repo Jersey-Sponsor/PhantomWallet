@@ -1755,6 +1755,8 @@ function initiateBuy() {
       // On filter rarity change event
       $("#buy-rarity-filter").change(function () {
 
+        console.log(currency)
+
         // on change reset selected values & count
         $("#select-nft-buy").val('');
         document.getElementById("selected-nfts-buy-count").innerHTML = 0;
@@ -1776,10 +1778,10 @@ function initiateBuy() {
         if (filterBuy != 'any') {
           if (filterBuy == 'myItems') {
             $("#select-nft-buy option:not(.filter-myItems)").hide();
-            $("#select-nft-buy option.filter-myItems").show();
+            $("#select-nft-buy option.filter-myItems").filter(".filter-currency-" + currency).show();
           } else {
             $("#select-nft-buy option:not(.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase()) + ")").hide();
-            $("#select-nft-buy option.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).show();
+            $("#select-nft-buy option.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).show();
           }
         }
 
@@ -1793,24 +1795,24 @@ function initiateBuy() {
           // if any, show all
           if (rarity == 'any') {
             if (filterBuy == 'any') {
-              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type").length;
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type").filter(".filter-currency-" + currency).length;
             } else if (filterBuy == 'part') {
-              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).length + $("#select-nft-buy option.filter-type.filter-type-Pack").length;
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).length + $("#select-nft-buy option.filter-type.filter-type-Pack").filter(".filter-currency-" + currency).length;
             } else if (filterBuy == 'myItems') {
-              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).length;
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).filter(".filter-currency-" + currency).length;
             } else {
-              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).length;
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).length;
             }
           } else {
             if (filterBuy == 'any') {
               $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
-              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).length;
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-currency-" + currency).length;
             } else if (filterBuy == 'myItems') {
               $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
-                document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-" + filterBuy).length;
+                document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-" + filterBuy).filter(".filter-currency-" + currency).length;
             } else {
               $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
-              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).length;
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).length;
             }
           }
           if (document.getElementById("available-nfts-buy").innerHTML == '0') {
