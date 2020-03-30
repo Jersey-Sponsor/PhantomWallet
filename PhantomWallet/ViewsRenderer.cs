@@ -239,6 +239,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/marketbuycustom", RouteMarketBuyCustom);
 
+            TemplateEngine.Server.Post("/marketbuycustommodal", RouteMarketBuyCustomModal);
+
             TemplateEngine.Server.Get("/chains", RouteChains);
 
             TemplateEngine.Server.Get("/platforms", RoutePlatforms);
@@ -897,6 +899,60 @@ namespace Phantom.Wallet
                     InvalidateCache(keyPair.Address);
                     var result = AccountController.MarketBuyCustom(
                             keyPair, chain, contract, method, paramList.ToArray(), feeamount, feesymbol
+                            ).Result;
+
+                    if (result.GetType() == typeof(ErrorRes))
+                    {
+                        return JsonConvert.SerializeObject(result, Formatting.Indented);
+                    }
+
+                    var contractTx = (string)result;
+
+                    if (SendUtils.IsTxHashValid(contractTx))
+                    {
+                        request.session.SetString("confirmedHash", contractTx);
+                        return contractTx;
+                    }
+
+                    PushError(request, contractTx);
+                }
+                else
+                {
+                    PushError(request, "You need a small drop of KCAL to call a contract.");
+                }
+            }
+            return null;
+        }
+
+        private object RouteMarketBuyCustomModal(HTTPRequest request)
+        {
+            var chain = request.GetVariable("chain");
+            var contract = request.GetVariable("contract");
+            var method = request.GetVariable("method");
+            var param = request.GetVariable("params");
+            var id = request.GetVariable("id");
+            var quotesymbol = request.GetVariable("quoteSymbol");
+            var pricenft = request.GetVariable("priceNFT");
+            var creatoraddress = request.GetVariable("creatorAddress");
+            var context = InitContext(request);
+
+            if (param == null)
+            {
+                PushError(request, "Parameters cannot be null!");
+                return null;
+            }
+
+            List<object> paramList = SendUtils.BuildParamList(param);
+
+            if (context["holdings"] is Holding[] balance)
+            {
+                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == chain);
+                if (kcalBalance.Amount > 0.1m)
+                {
+                    var keyPair = GetLoginKey(request);
+                    InvalidateCache(keyPair.Address);
+                    var result = AccountController.MarketBuyCustomModal(
+                            keyPair, chain, contract, method, paramList.ToArray(), id, quotesymbol, pricenft, creatoraddress
                             ).Result;
 
                     if (result.GetType() == typeof(ErrorRes))

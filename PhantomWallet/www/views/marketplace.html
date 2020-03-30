@@ -10,6 +10,7 @@
             </div>
             <div class="col-md-6 center container-sell" style="margin-top: -4em;z-index: 10;">
               <div class="category sell-nft" id="sell-nft" style="opacity:0" onclick="initiateSell()">Sell NFT</div>
+              <div class="category buy-nft" id="buy-nft" style="opacity:0" onclick="initiateBuy()">Buy NFT</div>
               <div class="referral-nft" id="sell-nft-tooltip" style="opacity:0;margin-top:1em;">No fees for seller, 2% fees for buyer!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_fees"></i></div>
             </div>
             <div class="col-md-6 center container-prize" style="opacity:0;margin-top:-6em;">
@@ -80,9 +81,17 @@
 </div>
 
 <div class="tooltip_templates">
+    <span id="tooltip_pending">
+      This item has just been bought, but the transaction is still being confirmed.<br>It might take up to 2 minutes before it disappears from the Marketplace.<br>Refresh the page will trigger a marketplace refresh.
+    </span>
+</div>
+
+<div class="tooltip_templates">
     <span id="tooltip_stats">
     </span>
 </div>
+
+<div id="alert-area" class="alert-area"></div>
 
 <script>
 
@@ -93,10 +102,12 @@ $(document).ready(function() {
   nftURL = 'http://www.22series.com/api/store/nft';
 
   fetchSellNFTDropdown = '';
+  fetchBuyNFTDropdown = '';
 
   initialLoad = 0;
 
   $("#loader-nftlist").show();
+  $("#container-auctions-list").hide();
 
   // set session storage and filter on load
   localStorage.setItem('marketplace-category-filter', 'filter-all-items');
@@ -279,14 +290,17 @@ $(document).ready(function() {
     }
 
   } else {
-    $("#sell-nft").fadeTo("slow", 1);
-    $("#sell-nft-tooltip").fadeTo("slow", 1);
+    //$("#sell-nft").fadeTo("slow", 1);
+    //$("#sell-nft-tooltip").fadeTo("slow", 1);
   }
 
 });
 
 // On click filtering
 function filterCategory(category) {
+
+  $("#loader-nftlist").show();
+  $("#container-auctions-list").hide();
 
   var cat1 = document.getElementById("filter-all-items");
   var cat2 = document.getElementById("filter-my-items");
@@ -331,12 +345,16 @@ function filterCategory(category) {
   }
   selectedMainFilter = localStorage.getItem('marketplace-category-filter');
   // launch refresh auctions once filter has been selected
-  refreshAuctions();
+  //refreshAuctions();
+  setTimeout(function(){ refreshAuctions(); }, 100);
 
 }
 
 // On click sorting
 function sortCategory(category) {
+
+  $("#loader-nftlist").show();
+  $("#container-auctions-list").hide();
 
   $("#sorting-order-container").fadeTo("fast", 1);
   var cat1 = document.getElementById("sort-price");
@@ -368,7 +386,8 @@ function sortCategory(category) {
   }
   selectedMainSort = category;
   // launch refresh auctions once sorting has been selected
-  refreshAuctions();
+  //refreshAuctions();
+  setTimeout(function(){ refreshAuctions(); }, 100);
 
 }
 
@@ -649,7 +668,7 @@ function getAuctions() {
 
       $.when(
 
-        $.get('https://seed.neoeconomy.io/phantasma/auctionsmarketplace.json',
+        $.get('https://neoeconomy.io/json/auctionsmarketplace.json',
 
           function (data) {
             //console.log(data)
@@ -657,7 +676,7 @@ function getAuctions() {
           }
 
         ),
-        $.get('https://seed.neoeconomy.io/phantasma/auctionsmarketplace-goati.json',
+        $.get('https://neoeconomy.io/json/auctionsmarketplace-goati.json',
 
           function (data) {
             //console.log(data)
@@ -689,8 +708,75 @@ function getAuctions() {
         // start marketplace stats
         getStats();
 
+        // init empty pendingItems
+        pendingItems = [];
+
         // start refresh auctions
         refreshAuctions();
+
+        // preload nft list for buying dropdown bootbox
+        buyCustomNFT = dataAPIGoati
+
+        // double sort item & mint
+        buyCustomNFT.sort(function (a, b) {
+
+          if (parseFloat(a.item) < parseFloat(b.item)) return 1;
+          if (parseFloat(a.item) > parseFloat(b.item)) return -1;
+
+          if (parseFloat(a.mint) > parseFloat(b.mint)) return 1;
+          if (parseFloat(a.mint) < parseFloat(b.mint)) return -1;
+
+        });
+
+        countExpired = 0;
+        fetchBuyNFTDropdown = '<select multiple style="margin: .5em auto;" id="select-nft-buy">';
+        //fetchBuyNFTDropdown += '<option value="">Select NFT to sell</option>'
+        for (i = 0; i < buyCustomNFT.length; i ++) {
+
+          buyType = buyCustomNFT[i].type
+          buyName = (buyCustomNFT[i].name).substr(2)
+          buyMint = buyCustomNFT[i].mint
+          buyMinDate = buyCustomNFT[i].mint_date
+          var date = new Date(buyMinDate * 1000);
+          var year = date.getFullYear();
+          var month = ("0" + (date.getMonth() + 1)).slice(-2)
+          var day = ("0" + (date.getDate())).slice(-2)
+          buyMintDateFormatted = year + "-" + month + "-" + day;
+          buyRarity = formatRarity(buyCustomNFT[i].rarity)
+          buyId = buyCustomNFT[i].id
+          buyPriceRaw = mergedAuctionsFinal.filter(function (el) {
+            return el.tokenId == dataAPIGoati[i].id;
+          });
+          buyCurrency = buyPriceRaw[0].quoteSymbol
+          buyPrice = (buyPriceRaw[0].price)/(Math.pow(10,formatDecimals(buyCurrency)));
+          buyCreator = buyPriceRaw[0].creatorAddress
+
+          if ((((buyPriceRaw[0].endDate)*1000) - (new Date()).getTime() < 0) && buyCreator != '{{address}}') {
+            countExpired++
+            continue;
+          }
+
+          if (buyCreator == '{{address}}') {
+            classCreator = "classCreator";
+            buyPriceCustom = 0;
+            buyMyitems = 'filter-myItems';
+          } else {
+            classCreator = '';
+            buyPriceCustom = (buyPriceRaw[0].price)/(Math.pow(10,formatDecimals(buyCurrency)));
+            buyMyitems = '';
+          }
+
+          lenAuctionsBuy = buyCustomNFT.length - countExpired;
+
+          if (((buyPriceRaw[0].endDate)*1000) - (new Date()).getTime() < 0) {
+            expiredItem = ' • Expired'
+          } else {
+            expiredItem = ''
+          }
+
+          fetchBuyNFTDropdown += '<option value="' + buyCustomNFT[i].id + '" class=" ' + classCreator + ' filter-type filter-type-' + buyType + ' filter-rarity filter-rarity-' + buyRarity + ' filter-currency filter-currency-' + buyCurrency +  ' ' + buyMyitems + '" price="' + buyPriceCustom + '" creatorAddress="' + buyCreator + '">' + buyName + ' • Mint #' + buyMint + ' • Minted on ' + buyMintDateFormatted + ' • ' + buyRarity + ' • ' + numberWithCommas(buyPrice) + ' ' + buyCurrency + expiredItem + '</option>'
+        }
+        fetchBuyNFTDropdown += '</select>'
 
   })
 }
@@ -757,13 +843,37 @@ function refreshAuctions() {
           item = (singleDetailsAPINFT[0].item);
           priceRaw = (auctionsDetailsAPINFT[i].price)/(Math.pow(10,formatDecimals(quoteSymbol)));
           price = numberWithCommas(priceRaw);
-          if (auctionsDetailsAPINFT[i].creatorAddress == '{{address}}') {
-            priceFormatted = price + ' ' + quoteSymbol + ' - CANCEL'
-            cancelClass = 'cancel'
+
+          pendingItem = pendingItems.filter(function (el) {
+            return el.id == tokenID;
+          });
+
+          pendingClass = ''
+
+          if (pendingItem[0]) {
+            if (tokenID == pendingItem[0].id) {
+              priceFormatted = 'PENDING'
+              cancelClass = 'cancel'
+              pendingClass = '<button class="tooltip nft-order info pending" data-tooltip-content="#tooltip_pending"><i class="fas fa-info" style="width:1em;"></i></button>'
+            } else {
+              if (auctionsDetailsAPINFT[i].creatorAddress == '{{address}}') {
+                priceFormatted = price + ' ' + quoteSymbol + ' - CANCEL'
+                cancelClass = 'cancel'
+              } else {
+                priceFormatted = 'BUY FOR ' + price + ' ' + quoteSymbol
+                cancelClass = ''
+              }
+            }
           } else {
-            priceFormatted = 'BUY FOR ' + price + ' ' + quoteSymbol
-            cancelClass = ''
+            if (auctionsDetailsAPINFT[i].creatorAddress == '{{address}}') {
+              priceFormatted = price + ' ' + quoteSymbol + ' - CANCEL'
+              cancelClass = 'cancel'
+            } else {
+              priceFormatted = 'BUY FOR ' + price + ' ' + quoteSymbol
+              cancelClass = ''
+            }
           }
+
           rarity = formatRarity(singleDetailsAPINFT[0].rarity);
           season = formatSeason(singleDetailsAPINFT[0].season);
           mintNumber = singleDetailsAPINFT[0].mint;
@@ -828,6 +938,7 @@ function refreshAuctions() {
           fetchAuctions += '<li><div class="nft-class">'
             + '<div class="nft-image" style="width:24em;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
             +   '<button class="nft-order circulating">' + hoursleft + '</button>'
+            +   pendingClass
             +   '<button class="nft-order supply priceFilter ' + cancelClass + '">' + priceFormatted + '</button>'
             +   '<img src="' + image + '?width=512" alt="" style="height:12em;padding-top:3em;">'
             +   '<div class="nft-desc item-filter">'
@@ -836,7 +947,7 @@ function refreshAuctions() {
             +       '<button class="nft-order price mint-number-filter" >#' + mintNumber + '</button>'
             +       '<button class="nft-order price">' + mintDateFormatted + '</button>'
             +       '<button class="nft-order price rarity-' + rarity.toLowerCase() + ' rarityFilter">' + rarity.toUpperCase() + '</button>'
-            +       '<button class="tooltip nft-order info tooltipstered" data-tooltip-content="#tooltip_' + [i] + '">'
+            +       '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_' + [i] + '">'
             +         '<i class="fas fa-info" style="width:1em;"></i>'
             +         '<div class="tooltip_templates"><span id="tooltip_' + i + '">' + tooltipAuction + '</span></div>'
             +       '</button>'
@@ -886,10 +997,13 @@ function refreshAuctions() {
     };
     var itemsList = new List('auctions-list', options);
 
+    // Init a timeout variable to be used below - custom phantom
+    let timeout = null;
+
     itemsList.on('updated', function () {
-      // refresh tooltipster button
-      if ($('button.tooltip').tooltipster()) {
-          $('button.tooltip').tooltipster('destroy');
+
+      if ($('button.tooltip').hasClass("tooltipstered")) {
+        $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
       }
 
       $('button.tooltip').tooltipster({
@@ -898,6 +1012,7 @@ function refreshAuctions() {
         interactive: true,
         side: 'top'
       });
+
     });
 
     // custom sort for rarity except initial load
@@ -970,8 +1085,10 @@ function refreshAuctions() {
 
     // show auctions
     $("#loader-nftlist").hide();
+    $("#container-auctions-list").show();
 
-    // init sell button
+    // init sell/buy button
+    $("#buy-nft").fadeTo("slow", 1);
     $("#sell-nft").fadeTo("slow", 1);
     $("#sell-nft-tooltip").fadeTo("slow", 1);
 
@@ -981,27 +1098,26 @@ function refreshAuctions() {
     $(".container-prize").fadeTo("slow", 1);
 
     $("#input-search").on("input", function() {
-        // update items count
-        var el = document.getElementById('input-search');
-        el.dispatchEvent(new Event('keyup'));
-        fetchValuesCount = (itemsList.matchingItems).length + ' items available';
-        $('#count-search').html(fetchValuesCount);
+      setTimeout(function(){
+          fetchValuesCount = (itemsList.matchingItems).length + ' items available';
+          $('#count-search').html(fetchValuesCount);
 
-        // hide pagination if single page
-        if ((itemsList.matchingItems).length <= itemsList.page) {
-          $('.paginationBottom').css('display', 'none');
-        } else {
-          $('.paginationBottom').css('display', 'block');
-        }
+          // hide pagination if single page
+          if ((itemsList.matchingItems).length <= itemsList.page) {
+            $('.paginationBottom').css('display', 'none');
+          } else {
+            $('.paginationBottom').css('display', 'block');
+          }
+         }, 1000);
+
     })
 
     // init items count search
     fetchValuesCount = (itemsList.matchingItems).length + ' items available';
     $('#count-search').html(fetchValuesCount);
 
-    // init tooltipster button
-    if ($('button.tooltip').tooltipster()) {
-        $('button.tooltip').tooltipster('destroy');
+    if ($('button.tooltip').hasClass("tooltipstered")) {
+      $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
     }
 
     $('button.tooltip').tooltipster({
@@ -1114,7 +1230,7 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
   params = [];
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: ''  }
   params[1] = { name: 'symbol', type: 'String', input: 'TTRS', info: '' },
-  params[2] = { name: 'tokenID', type: 'Number', input: idNFT, info: '' },
+  params[2] = { name: 'tokenID', type: 'Number', input: idNFT, info: '' }
 
   $('#sendSpinner').show();
 
@@ -1174,8 +1290,12 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
              },
              function (returnedData) {
                  if (returnedData !== "") {
-                     //window.location.replace("/waiting/" + returnedData);
-                     window.location.replace("/marketplace");
+                     pendingItems.push ({
+                         id: idNFT
+                     });
+                     $('#sendSpinner').hide();
+                     alertbox.show('Transaction successful!');
+                     refreshAuctions();
                  } else {
                      window.location.replace("/error");
                  }
@@ -1288,7 +1408,7 @@ function initiateSell() {
       });
 
       // On select nft change event
-      $("#select-nft").click(function () {
+      $("#select-nft").bind("keydown change", function(){
 
         document.getElementById("selected-nfts").innerHTML = $("#select-nft :checked").length;
 
@@ -1296,6 +1416,10 @@ function initiateSell() {
 
       // On filter type change event
       $("#sell-type-filter").change(function () {
+
+        // on change reset selected values & count
+        $("#select-nft").val('');
+        document.getElementById("selected-nfts").innerHTML = 0;
 
         // show all type on change start
         $("#select-nft option.filter-type").show();
@@ -1333,13 +1457,14 @@ function initiateSell() {
             $("#filter-results-count").show();
           }
 
-          // show first val after filters
-          document.getElementById("select-nft").options[0].selected = true;
-
        });
 
       // On filter rarity change event
       $("#sell-rarity-filter").change(function () {
+
+        // on change reset selected values & count
+        $("#select-nft").val('');
+        document.getElementById("selected-nfts").innerHTML = 0;
 
         // show all type on change start
         $("#select-nft option.filter-type").show();
@@ -1388,14 +1513,10 @@ function initiateSell() {
             $("#filter-results-count").show();
           }
 
-          // show first val after filters
-          document.getElementById("select-nft").options[0].selected = true;
-
        });
       // init custom dropdown after bootbox init
       //$("#select-nft-custom").msDropDown();
     });
-
 
 }
 
@@ -1428,9 +1549,308 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
      },
      function (returnedData) {
          if (returnedData !== "") {
-           window.location.replace("/marketplace");
+           for (var i = 0, len = nftIdArr.length; i < len; i++) {
+             pendingItems.push ({
+                 id: nftIdArr[i]
+             });
+           }
+           $('#sendSpinner').hide();
+           alertbox.show('Transaction successful!');
+           refreshAuctions();
          } else {
            window.location.replace("/error");
+         }
+         console.log(returnedData);
+     }).fail(function() {
+     $('#sendSpinner').hide();
+     console.log("error marketplace");
+     })
+
+}
+
+// Initiate buy nft
+function initiateBuy() {
+
+  if (lenAuctionsBuy == 0 || lenAuctionsBuy == null) {
+        bootbox.alert("There are no NFTs available to buy!");
+        return;
+  }
+
+  if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
+        bootbox.alert("Not enough KCAL available. You need at least 0.1 KCAL to perform a transaction!");
+        return;
+  }
+
+  $('#sendSpinner').show();
+
+  contentBootbox = '1) Select the NFT(s) you would like to buy:<br><br>'
+                + '<div class="filter-results">Filter by currency: <select style="margin-left:.6em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-currency-filter"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
+                + 'Filter by type: <select style="margin-left:.5em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="buy-type-filter"><option value="any">Any</option><option value="myItems">My Items</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
+                + 'Filter by rarity: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
+                + '<div class="filter-results-count">There are <strong><span id="available-nfts-buy">' + lenAuctionsBuy + '</span> NFTs available</strong> matching these filters.</div>'
+                + fetchBuyNFTDropdown
+                + '<div class="filter-results-count" id="filter-results-count-selected">You have selected <strong><span id="selected-nfts-buy-count">0</span> NFTs </strong> to be bought.</div><br>'
+                + '2) Confirm the total amount to be spent:<br><br>'
+                + '<div class="filter-results-count">You will be paying a total of <strong><span id="selected-nfts-buy-amount">0 SOUL</span></strong> to buy these NFT(s).</div><br>'
+
+  dialog = bootbox.confirm({
+      title: "NFT buy confirmation",
+      message: contentBootbox,
+      buttons: {
+          cancel: {
+              label: '<i class="fa fa-times"></i> Cancel',
+              className:'btn btn-default'
+          },
+          confirm: {
+              label: '<i class="fa fa-check"></i> Buy NFT',
+              className:'btn btn-primary sell-confirm'
+          }
+      },
+      callback: function(result) {
+
+        //$("#select-id").msDropDown();
+
+        if (result) {
+
+          quoteSymbol = $("#buy-currency-filter").val();
+          bulkdIdNFT = $("#select-nft-buy").val();
+
+          nftIdArr = [];
+          for (var i = 0; i < bulkdIdNFT.length; i++) {
+            nftIdArr.push ({
+                id: bulkdIdNFT[i]
+            });
+          }
+
+          creatorAddress = []
+          $("#select-nft-buy option:selected[creatorAddress]").each(function() {
+                creatorAddress.push ({
+                    id: $(this).attr("creatorAddress")
+                });
+          });
+
+          priceNFT = []
+          $("#select-nft-buy option:selected[price]").each(function() {
+                priceNFT.push ({
+                    id: $(this).attr("price")
+                });
+          });
+
+          confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress)
+
+        } else {
+          $('#sendSpinner').hide();
+        }
+
+      }
+
+    }).init(function() {
+
+      // On select nft change event
+      $("#select-nft-buy").bind("keydown change", function(){
+
+        document.getElementById("selected-nfts-buy-count").innerHTML = $("#select-nft-buy :checked").length;
+
+        totalAmount = 0
+        $("#select-nft-buy option:selected[price]").each(function() {
+            totalAmount += parseFloat($(this).attr("price"))
+        });
+        buyerFee = 0.02;
+        if (roundDown((totalAmount*buyerFee),2) < 0.10) {
+          finalFee = 0.1
+        } else {
+          finalFee = roundDown((totalAmount*buyerFee),2);
+        }
+
+        // if only cancel items
+        if (totalAmount == 0) {
+          document.getElementById("selected-nfts-buy-amount").innerHTML = numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and 0% fee)'
+        } else {
+          document.getElementById("selected-nfts-buy-amount").innerHTML = numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and a 2% fee: ' + numberWithCommas(finalFee) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ')'
+        }
+
+       });
+
+       // On filter currency change event
+       $("#buy-currency-filter").change(function () {
+
+         // on change reset selected values & count
+         $("#select-nft-buy").val('');
+         document.getElementById("selected-nfts-buy-count").innerHTML = 0;
+
+         // show all type on change start
+         $("#select-nft-buy option.filter-type").show();
+
+         var e = document.getElementById("buy-currency-filter");
+         currency = e.options[e.selectedIndex].value;
+
+         $("#select-nft-buy option.filter-currency").show();
+         $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").hide();
+         document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-currency-" + currency).length;
+
+      });
+
+      // On filter type change event
+      $("#buy-type-filter").change(function () {
+
+        // on change reset selected values & count
+        $("#select-nft-buy").val('');
+        document.getElementById("selected-nfts-buy-count").innerHTML = 0;
+
+        // show all type on change start
+        $("#select-nft-buy option.filter-type").show();
+
+        // show all rarity on change start & reset value
+        $("#select-nft-buy option.filter-rarity").show();
+        $("#buy-rarity-filter").val("any");
+
+        // switch back to currency on start
+        $("#select-nft-buy option.filter-currency").show();
+        $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").hide();
+        $("#buy-currency-filter").val(currency);
+
+           var e = document.getElementById("buy-type-filter");
+           var type = e.options[e.selectedIndex].value;
+
+           function capitalizeFirstLetter(string) {
+              return string.charAt(0).toUpperCase() + string.slice(1);
+          }
+
+          // set filter buy
+          filterBuy = type;
+
+          // if any, show all
+          if (type == 'any') {
+            $("#select-nft-buy option.filter-type").show();
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type").length;
+          } else if (type == 'part') {
+            $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").hide();
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length + $("#select-nft-buy option.filter-type.filter-type-Pack").length;
+          } else if (type == 'myItems') {
+            $("#select-nft-buy option:not(.filter-" + type + ")").hide();
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).length;
+          } else {
+            $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").hide();
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length;
+          }
+          if (document.getElementById("available-nfts-buy").innerHTML == '0') {
+            $("#select-nft-buy").hide();
+            $("#filter-results-count-selected").hide();
+          } else {
+            $("#select-nft-buy").show();
+            $("#filter-results-count-selected").show();
+          }
+
+       });
+
+      // On filter rarity change event
+      $("#buy-rarity-filter").change(function () {
+
+        // on change reset selected values & count
+        $("#select-nft-buy").val('');
+        document.getElementById("selected-nfts-buy-count").innerHTML = 0;
+
+        // show all type on change start
+        $("#select-nft-buy option.filter-type").show();
+
+        // switch back to currency on start
+        $("#select-nft-buy option.filter-currency").show();
+        $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").hide();
+        $("#buy-currency-filter").val(currency);
+
+        // handle change rarity if type has not been changed yet
+        if (typeof filterBuy == 'undefined') {
+          filterBuy = 'any';
+        }
+
+        // show all on change start
+        if (filterBuy != 'any') {
+          if (filterBuy == 'myItems') {
+            $("#select-nft-buy option:not(.filter-myItems)").hide();
+            $("#select-nft-buy option.filter-myItems").show();
+          } else {
+            $("#select-nft-buy option:not(.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase()) + ")").hide();
+            $("#select-nft-buy option.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).show();
+          }
+        }
+
+           var e = document.getElementById("buy-rarity-filter");
+           var rarity = e.options[e.selectedIndex].value;
+
+           function capitalizeFirstLetter(string) {
+              return string.charAt(0).toUpperCase() + string.slice(1);
+          }
+
+          // if any, show all
+          if (rarity == 'any') {
+            if (filterBuy == 'any') {
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type").length;
+            } else if (filterBuy == 'part') {
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).length + $("#select-nft-buy option.filter-type.filter-type-Pack").length;
+            } else if (filterBuy == 'myItems') {
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).length;
+            } else {
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).length;
+            }
+          } else {
+            if (filterBuy == 'any') {
+              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).length;
+            } else if (filterBuy == 'myItems') {
+              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+                document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-" + filterBuy).length;
+            } else {
+              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).length;
+            }
+          }
+          if (document.getElementById("available-nfts-buy").innerHTML == '0') {
+            $("#select-nft-buy").hide();
+            $("#filter-results-count-selected").hide();
+          } else {
+            $("#select-nft-buy").show();
+            $("#filter-results-count-selected").show();
+          }
+
+       });
+
+    });
+
+}
+
+// Confirm sell nft
+function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
+
+  params = [];
+  params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: ''  }
+  params[1] = { name: 'symbol', type: 'String', input: 'TTRS', info: '' },
+  params[2] = { name: 'tokenID', type: 'Number', input: nftIdArr[0].id, info: '' }
+
+  $.post('/marketbuycustommodal',
+     {
+         chain: 'main',
+         contract: 'market',
+         method: 'BuyToken',
+         params: JSON.stringify({
+           params
+         }),
+         id: JSON.stringify(nftIdArr),
+         quoteSymbol: quoteSymbol,
+         priceNFT: JSON.stringify(priceNFT),
+         creatorAddress : JSON.stringify(creatorAddress)
+     },
+     function (returnedData) {
+         if (returnedData !== "") {
+             for (var i = 0, len = nftIdArr.length; i < len; i++) {
+               pendingItems.push ({
+                   id: nftIdArr[i]
+               });
+             }
+             $('#sendSpinner').hide();
+             alertbox.show('Transaction successful!');
+             refreshAuctions();
+         } else {
+             window.location.replace("/error");
          }
          console.log(returnedData);
      }).fail(function() {
