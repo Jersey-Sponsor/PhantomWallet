@@ -731,6 +731,16 @@ function getAuctions() {
         countExpired = 0;
         fetchBuyNFTDropdown = '<select multiple style="margin: .5em auto;" id="select-nft-buy">';
         //fetchBuyNFTDropdown += '<option value="">Select NFT to sell</option>'
+
+        /*
+        // check difference between APIs
+        console.log(buyCustomNFT)
+        console.log(mergedAuctionsFinal)
+        var res = buyCustomNFT.filter(item1 =>
+        !mergedAuctionsFinal.some(item2 => (item2.tokenId === item1.id)))
+        console.log(res);
+        */
+
         for (i = 0; i < buyCustomNFT.length; i ++) {
 
           buyType = buyCustomNFT[i].type
@@ -1295,6 +1305,7 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
                      });
                      $('#sendSpinner').hide();
                      alertbox.show('Transaction successful!');
+                     initialLoad = 0;
                      refreshAuctions();
                  } else {
                      window.location.replace("/error");
@@ -1556,6 +1567,7 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
            }
            $('#sendSpinner').hide();
            alertbox.show('Transaction successful!');
+           initialLoad = 0;
            refreshAuctions();
          } else {
            window.location.replace("/error");
@@ -1589,9 +1601,9 @@ function initiateBuy() {
                 + 'Filter by rarity: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
                 + '<div class="filter-results-count">There are <strong><span id="available-nfts-buy">' + lenAuctionsBuy + '</span> NFTs available</strong> matching these filters.</div>'
                 + fetchBuyNFTDropdown
-                + '<div class="filter-results-count" id="filter-results-count-selected">You have selected <strong><span id="selected-nfts-buy-count">0</span> NFTs </strong> to be bought.</div><br>'
+                + '<div class="filter-results-count" id="filter-results-count-selected">You have selected <span id="selected-nfts-buy-count"><strong>0 NFTs </strong> to be bought.</span></div><br>'
                 + '2) Confirm the total amount to be spent:<br><br>'
-                + '<div class="filter-results-count">You will be paying a total of <strong><span id="selected-nfts-buy-amount">0 SOUL</span></strong> to buy these NFT(s).</div><br>'
+                + '<div class="filter-results-count">You will be paying a total of <span id="selected-nfts-buy-amount"><strong>0 SOUL</strong> to buy these NFT(s).</span></div><br>'
 
   dialog = bootbox.confirm({
       title: "NFT buy confirmation",
@@ -1658,8 +1670,6 @@ function initiateBuy() {
       // On select nft change event
       $("#select-nft-buy").bind("keydown change", function(){
 
-        document.getElementById("selected-nfts-buy-count").innerHTML = $("#select-nft-buy :checked").length;
-
         totalAmount = 0
         $("#select-nft-buy option:selected[price]").each(function() {
             totalAmount += parseFloat($(this).attr("price"))
@@ -1673,9 +1683,11 @@ function initiateBuy() {
 
         // if only cancel items
         if (totalAmount == 0) {
-          document.getElementById("selected-nfts-buy-amount").innerHTML = numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and 0% fee)'
+          document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>' + $("#select-nft-buy :checked").length + ' NFTs </strong> to be cancelled.';
+          document.getElementById("selected-nfts-buy-amount").innerHTML = '<strong>' + numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and 0% fee)' + '</strong> to cancel these NFT(s).</span>'
         } else {
-          document.getElementById("selected-nfts-buy-amount").innerHTML = numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and a 2% fee: ' + numberWithCommas(finalFee) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ')'
+          document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>' + $("#select-nft-buy :checked").length + ' NFTs </strong> to be bought.';
+          document.getElementById("selected-nfts-buy-amount").innerHTML = '<strong>' + numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and a 2% fee: ' + numberWithCommas(finalFee) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ')' + '</strong> to buy these NFT(s).</span>'
         }
 
        });
@@ -1685,7 +1697,7 @@ function initiateBuy() {
 
          // on change reset selected values & count
          $("#select-nft-buy").val('');
-         document.getElementById("selected-nfts-buy-count").innerHTML = 0;
+         document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>0 NFTs </strong> to be bought.';
 
          // show all type on change start
          $("#select-nft-buy option.filter-type").show();
@@ -1704,7 +1716,7 @@ function initiateBuy() {
 
         // on change reset selected values & count
         $("#select-nft-buy").val('');
-        document.getElementById("selected-nfts-buy-count").innerHTML = 0;
+        document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>0 NFTs </strong> to be bought.';
 
         // show all type on change start
         $("#select-nft-buy option.filter-type").show();
@@ -1759,7 +1771,7 @@ function initiateBuy() {
 
         // on change reset selected values & count
         $("#select-nft-buy").val('');
-        document.getElementById("selected-nfts-buy-count").innerHTML = 0;
+        document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>0 NFTs </strong> to be bought.';
 
         // show all type on change start
         $("#select-nft-buy option.filter-type").show();
@@ -1859,6 +1871,7 @@ function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
              }
              $('#sendSpinner').hide();
              alertbox.show('Transaction successful!');
+             initialLoad = 0;
              refreshAuctions();
          } else {
              window.location.replace("/error");
