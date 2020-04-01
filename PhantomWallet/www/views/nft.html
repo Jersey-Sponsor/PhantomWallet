@@ -239,8 +239,6 @@ $(document).ready(function() {
 // function redeem pack
 function getRedeemPack() {
 
-  redeemcustomNFT = [];
-
   if (arrayNFTlength > 0) {
 
     var arrayNFTFormattedResultTotal = [];
@@ -255,6 +253,8 @@ function getRedeemPack() {
       dataNFT = data.reduce(function(result, current) {
         return Object.assign(result, current);
       }, {});
+
+      redeemcustomNFT = [];
 
       fetchRedeemDropdown = '<select style="margin-left:.5em;margin-right:.5em;" id="pack-redeem-count">';
       Object.keys(dataNFT).forEach(key => {
@@ -336,7 +336,6 @@ function toggleCurrency() {
   }
 
   getNFTDetails()
-  getRedeemPack()
 
 }
 
@@ -472,7 +471,6 @@ function initStore() {
           // init refresh every 5 minutes
           setInterval(function() {
             getNFTDetails()
-            getRedeemPack()
           }, 3000000);
 
           // init counter
