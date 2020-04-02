@@ -931,6 +931,7 @@ function refreshAuctions() {
 
           // tooltip construct
           tooltipAuction = ''
+                      + '<div class="tooltip-container"><br>'
                       + '• <strong>Item: </strong>' + name + '<br><br>'
                       + '• <strong>Price: </strong>' + price + ' ' + quoteSymbol + '<br><br>'
                       + '• <strong>Current owner: </strong><a class="raw-link" href="https://www.22series.com/inventory?#' + creatorAddress + '" target="_blank">' + addressFormated + '</a><br><br>'
@@ -942,7 +943,8 @@ function refreshAuctions() {
                       + '• <strong>Rarity: </strong>' + rarity + '<br><br>'
                       + '• <strong>Season: </strong>' + season + '<br><br>'
                       + '• <strong>Mint limit: </strong>' + mintLimit + '<br><br>'
-                      + '• <strong>Details: </strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a><br><br>';
+                      + '• <strong>Details: </strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a><br><br>'
+                      + '</div>';
 
           // auction contstruct
           fetchAuctions += '<li><div class="nft-class">'
@@ -1006,9 +1008,6 @@ function refreshAuctions() {
       }]
     };
     var itemsList = new List('auctions-list', options);
-
-    // Init a timeout variable to be used below - custom phantom
-    let timeout = null;
 
     itemsList.on('updated', function () {
 
@@ -1109,7 +1108,11 @@ function refreshAuctions() {
 
     $("#input-search").on("input", function() {
       setTimeout(function(){
-          fetchValuesCount = (itemsList.matchingItems).length + ' items available';
+          if ((itemsList.matchingItems).length > 1) {
+            fetchValuesCount = (itemsList.matchingItems).length + ' items available';
+          } else {
+            fetchValuesCount = (itemsList.matchingItems).length + ' item available';
+          }
           $('#count-search').html(fetchValuesCount);
 
           // hide pagination if single page
@@ -1123,9 +1126,14 @@ function refreshAuctions() {
     })
 
     // init items count search
-    fetchValuesCount = (itemsList.matchingItems).length + ' items available';
+    if ((itemsList.matchingItems).length > 1) {
+      fetchValuesCount = (itemsList.matchingItems).length + ' items available';
+    } else {
+      fetchValuesCount = (itemsList.matchingItems).length + ' item available';
+    }
     $('#count-search').html(fetchValuesCount);
 
+    // init tooltipster button
     if ($('button.tooltip').hasClass("tooltipstered")) {
       $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
     }
@@ -1347,7 +1355,7 @@ function initiateSell() {
 
   $('#sendSpinner').show();
 
-  contentBootbox = '1) Select the NFT(s) you would like to sell:<br><br>'
+  contentBootbox = '1) Select the NFT(s) you would like to sell:<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
                 + '<div class="filter-results">Filter by type: <select style="margin-left:1em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="sell-type-filter"><option value="any">Any</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
                 + 'Filter by rarity: <select style="margin-left:1em;height: 2.5em;text-transform:uppercase;" id="sell-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
                 + '<div class="filter-results-count">You have <strong><span id="available-nfts">' + sellCustomNFT.length + '</span> NFTs available</strong> matching these filters.</div>'
@@ -1595,7 +1603,7 @@ function initiateBuy() {
 
   $('#sendSpinner').show();
 
-  contentBootbox = '1) Select the NFT(s) you would like to buy:<br><br>'
+  contentBootbox = '1) Select the NFT(s) you would like to buy::<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
                 + '<div class="filter-results">Filter by currency: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-currency-filter"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
                 + 'Filter by type: <select style="margin-left:.5em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="buy-type-filter"><option value="any">Any</option><option value="myItems">My Items</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
                 + 'Filter by rarity: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
