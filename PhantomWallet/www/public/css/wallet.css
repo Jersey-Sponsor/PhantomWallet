@@ -1941,6 +1941,10 @@ ul.nav.nav-pills {
   line-height: initial;
 }
 
+.tooltip-container {
+  padding: .5em;
+}
+
 .tooltip_templates { display: none; }
 
 .raw-link {
