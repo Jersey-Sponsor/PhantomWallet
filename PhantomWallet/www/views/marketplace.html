@@ -656,11 +656,16 @@ function getStats() {
             side: 'bottom'
           });
 
+      }).fail(function() {
+        $('i#tooltip-stats-container').hide();
+        console.log("error api call");
       });
 
     }
-  )
-
+  ).fail(function() {
+    $('i#tooltip-stats-container').hide();
+    console.log("error api call");
+  });
 
 }
 

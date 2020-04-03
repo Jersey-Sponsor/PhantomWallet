@@ -155,6 +155,8 @@ $(document).ready(function() {
           document.getElementById("lottery-odds").innerHTML = 'Your current odds: ' + ((ticketsEntries.length/data.length)*100).toFixed(2) + '%'
       }
 
+      $('i.tooltip').show();
+
       // init tooltipster i
       $('i.tooltip').tooltipster({
         theme: 'tooltipster-noir',
@@ -165,7 +167,10 @@ $(document).ready(function() {
 
 
     }
-  )
+  ).fail(function() {
+    $('i.tooltip').hide();
+    console.log("error api call");
+  });
 
 
   hasredeemPack = 0;
