@@ -946,7 +946,7 @@ function refreshAuctions() {
                       + '• <strong>Details: </strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a><br><br>'
                       + '</div>';
 
-          // auction contstruct
+          // auction construct
           fetchAuctions += '<li><div class="nft-class">'
             + '<div class="nft-image" style="width:24em;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
             +   '<button class="nft-order circulating">' + hoursleft + '</button>'
@@ -1353,189 +1353,242 @@ function initiateSell() {
   }
   fetchSellNFTDropdown += '</select>'
 
-  $('#sendSpinner').show();
+  confirmSellInitial();
 
-  contentBootbox = '1) Select the NFT(s) you would like to sell:<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
-                + '<div class="filter-results">Filter by type: <select style="margin-left:1em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="sell-type-filter"><option value="any">Any</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
-                + 'Filter by rarity: <select style="margin-left:1em;height: 2.5em;text-transform:uppercase;" id="sell-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
-                + '<div class="filter-results-count">You have <strong><span id="available-nfts">' + sellCustomNFT.length + '</span> NFTs available</strong> matching these filters.</div>'
-                + fetchSellNFTDropdown
-                + '<div class="filter-results-count" id="filter-results-count">You have selected <strong><span id="selected-nfts">0</span> NFTs </strong> to be sold.</div><br>'
-                + '2) Specify amount, currency and duration of your sale:<br><br>'
-                + '<div class="center"><input type="text" class="form-control" name="sell-amount" style="width:60%;display:inline-block" id="sell-amount">'
-                + '<select style="margin-left:2em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="sell-currency"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
-                + '<select style="margin-left:2em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="sell-enddate">'
-                + '<option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option><option value="5">5 days</option><option value="6">6 days</option><option value="7">7 days</option><option value="8">8 days</option><option value="9">9 days</option><option value="10">10 days</option>'
-                + '<option value="11">11 days</option><option value="12">12 days</option><option value="13">13 days</option><option value="14">14 days</option><option value="15">15 days</option><option value="16">16 days</option><option value="17">17 days</option><option value="18">18 days</option><option value="19">19 days</option><option value="20">20 days</option>'
-                + '<option value="21">21 days</option><option value="22">22 days</option><option value="23">23 days</option><option value="24">24 days</option><option value="25">25 days</option><option value="26">26 days</option><option value="27">27 days</option><option value="28">28 days</option><option value="29">29 days</option><option value="30">30 days</option>'
-                + '</select></div>'
+  function confirmSellInitial() {
 
-  dialog = bootbox.confirm({
-      title: "NFT sell confirmation",
-      message: contentBootbox,
-      buttons: {
-          cancel: {
-              label: '<i class="fa fa-times"></i> Cancel',
-              className:'btn btn-default'
-          },
-          confirm: {
-              label: '<i class="fa fa-check"></i> Sell NFT',
-              className:'btn btn-primary sell-confirm'
+    $('#sendSpinner').show();
+
+    contentBootbox = '1) Select the NFT(s) you would like to sell:<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
+                  + '<div class="filter-results">Filter by type: <select style="margin-left:1em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="sell-type-filter"><option value="any">Any</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
+                  + 'Filter by rarity: <select style="margin-left:1em;height: 2.5em;text-transform:uppercase;" id="sell-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
+                  + '<div class="filter-results-count">You have <strong><span id="available-nfts">' + sellCustomNFT.length + '</span> NFTs available</strong> matching these filters.</div>'
+                  + fetchSellNFTDropdown
+                  + '<div class="filter-results-count" id="filter-results-count">You have selected <strong><span id="selected-nfts">0</span> NFTs </strong> to be sold.</div><br>'
+                  + '2) Specify amount, currency and duration of your sale:<br><br>'
+                  + '<div class="center"><input type="text" class="form-control" name="sell-amount" style="width:60%;display:inline-block" id="sell-amount">'
+                  + '<select style="margin-left:2em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="sell-currency"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
+                  + '<select style="margin-left:2em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="sell-enddate">'
+                  + '<option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option><option value="5">5 days</option><option value="6">6 days</option><option value="7">7 days</option><option value="8">8 days</option><option value="9">9 days</option><option value="10">10 days</option>'
+                  + '<option value="11">11 days</option><option value="12">12 days</option><option value="13">13 days</option><option value="14">14 days</option><option value="15">15 days</option><option value="16">16 days</option><option value="17">17 days</option><option value="18">18 days</option><option value="19">19 days</option><option value="20">20 days</option>'
+                  + '<option value="21">21 days</option><option value="22">22 days</option><option value="23">23 days</option><option value="24">24 days</option><option value="25">25 days</option><option value="26">26 days</option><option value="27">27 days</option><option value="28">28 days</option><option value="29">29 days</option><option value="30">30 days</option>'
+                  + '</select></div>'
+
+    dialog = bootbox.confirm({
+        title: "NFT sell selection",
+        message: contentBootbox,
+        buttons: {
+            cancel: {
+                label: '<i class="fa fa-times"></i> Cancel',
+                className:'btn btn-default'
+            },
+            confirm: {
+                label: '<i class="fa fa-check"></i> Sell NFT',
+                className:'btn btn-primary sell-confirm'
+            }
+        },
+        callback: function(result) {
+
+          //$("#select-id").msDropDown();
+
+          if (result) {
+
+            var e = document.getElementById("sell-currency");
+            sellCurrency = e.options[e.selectedIndex].value;
+            var f = document.getElementById("select-nft");
+            //idNFT = f.options[f.selectedIndex].value;
+            bulkdIdNFT = $('#select-nft').val()
+            var g = document.getElementById("sell-enddate");
+            endDate = g.options[g.selectedIndex].value;
+            results = {};
+            results.fieldname1 = dialog[0].querySelector("[name=sell-amount]").value;
+            sellAmount = results.fieldname1
+
+            nftIdArr = [];
+            for (var i = 0; i < bulkdIdNFT.length; i++) {
+              nftIdArr.push ({
+                  id: bulkdIdNFT[i]
+              });
+            }
+
+            // second confirm
+            if ($("#select-nft :checked").length > 1) {
+                confirmSecondQty = $("#select-nft :checked").length + ' NFTs'
+                confirmSecondBtn = 'NFTs'
+                confirmSecondDesc = 'items'
+            } else {
+                confirmSecondQty = $("#select-nft :checked").length + ' NFT'
+                confirmSecondBtn = 'NFT'
+                confirmSecondDesc = 'item'
+            }
+            if ($("#sell-amount").val() > 0) {
+                confirmSecondCurrency = $("#sell-amount").val() + ' ' + $("#sell-currency").val() + '</strong> each'
+            } else {
+                confirmSecondCurrency = '0 ' + $("#sell-currency").val() + '</strong>'
+            }
+            if ($("#sell-enddate").val() > 1) {
+                confirmSecondDate = $("#sell-enddate").val() + ' days'
+            } else {
+                confirmSecondDate = $("#sell-enddate").val() + ' day'
+            }
+            contentBootboxConfirm = 'You are going to sell <strong>' + confirmSecondQty + '</strong> for <strong>' + confirmSecondCurrency + ', for a duration of <strong>' + confirmSecondDate + '</strong>.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">Your ' + confirmSecondDesc + ' will show up on the marketplace within 3 minutes.</span></i>'
+
+            dialogConfirm = bootbox.confirm({
+                title: "NFT sell confirmation",
+                message: contentBootboxConfirm,
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> Cancel',
+                        className:'btn btn-default'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> Confirm & sell ' + confirmSecondBtn,
+                        className:'btn btn-primary sell-confirm'
+                    }
+                },
+                callback: function(result) {
+
+                  if (result) {
+
+                    confirmSellNFT(nftIdArr, sellAmount, sellCurrency, endDate)
+
+                  } else {
+                    confirmSellInitial();
+                  }
+
+                }
+
+              })
+
+          } else {
+            $('#sendSpinner').hide();
           }
-      },
-      callback: function(result) {
 
-        //$("#select-id").msDropDown();
-
-        if (result) {
-
-          var e = document.getElementById("sell-currency");
-          sellCurrency = e.options[e.selectedIndex].value;
-          var f = document.getElementById("select-nft");
-          //idNFT = f.options[f.selectedIndex].value;
-          bulkdIdNFT = $('#select-nft').val()
-          var g = document.getElementById("sell-enddate");
-          endDate = g.options[g.selectedIndex].value;
-          results = {};
-          results.fieldname1 = dialog[0].querySelector("[name=sell-amount]").value;
-          sellAmount = results.fieldname1
-
-          nftIdArr = [];
-          for (var i = 0; i < bulkdIdNFT.length; i++) {
-            nftIdArr.push ({
-                id: bulkdIdNFT[i]
-            });
-          }
-
-          confirmSellNFT(nftIdArr, sellAmount, sellCurrency, endDate)
-
-        } else {
-          $('#sendSpinner').hide();
         }
 
-      }
+      }).init(function() {
 
-    }).init(function() {
+        // Trigger next button on press enter
+        var input = document.getElementById("sell-amount");
+        input.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("sell-confirm").click();
+            }
+        });
 
-      // Trigger next button on press enter
-      var input = document.getElementById("sell-amount");
-      input.addEventListener("keyup", function(event) {
-          if (event.keyCode === 13) {
-              event.preventDefault();
-              document.getElementById("sell-confirm").click();
+        // On select nft change event
+        $("#select-nft").bind("keydown change", function(){
+
+          document.getElementById("selected-nfts").innerHTML = $("#select-nft :checked").length;
+
+         });
+
+        // On filter type change event
+        $("#sell-type-filter").change(function () {
+
+          // on change reset selected values & count
+          $("#select-nft").val('');
+          document.getElementById("selected-nfts").innerHTML = 0;
+
+          // show all type on change start
+          $("#select-nft option.filter-type").show();
+
+          // show all rarity on change start & reset value
+          $("#select-nft option.filter-rarity").show();
+          $("#sell-rarity-filter").val("any");
+
+             var e = document.getElementById("sell-type-filter");
+             var type = e.options[e.selectedIndex].value;
+
+             function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+
+            // set filter sell
+            filterSell = type;
+
+            // if any, show all
+            if (type == 'any') {
+              $("#select-nft option.filter-type").show();
+              document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type").length;
+            } else if (type == 'part') {
+              $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").hide();
+              document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length + $("#select-nft option.filter-type.filter-type-Pack").length;
+            } else {
+              $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").hide();
+              document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length;
+            }
+            if (document.getElementById("available-nfts").innerHTML == '0') {
+              $("#select-nft").hide();
+              $("#filter-results-count").hide();
+            } else {
+              $("#select-nft").show();
+              $("#filter-results-count").show();
+            }
+
+         });
+
+        // On filter rarity change event
+        $("#sell-rarity-filter").change(function () {
+
+          // on change reset selected values & count
+          $("#select-nft").val('');
+          document.getElementById("selected-nfts").innerHTML = 0;
+
+          // show all type on change start
+          $("#select-nft option.filter-type").show();
+
+          // handle change rarity if type has not been changed yet
+          if (typeof filterSell == 'undefined') {
+            filterSell = 'any';
           }
+
+          // show all on change start
+          if (filterSell != 'any') {
+            $("#select-nft option:not(.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase()) + ")").hide();
+            $("#select-nft option.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).show();
+          }
+
+             var e = document.getElementById("sell-rarity-filter");
+             var rarity = e.options[e.selectedIndex].value;
+
+             function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+
+            // if any, show all
+            if (rarity == 'any') {
+              if (filterSell == 'any') {
+                document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type").length;
+              } else if (filterSell == 'part') {
+                document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length + $("#select-nft option.filter-type.filter-type-Pack").length;
+              } else {
+                document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length;
+              }
+            } else {
+              if (filterSell == 'any') {
+                $("#select-nft option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+                document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).length;
+              } else {
+                $("#select-nft option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+                document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length;
+              }
+            }
+            if (document.getElementById("available-nfts").innerHTML == '0') {
+              $("#select-nft").hide();
+              $("#filter-results-count").hide();
+            } else {
+              $("#select-nft").show();
+              $("#filter-results-count").show();
+            }
+
+         });
+        // init custom dropdown after bootbox init
+        //$("#select-nft-custom").msDropDown();
       });
 
-      // On select nft change event
-      $("#select-nft").bind("keydown change", function(){
-
-        document.getElementById("selected-nfts").innerHTML = $("#select-nft :checked").length;
-
-       });
-
-      // On filter type change event
-      $("#sell-type-filter").change(function () {
-
-        // on change reset selected values & count
-        $("#select-nft").val('');
-        document.getElementById("selected-nfts").innerHTML = 0;
-
-        // show all type on change start
-        $("#select-nft option.filter-type").show();
-
-        // show all rarity on change start & reset value
-        $("#select-nft option.filter-rarity").show();
-        $("#sell-rarity-filter").val("any");
-
-           var e = document.getElementById("sell-type-filter");
-           var type = e.options[e.selectedIndex].value;
-
-           function capitalizeFirstLetter(string) {
-              return string.charAt(0).toUpperCase() + string.slice(1);
-          }
-
-          // set filter sell
-          filterSell = type;
-
-          // if any, show all
-          if (type == 'any') {
-            $("#select-nft option.filter-type").show();
-            document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type").length;
-          } else if (type == 'part') {
-            $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").hide();
-            document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length + $("#select-nft option.filter-type.filter-type-Pack").length;
-          } else {
-            $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").hide();
-            document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length;
-          }
-          if (document.getElementById("available-nfts").innerHTML == '0') {
-            $("#select-nft").hide();
-            $("#filter-results-count").hide();
-          } else {
-            $("#select-nft").show();
-            $("#filter-results-count").show();
-          }
-
-       });
-
-      // On filter rarity change event
-      $("#sell-rarity-filter").change(function () {
-
-        // on change reset selected values & count
-        $("#select-nft").val('');
-        document.getElementById("selected-nfts").innerHTML = 0;
-
-        // show all type on change start
-        $("#select-nft option.filter-type").show();
-
-        // handle change rarity if type has not been changed yet
-        if (typeof filterSell == 'undefined') {
-          filterSell = 'any';
-        }
-
-        // show all on change start
-        if (filterSell != 'any') {
-          $("#select-nft option:not(.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase()) + ")").hide();
-          $("#select-nft option.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).show();
-        }
-
-           var e = document.getElementById("sell-rarity-filter");
-           var rarity = e.options[e.selectedIndex].value;
-
-           function capitalizeFirstLetter(string) {
-              return string.charAt(0).toUpperCase() + string.slice(1);
-          }
-
-          // if any, show all
-          if (rarity == 'any') {
-            if (filterSell == 'any') {
-              document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type").length;
-            } else if (filterSell == 'part') {
-              document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length + $("#select-nft option.filter-type.filter-type-Pack").length;
-            } else {
-              document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length;
-            }
-          } else {
-            if (filterSell == 'any') {
-              $("#select-nft option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
-              document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).length;
-            } else {
-              $("#select-nft option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
-              document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length;
-            }
-          }
-          if (document.getElementById("available-nfts").innerHTML == '0') {
-            $("#select-nft").hide();
-            $("#filter-results-count").hide();
-          } else {
-            $("#select-nft").show();
-            $("#filter-results-count").show();
-          }
-
-       });
-      // init custom dropdown after bootbox init
-      //$("#select-nft-custom").msDropDown();
-    });
+  }
 
 }
 
@@ -1601,9 +1654,13 @@ function initiateBuy() {
         return;
   }
 
+  confirmBuyInitial();
+
+  function confirmBuyInitial() {
+
   $('#sendSpinner').show();
 
-  contentBootbox = '1) Select the NFT(s) you would like to buy::<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
+  contentBootbox = '1) Select the NFT(s) you would like to buy:<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
                 + '<div class="filter-results">Filter by currency: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-currency-filter"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
                 + 'Filter by type: <select style="margin-left:.5em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="buy-type-filter"><option value="any">Any</option><option value="myItems">My Items</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
                 + 'Filter by rarity: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
@@ -1614,7 +1671,7 @@ function initiateBuy() {
                 + '<div class="filter-results-count">You will be paying a total of <span id="selected-nfts-buy-amount"><strong>0 SOUL</strong> to buy these NFT(s).</span></div><br>'
 
   dialog = bootbox.confirm({
-      title: "NFT buy confirmation",
+      title: "NFT buy selection",
       message: contentBootbox,
       buttons: {
           cancel: {
@@ -1656,7 +1713,52 @@ function initiateBuy() {
                 });
           });
 
-          confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress)
+          // second confirm
+          if ($("#select-nft-buy :checked").length > 1) {
+              confirmSecondQty = $("#select-nft-buy :checked").length + ' NFTs'
+              confirmSecondBtn = 'NFTs'
+              confirmSecondDesc = 'items'
+          } else {
+              confirmSecondQty = $("#select-nft-buy :checked").length + ' NFT'
+              confirmSecondBtn = 'NFT'
+              confirmSecondDesc = 'item'
+          }
+          // if only cancel items
+          if (totalAmount == 0) {
+            confirmSecondCurrency = ''
+            confirmSecondAction = 'cancel the sale of'
+          } else {
+            confirmSecondCurrency = ' for <strong>' + numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and a 2% fee: ' + numberWithCommas(finalFee) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + '</strong>)'
+            confirmSecondAction = 'buy'
+          }
+          contentBootboxConfirm = 'You are going to ' + confirmSecondAction + ' <strong>' + confirmSecondQty + '</strong>' + confirmSecondCurrency + '.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">Your ' + confirmSecondDesc + ' will show up in your portfolio within 10 seconds.</span></i>'
+
+          dialogConfirm = bootbox.confirm({
+              title: "NFT buy confirmation",
+              message: contentBootboxConfirm,
+              buttons: {
+                  cancel: {
+                      label: '<i class="fa fa-times"></i> Cancel',
+                      className:'btn btn-default'
+                  },
+                  confirm: {
+                      label: '<i class="fa fa-check"></i> Confirm & buy ' + confirmSecondBtn,
+                      className:'btn btn-primary sell-confirm'
+                  }
+              },
+              callback: function(result) {
+
+                if (result) {
+
+                  confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress)
+
+                } else {
+                  confirmBuyInitial();
+                }
+
+              }
+
+            })
 
         } else {
           $('#sendSpinner').hide();
@@ -1849,6 +1951,8 @@ function initiateBuy() {
        });
 
     });
+
+  }
 
 }
 
