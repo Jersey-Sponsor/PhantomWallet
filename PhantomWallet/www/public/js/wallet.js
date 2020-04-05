@@ -162,7 +162,7 @@ $(document).ready(function() {
     // on login page check for latest version
     if (pathname == '/login') {
 
-      $.get('http://ghostdevs.com/getlatest.json?_=' + new Date().getTime(),
+      $.get('https://ghostdevs.com/getlatest.json?_=' + new Date().getTime(),
 
         function (data) {
 
@@ -347,7 +347,7 @@ function getRPCList() {
   $('#rpcurl').hide();
   $('#rpcdropdown').find('option').remove();
 
-  $.get('http://ghostdevs.com/getpeers.json?_=' + new Date().getTime(),
+  $.get('https://ghostdevs.com/getpeers.json?_=' + new Date().getTime(),
 
     function (data) {
 
