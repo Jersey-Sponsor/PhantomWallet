@@ -957,7 +957,7 @@ function refreshAuctions() {
             +   '<button class="nft-order circulating">' + hoursleft + '</button>'
             +   pendingClass
             +   '<button class="nft-order supply priceFilter ' + cancelClass + '">' + priceFormatted + '</button>'
-            +   '<img src="' + image + '?width=512" alt="" style="height:12em;padding-top:3em;">'
+            +   '<img src="' + image + '?width=256" alt="" style="height:12em;padding-top:3em;">'
             +   '<div class="nft-desc item-filter">'
             +     '<h3 style="display:inline-block;">' + nameRaw + '</h3><br>'
             +     '<div style="text-align:center;">'
@@ -1732,9 +1732,11 @@ function initiateBuy() {
           if (totalAmount == 0) {
             confirmSecondCurrency = ''
             confirmSecondAction = 'cancel the sale of'
+            confirmSecondBtnAction = ' Confirm & cancel '
           } else {
             confirmSecondCurrency = ' for <strong>' + numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and a 2% fee: ' + numberWithCommas(finalFee) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + '</strong>)'
             confirmSecondAction = 'buy'
+            confirmSecondBtnAction = ' Confirm & buy ';
           }
           contentBootboxConfirm = 'You are going to ' + confirmSecondAction + ' <strong>' + confirmSecondQty + '</strong>' + confirmSecondCurrency + '.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">Your ' + confirmSecondDesc + ' will show up in your portfolio within 10 seconds.</span></i>'
 
@@ -1747,7 +1749,7 @@ function initiateBuy() {
                       className:'btn btn-default'
                   },
                   confirm: {
-                      label: '<i class="fa fa-check"></i> Confirm & buy ' + confirmSecondBtn,
+                      label: '<i class="fa fa-check"></i>' + confirmSecondBtnAction + confirmSecondBtn,
                       className:'btn btn-primary sell-confirm'
                   }
               },
@@ -1884,8 +1886,6 @@ function initiateBuy() {
 
       // On filter rarity change event
       $("#buy-rarity-filter").change(function () {
-
-        console.log(currency)
 
         // on change reset selected values & count
         $("#select-nft-buy").val('');
