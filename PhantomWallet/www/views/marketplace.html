@@ -105,6 +105,7 @@ $(document).ready(function() {
   fetchBuyNFTDropdown = '';
 
   initialLoad = 0;
+  itemBought = 0;
 
   $("#loader-nftlist").show();
   $("#container-auctions-list").hide();
@@ -125,8 +126,8 @@ $(document).ready(function() {
   getAuctions();
 
   // init tooltipster i
-  $('.referral-nft i.tooltip').tooltipster({
-    theme: 'tooltipster-noir',
+  $('.referral-nft i.tooltip, .tooltip.fas.fa-gem').tooltipster({
+    theme: 'tooltipster-light',
     contentCloning: true,
     interactive: true,
     side: 'bottom'
@@ -476,14 +477,14 @@ function getStats() {
 
       dataTooltipStats = ''
         + '<div class="center" style="font-size:.9;margin-top:1em;">'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL ITEMS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItems) + '<span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">ITEMS AVAILABLE</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsOnSale) + '<span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">ITEMS EXPIRED</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsExpired) + '<span></span></span></div><br>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL TRANSACTIONS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsers) + '<span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsers) + '<span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">AVERAGE TX PER DAY</span><br><span style="font-size: 1.5em;">' + numberWithCommas(txPerDay) + '<span></span></span></div><br>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">24H TRANSACTIONS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUsersLastDayChangeClass + '">' + totalUsersLastDayChange + '</span><span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">24H USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUniqueUsersLastDayChangeClass + '">' + totalUniqueUsersLastDayChange + '</span><span></span></span></div><br>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">TOTAL ITEMS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItems) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">ITEMS AVAILABLE</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsOnSale) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">ITEMS EXPIRED</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsExpired) + '<span></span></span></div><br>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">TOTAL TRANSACTIONS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsers) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">TOTAL USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsers) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">AVERAGE TX PER DAY</span><br><span style="font-size: 1.5em;">' + numberWithCommas(txPerDay) + '<span></span></span></div><br>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">24H TRANSACTIONS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUsersLastDayChangeClass + '">' + totalUsersLastDayChange + '</span><span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">24H USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUniqueUsersLastDayChangeClass + '">' + totalUniqueUsersLastDayChange + '</span><span></span></span></div><br>'
         + '<div style="margin-bottom:1em;display:inline-block;"><div id="container-tx-historical" style="height: 320px;width: 400px;z-index:999; margin: 0 auto"></div></div>'
         + '</div>';
 
@@ -521,14 +522,14 @@ function getStats() {
                   text: 'Historical Marketplace Transactions',
                   style: {
                       fontFamily: 'Rubik',
-                      color: "#fff"
+                      color: "#333"
                   }
               },
               chart: {
                   backgroundColor: 'transparent',
                   style: {
                       fontFamily: 'Rubik',
-                      color: "#fff"
+                      color: "#333"
                   }
               },
               xAxis: {
@@ -539,7 +540,7 @@ function getStats() {
                   },
                   style: {
                       fontFamily: 'Rubik',
-                      color: "#fff"
+                      color: "#333"
                   }
                 }
               },
@@ -552,7 +553,7 @@ function getStats() {
                       },
                       style: {
                           fontFamily: 'Rubik',
-                          color: "#fff"
+                          color: "#333"
                       }
                   },
                   min: 0,
@@ -564,7 +565,7 @@ function getStats() {
                       },
                       style: {
                           fontFamily: 'Rubik',
-                          color: "#fff",
+                          color: "#333",
                       }
                   },
                   opposite: true,
@@ -586,7 +587,7 @@ function getStats() {
                   enabled: true,
                   itemStyle: {
                     fontFamily: 'Rubik',
-                    color: "#fff",
+                    color: "#333",
                     fontWeight: "Light"
                   }
               },
@@ -634,8 +635,8 @@ function getStats() {
                           y2: 1
                       },
                       stops: [
-                          [0, '#fff'],
-                          [1, '#fff']
+                          [0, '#333'],
+                          [1, '#333']
                       ]
                   }
               },{
@@ -650,7 +651,7 @@ function getStats() {
 
           // init tooltipster i after highcharts loaded
           $('i#tooltip-stats-container').tooltipster({
-            theme: 'tooltipster-noir',
+            theme: 'tooltipster-light',
             contentCloning: true,
             interactive: true,
             side: 'bottom'
@@ -1021,7 +1022,7 @@ function refreshAuctions() {
       }
 
       $('button.tooltip').tooltipster({
-        theme: 'tooltipster-noir',
+        theme: 'tooltipster-light',
         contentCloning: true,
         interactive: true,
         side: 'top'
@@ -1089,7 +1090,7 @@ function refreshAuctions() {
     }
 
     // init filtering custom for initial load
-    if (initialLoad == 0) {
+    if (initialLoad == 0 && itemBought == 0) {
       var cat1 = document.getElementById("filter-all-items");
       cat1.classList.add("category-current");
       localStorage.setItem('marketplace-category-filter', 'filter-all-items');
@@ -1144,7 +1145,7 @@ function refreshAuctions() {
     }
 
     $('button.tooltip').tooltipster({
-      theme: 'tooltipster-noir',
+      theme: 'tooltipster-light',
       contentCloning: true,
       interactive: true,
       side: 'top'
@@ -1284,7 +1285,8 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
       + nameNFT + '</strong> • Mint <strong>#' + mintNFT + '</strong> • Minted on <strong>' + mindDateNFT
       + '</strong> ' + actionText + ' <strong>'
       + numberWithCommas(parseFloat(priceNFT))
-      + ' ' + quoteSymbol + ' </strong>' + feeText;
+      + ' ' + quoteSymbol + ' </strong>' + feeText
+      + '<br><br><i><span style="font-size:.7em;">The NFT will show up in your portfolio within 10 seconds.</span></i>';
   dialog = bootbox.confirm({
       title: titleText,
       message: contentBootbox,
@@ -1318,7 +1320,7 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
                      });
                      $('#sendSpinner').hide();
                      alertbox.show('Transaction successful!');
-                     initialLoad = 0;
+                     itemBought = 1;
                      refreshAuctions();
                  } else {
                      window.location.replace("/error");
@@ -1420,11 +1422,11 @@ function initiateSell() {
             if ($("#select-nft :checked").length > 1) {
                 confirmSecondQty = $("#select-nft :checked").length + ' NFTs'
                 confirmSecondBtn = 'NFTs'
-                confirmSecondDesc = 'items'
+                confirmSecondDesc = 'NFTs'
             } else {
                 confirmSecondQty = $("#select-nft :checked").length + ' NFT'
                 confirmSecondBtn = 'NFT'
-                confirmSecondDesc = 'item'
+                confirmSecondDesc = 'NFT'
             }
             if ($("#sell-amount").val() > 0) {
                 confirmSecondCurrency = $("#sell-amount").val() + ' ' + $("#sell-currency").val() + '</strong> each'
@@ -1518,10 +1520,10 @@ function initiateSell() {
               $("#select-nft option.filter-type").show();
               document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type").length;
             } else if (type == 'part') {
-              $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").hide();
+              $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").attr('disabled', 'disabled').hide();
               document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length + $("#select-nft option.filter-type.filter-type-Pack").length;
             } else {
-              $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").hide();
+              $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
               document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length;
             }
             if (document.getElementById("available-nfts").innerHTML == '0') {
@@ -1542,7 +1544,7 @@ function initiateSell() {
           document.getElementById("selected-nfts").innerHTML = 0;
 
           // show all type on change start
-          $("#select-nft option.filter-type").show();
+          $("#select-nft option.filter-type").removeAttr('disabled').show();
 
           // handle change rarity if type has not been changed yet
           if (typeof filterSell == 'undefined') {
@@ -1551,7 +1553,7 @@ function initiateSell() {
 
           // show all on change start
           if (filterSell != 'any') {
-            $("#select-nft option:not(.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase()) + ")").hide();
+            $("#select-nft option:not(.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
             $("#select-nft option.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).show();
           }
 
@@ -1573,10 +1575,10 @@ function initiateSell() {
               }
             } else {
               if (filterSell == 'any') {
-                $("#select-nft option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+                $("#select-nft option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
                 document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).length;
               } else {
-                $("#select-nft option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+                $("#select-nft option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
                 document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length;
               }
             }
@@ -1633,7 +1635,7 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
            }
            $('#sendSpinner').hide();
            alertbox.show('Transaction successful!');
-           initialLoad = 0;
+           itemBought = 1;
            refreshAuctions();
          } else {
            window.location.replace("/error");
@@ -1722,11 +1724,11 @@ function initiateBuy() {
           if ($("#select-nft-buy :checked").length > 1) {
               confirmSecondQty = $("#select-nft-buy :checked").length + ' NFTs'
               confirmSecondBtn = 'NFTs'
-              confirmSecondDesc = 'items'
+              confirmSecondDesc = 'NFTs'
           } else {
               confirmSecondQty = $("#select-nft-buy :checked").length + ' NFT'
               confirmSecondBtn = 'NFT'
-              confirmSecondDesc = 'item'
+              confirmSecondDesc = 'NFT'
           }
           // if only cancel items
           if (totalAmount == 0) {
@@ -1738,7 +1740,7 @@ function initiateBuy() {
             confirmSecondAction = 'buy'
             confirmSecondBtnAction = ' Confirm & buy ';
           }
-          contentBootboxConfirm = 'You are going to ' + confirmSecondAction + ' <strong>' + confirmSecondQty + '</strong>' + confirmSecondCurrency + '.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">Your ' + confirmSecondDesc + ' will show up in your portfolio within 10 seconds.</span></i>'
+          contentBootboxConfirm = 'You are going to ' + confirmSecondAction + ' <strong>' + confirmSecondQty + '</strong>' + confirmSecondCurrency + '.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">The ' + confirmSecondDesc + ' will show up in your portfolio within 10 seconds.</span></i>'
 
           dialogConfirm = bootbox.confirm({
               title: "NFT buy confirmation",
@@ -1780,8 +1782,8 @@ function initiateBuy() {
       var e = document.getElementById("buy-currency-filter");
       currency = e.options[e.selectedIndex].value;
 
-      $("#select-nft-buy option.filter-currency").show();
-      $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").hide();
+      $("#select-nft-buy option.filter-currency").removeAttr('disabled').show();
+      $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").attr('disabled', 'disabled').hide();
       document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-currency-" + currency).length;
 
       // On select nft change event
@@ -1817,13 +1819,13 @@ function initiateBuy() {
          document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>0 NFTs </strong> to be bought.';
 
          // show all type on change start
-         $("#select-nft-buy option.filter-type").show();
+         $("#select-nft-buy option.filter-type").removeAttr('disabled').show();
 
          var e = document.getElementById("buy-currency-filter");
          currency = e.options[e.selectedIndex].value;
 
-         $("#select-nft-buy option.filter-currency").show();
-         $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").hide();
+         $("#select-nft-buy option.filter-currency").removeAttr('disabled').show();
+         $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").attr('disabled', 'disabled').hide();
          document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-currency-" + currency).length;
 
          $("#buy-type-filter").val("any");
@@ -1839,15 +1841,15 @@ function initiateBuy() {
         document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>0 NFTs </strong> to be bought.';
 
         // show all type on change start
-        $("#select-nft-buy option.filter-type").show();
+        $("#select-nft-buy option.filter-type").removeAttr('disabled').show();
 
         // show all rarity on change start & reset value
-        $("#select-nft-buy option.filter-rarity").show();
+        $("#select-nft-buy option.filter-rarity").removeAttr('disabled').show();
         $("#buy-rarity-filter").val("any");
 
         // switch back to currency on start
-        $("#select-nft-buy option.filter-currency").show();
-        $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").hide();
+        $("#select-nft-buy option.filter-currency").removeAttr('disabled').show();
+        $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").attr('disabled', 'disabled').hide();
         $("#buy-currency-filter").val(currency);
 
            var e = document.getElementById("buy-type-filter");
@@ -1862,16 +1864,16 @@ function initiateBuy() {
 
           // if any, show all
           if (type == 'any') {
-            $("#select-nft-buy option.filter-type").show();
+            $("#select-nft-buy option.filter-type").removeAttr('disabled').show();
             document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type").length;
           } else if (type == 'part') {
-            $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").hide();
+            $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").attr('disabled', 'disabled').hide();
             document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length + $("#select-nft-buy option.filter-type.filter-type-Pack").length;
           } else if (type == 'myItems') {
-            $("#select-nft-buy option:not(.filter-" + type + ")").hide();
+            $("#select-nft-buy option:not(.filter-" + type + ")").attr('disabled', 'disabled').hide();
             document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).length;
           } else {
-            $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").hide();
+            $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
             document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length;
           }
           if (document.getElementById("available-nfts-buy").innerHTML == '0') {
@@ -1892,11 +1894,11 @@ function initiateBuy() {
         document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>0 NFTs </strong> to be bought.';
 
         // show all type on change start
-        $("#select-nft-buy option.filter-type").show();
+        $("#select-nft-buy option.filter-type").removeAttr('disabled').show();
 
         // switch back to currency on start
-        $("#select-nft-buy option.filter-currency").show();
-        $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").hide();
+        $("#select-nft-buy option.filter-currency").removeAttr('disabled').show();
+        $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").attr('disabled', 'disabled').hide();
         $("#buy-currency-filter").val(currency);
 
         // handle change rarity if type has not been changed yet
@@ -1907,11 +1909,11 @@ function initiateBuy() {
         // show all on change start
         if (filterBuy != 'any') {
           if (filterBuy == 'myItems') {
-            $("#select-nft-buy option:not(.filter-myItems)").hide();
-            $("#select-nft-buy option.filter-myItems").filter(".filter-currency-" + currency).show();
+            $("#select-nft-buy option:not(.filter-myItems)").attr('disabled', 'disabled').hide();
+            $("#select-nft-buy option.filter-myItems").filter(".filter-currency-" + currency).removeAttr('disabled').show();
           } else {
-            $("#select-nft-buy option:not(.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase()) + ")").hide();
-            $("#select-nft-buy option.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).show();
+            $("#select-nft-buy option:not(.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
+            $("#select-nft-buy option.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).removeAttr('disabled').show();
           }
         }
 
@@ -1935,13 +1937,13 @@ function initiateBuy() {
             }
           } else {
             if (filterBuy == 'any') {
-              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
               document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-currency-" + currency).length;
             } else if (filterBuy == 'myItems') {
-              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
                 document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-" + filterBuy).filter(".filter-currency-" + currency).length;
             } else {
-              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").hide();
+              $("#select-nft-buy option:not(.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
               document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).length;
             }
           }
@@ -1991,7 +1993,7 @@ function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
              }
              $('#sendSpinner').hide();
              alertbox.show('Transaction successful!');
-             initialLoad = 0;
+             itemBought = 1;
              refreshAuctions();
          } else {
              window.location.replace("/error");
