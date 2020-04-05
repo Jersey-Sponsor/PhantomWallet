@@ -1226,7 +1226,7 @@ namespace Phantom.Wallet
             new MenuEntry(){ Id = "nft", Icon = "fa-certificate", Caption = "NFT Sales", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "marketplace", Icon = "fa-comment-dollar", Caption = "Marketplace", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "send", Icon = "fa-paper-plane", Caption = "Send", Enabled = true, IsSelected = false},
-            new MenuEntry(){ Id = "receive", Icon = "fa-qrcode", Caption = "Receive", Enabled = true, IsSelected = false},
+            new MenuEntry(){ Id = "receive", Icon = "fa-sign-in", Caption = "Receive", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "swap", Icon = "fa-random", Caption = "Swap", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "history", Icon = "fa-receipt", Caption = "History", Enabled = true, IsSelected = false},
             //new MenuEntry(){ Id = "storage", Icon = "fa-hdd", Caption = "Storage", Enabled = true, IsSelected = false},
