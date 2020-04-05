@@ -280,6 +280,7 @@ function numberWithCommas(x) {
 
 // function toggle on/off dark theme
 function toggleNightMode() {
+  $('body').toggleClass('dark-mode-tooltip');
   $('.well').toggleClass('dark-mode');
   $('.pending').toggleClass('dark-mode');
   $('.sidenav').toggleClass('dark-mode');

@@ -1542,6 +1542,10 @@ ul.nav.nav-pills {
     outline: none;
 }
 
+option:disabled {
+    display: none;
+}
+
 #select-id_msdd {
     width: initial !important;
 }
@@ -1948,12 +1952,31 @@ ul.nav.nav-pills {
 .tooltip_templates { display: none; }
 
 .raw-link {
-    color: white !important;
+    color: #17B0E7 !important;
+}
+
+.dark-mode-tooltip .raw-link {
+    color: #17B0E7 !important;
+}
+
+.raw-link:hover {
     text-decoration: underline !important;
 }
 
+.dark-mode-tooltip #tooltip_nft a, .dark-mode-tooltip #tooltip_lottery a {
+    color: #fff;
+}
+
+.span-stats {
+  color:#555;
+}
+
+.dark-mode-tooltip .span-stats {
+  color:#ccc;
+}
+
 #tooltip_nft a, #tooltip_lottery a {
-    color: white;
+    color: #333;
 }
 
 #lottery-odds {
@@ -2539,6 +2562,13 @@ input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-
     color: #ddd;
 }
 
+.dark-mode-tooltip #container-tx-historical .highcharts-area-series text tspan {
+    fill: #fff !important;
+}
+
+.dark-mode-tooltip #container-tx-historical .highcharts-series-1 .highcharts-area {
+    fill: transparent !important;
+}
 
 .dark-mode .highcharts-background {
     fill: transparent;
@@ -2548,7 +2578,7 @@ input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-
     fill: #fff !important;
 }
 
-.dark-mode .highcharts-title {
+.dark-mode .highcharts-title, .dark-mode-tooltip .highcharts-title {
     fill: #fff !important;
 }
 
@@ -2566,6 +2596,11 @@ input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-
 
 .dark-mode .highcharts-yaxis-labels text,
 .dark-mode .highcharts-xaxis-labels text {
+    fill: #fff !important;
+}
+
+.dark-mode-tooltip .highcharts-yaxis-labels text,
+.dark-mode-tooltip .highcharts-xaxis-labels text {
     fill: #fff !important;
 }
 
