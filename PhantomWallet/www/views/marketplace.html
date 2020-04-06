@@ -1927,7 +1927,7 @@ function initiateBuy() {
             document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type:not(.filter-currency-" + currency + ")").length;
           } else if (type == 'part') {
             $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").attr('disabled', 'disabled').hide();
-            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ":not(.filter-currency-" + currency + ")").length + $("#select-nft-buy option.filter-type.filter-type-Pack :not(.filter-currency-" + currency + ")").length;
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).filter(".filter-currency-" + currency).length + $("#select-nft-buy option.filter-type.filter-type-Pack").filter(".filter-currency-" + currency).length;
           } else if (type == 'license') {
             $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
             document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).filter(".filter-currency-" + currency).length;
@@ -1936,7 +1936,7 @@ function initiateBuy() {
             document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).filter(".filter-currency-" + currency).length;
           } else {
             $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
-            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ":not(.filter-currency-" + currency + ")").length;
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).filter(".filter-currency-" + currency).length;
           }
           $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").attr('disabled', 'disabled').hide();
           $("#loader-nftlist-modal").hide();
