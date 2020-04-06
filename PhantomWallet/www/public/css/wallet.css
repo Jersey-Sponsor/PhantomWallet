@@ -1538,8 +1538,8 @@ ul.nav.nav-pills {
     margin: 0 auto;
 }
 
-.button:focus, select:focus, th:focus, .nft-order:focus, #select-id_msdd:focus, #select-nft_msdd:focus, .searchbar:focus, input[type="range"]:focus {
-    outline: none;
+.button:focus, button:focus, select:focus, th:focus, .nft-order:focus, #select-id_msdd:focus, #select-nft_msdd:focus, .searchbar:focus, input[type="range"]:focus {
+    outline: none !important;
 }
 
 option:disabled {
@@ -1684,6 +1684,49 @@ option:disabled {
 
 .modal-dialog {
   width: 900px !important;
+}
+
+.dark-mode-tooltip .modal-content {
+  background-color: #333;
+  color: #efefef;
+}
+
+.dark-mode-tooltip .bootbox-close-button {
+  color: #fff;
+}
+
+.dark-mode-tooltip .modal-footer {
+  border-top: 1px solid #555;
+}
+
+.dark-mode-tooltip .modal-header {
+  border-bottom: 1px solid #555;
+}
+
+.dark-mode-tooltip select {
+  background-color: #333;
+}
+
+.dark-mode-tooltip input {
+  background-color: #625e5e;
+  color: #fff;
+}
+
+.dark-mode-tooltip .btn-default {
+  color: #fff;
+  background-color: #020101;
+  border-color: #020101;
+}
+
+.dark-mode-tooltip .btn-default:hover {
+  color: #fff;
+  background-color: #0201018f;
+  border-color: #0201018f;
+}
+
+.dark-mode-tooltip option:checked {
+  background-color: #17B0E7;
+  color: #fff;
 }
 
 .sell-nft, .buy-nft {
@@ -2566,7 +2609,7 @@ input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-
     fill: #fff !important;
 }
 
-.dark-mode-tooltip #container-tx-historical .highcharts-series-1 .highcharts-area {
+.dark-mode-tooltip #container-tx-historical .highcharts-series-0 .highcharts-area, .dark-mode-tooltip #container-tx-historical .highcharts-series-1 .highcharts-area {
     fill: transparent !important;
 }
 
