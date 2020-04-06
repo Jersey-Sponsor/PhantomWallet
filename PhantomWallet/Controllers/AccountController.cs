@@ -164,6 +164,25 @@ namespace Phantom.Wallet.Controllers
             return new Holding[0];
         }
 
+        public async Task<AccountDto> GetAccount(string address)
+        {
+            try
+            {
+                var account = await _phantasmaRpcService.GetAccount.SendRequestAsync(address);
+                return account;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception occurred: {ex.Message}");
+            }
+
+            return new AccountDto();
+        }
+
         public async Task<List<BalanceSheetDto>> GetAccountTokens(string address)
         {
             try
