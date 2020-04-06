@@ -1226,7 +1226,7 @@ namespace Phantom.Wallet
             new MenuEntry(){ Id = "nft", Icon = "fa-certificate", Caption = "NFT Sales", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "marketplace", Icon = "fa-comment-dollar", Caption = "Marketplace", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "send", Icon = "fa-paper-plane", Caption = "Send", Enabled = true, IsSelected = false},
-            new MenuEntry(){ Id = "receive", Icon = "fa-sign-in", Caption = "Receive", Enabled = true, IsSelected = false},
+            new MenuEntry(){ Id = "receive", Icon = "fa-sign-in-alt", Caption = "Receive", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "swap", Icon = "fa-random", Caption = "Swap", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "history", Icon = "fa-receipt", Caption = "History", Enabled = true, IsSelected = false},
             //new MenuEntry(){ Id = "storage", Icon = "fa-hdd", Caption = "Storage", Enabled = true, IsSelected = false},
@@ -1235,7 +1235,7 @@ namespace Phantom.Wallet
             //new MenuEntry(){ Id = "offline", Icon = "fa-file-export", Caption = "Offline Operation", Enabled = true, IsSelected = false},
             //new MenuEntry(){ Id = "contracts", Icon = "fa-file-signature", Caption = "Contracts", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "settings", Icon = "fa-cog", Caption = "Settings", Enabled = true, IsSelected = false},
-            new MenuEntry(){ Id = "logout", Icon = "fa-sign-out-alt", Caption = "Log Out", Enabled = true, IsSelected = false},
+            new MenuEntry(){ Id = "logout", Icon = "fa-door-open", Caption = "Log Out", Enabled = true, IsSelected = false},
         };
 
         private static readonly Net[] Networks =
