@@ -573,6 +573,11 @@
 
     function swapPendingSettle() {
 
+      if (document.getElementById("swappendingsettlebutton").value == '') {
+          bootbox.alert("Please enter an address to process it!");
+          return;
+      }
+
       $('#sendSpinner').show();
       $("#wrapper-pendingswap-confirm").fadeTo("fast", 0);
       neopending = $("#neopending").val();
