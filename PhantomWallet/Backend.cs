@@ -14,6 +14,8 @@ using Serilog;
 using Serilog.Core;
 using System.Globalization;
 using System.Reflection;
+using System.Threading;
+using WebWindows;
 
 namespace Phantom.Wallet
 {
@@ -31,7 +33,7 @@ namespace Phantom.Wallet
         static void Main(string[] args)
         {
             Init();
-	          ParseArgs(args);
+	        ParseArgs(args);
             SetDefaultCulture(new CultureInfo("en-US"));
             var server = HostBuilder.CreateServer(args);
             var viewsRenderer = new ViewsRenderer(server, "views");
@@ -40,8 +42,15 @@ namespace Phantom.Wallet
             viewsRenderer.SetupHandlers();
             viewsRenderer.SetupControllers();
 
-	        OpenBrowser("http://localhost:"+Port);
-            server.Run();
+	        //OpenBrowser("http://localhost:"+Port);
+	        var window = new WebWindow("Phantom Wallet");
+	        window.Width = 1200;
+	        window.Height = 900;
+	        window.NavigateToUrl("http://localhost:" + Port);
+            Thread thread = new Thread( () => server.Run() );
+            thread.Start();
+	        window.WaitForExit();
+	        System.Environment.Exit(0);
         }
 
         public static void Init(bool reInit = false)
