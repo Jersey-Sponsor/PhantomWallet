@@ -1038,7 +1038,7 @@ function refreshAuctions() {
     });
 
     // custom sort for rarity except initial load
-    if (initialLoad == 1) {
+    if (initialLoad == 1 && itemBought == 0) {
       if (localStorage.getItem('marketplace-category-sort') == 'sort-rarity') {
 
         item_order = ["COMMON","CONSUMER","INDUSTRIAL","PROFESSIONAL","CUSTOM","COLLECTOR","UNIQUE"];
@@ -1104,6 +1104,9 @@ function refreshAuctions() {
       selectedMainFilter = localStorage.getItem('marketplace-category-filter');
       initialLoad = 1;
     }
+
+    // re set itemBought after refreshAuctions post buy
+    itemBought = 0;
 
     // show auctions
     $("#loader-nftlist").hide();
