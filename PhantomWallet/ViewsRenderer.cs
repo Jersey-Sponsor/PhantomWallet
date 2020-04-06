@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using LunarLabs.WebServer.HTTP;
@@ -315,6 +316,8 @@ namespace Phantom.Wallet
                 PushError(request, "Error decoding key.");
                 return HTTPResponse.Redirect("/login");
             }
+
+            new Thread( () => AccountController.RunConnector(GetLoginKey(request)) ).Start();
 
             return HTTPResponse.Redirect("/portfolio");
         }
