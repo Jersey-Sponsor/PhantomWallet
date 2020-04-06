@@ -2673,15 +2673,20 @@ input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-
 }
 
 .alert-box {
+  color: #333;
+  background: #efefef;
   font-size: 16px;
-  color: white;
-  background: rgba(0, 0, 0, 0.9);
   line-height: 1.3em;
   padding: 10px 15px;
   margin: 5px 10px;
   position: relative;
   border-radius: 5px;
   transition: opacity 0.5s ease-in;
+}
+
+.dark-mode-tooltip .alert-box {
+  color: white;
+  background: rgba(0, 0, 0, 0.9);
 }
 
 .alert-box.hide {
