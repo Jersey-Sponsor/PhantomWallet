@@ -42,6 +42,7 @@ namespace Phantom.Wallet.Models
     {
         public string Type;
         public DateTime Date;
+        public string DateFormated => Date.ToString("MM/dd/yyyy HH:mm:ss tt");
         public string Hash;
         public string Amount;
         public string Description;
