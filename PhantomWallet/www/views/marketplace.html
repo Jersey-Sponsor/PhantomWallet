@@ -490,8 +490,6 @@ function getStats() {
 
       document.getElementById("tooltip_stats").innerHTML = dataTooltipStats;
 
-      $('#tooltip-stats-container').show('fast');
-
       $.getJSON('https://neoeconomy.io/json/marketplacetransactionsdaily.json', function(data) {
 
           var ohlc = [],
@@ -649,13 +647,20 @@ function getStats() {
               }]
           });
 
-          // init tooltipster i after highcharts loaded
-          $('i#tooltip-stats-container').tooltipster({
-            theme: 'tooltipster-light',
-            contentCloning: true,
-            interactive: true,
-            side: 'bottom'
-          });
+          // add timeout to handle bug safari & IE
+          setTimeout(function(){
+
+            $('#tooltip-stats-container').show('fast');
+
+            // init tooltipster i after highcharts loaded
+            $('i#tooltip-stats-container').tooltipster({
+              theme: 'tooltipster-light',
+              contentCloning: true,
+              interactive: true,
+              side: 'bottom'
+            });
+
+          }, 1000);
 
       }).fail(function() {
         $('i#tooltip-stats-container').hide();
@@ -792,7 +797,7 @@ function getAuctions() {
             expiredItem = ''
           }
 
-          fetchBuyNFTDropdown += '<option value="' + buyCustomNFT[i].id + '" class=" ' + classCreator + ' filter-type filter-type-' + buyType + ' filter-rarity filter-rarity-' + buyRarity + ' filter-currency filter-currency-' + buyCurrency +  ' ' + buyMyitems + '" priceReal="' + buyPriceCustomReal + '" creatorAddress="' + buyCreator + '" item="' + buyItem + '" mint="' + buyMint + '" rarity="' + buyRarity + '">' + buyName + ' • Mint #' + buyMint + ' • Minted on ' + buyMintDateFormatted + ' • ' + buyRarity + ' • ' + numberWithCommas(buyPrice) + ' ' + buyCurrency + expiredItem + '</option>'
+          fetchBuyNFTDropdown += '<option value="' + buyCustomNFT[i].id + '" class=" ' + classCreator + ' filter-type filter-type-' + buyType + ' filter-rarity filter-rarity-' + buyRarity + ' filter-currency filter-currency-' + buyCurrency +  ' ' + buyMyitems + '" price="' + buyPriceCustom + '"priceReal="' + buyPriceCustomReal + '" creatorAddress="' + buyCreator + '" item="' + buyItem + '" mint="' + buyMint + '" rarity="' + buyRarity + '">' + buyName + ' • Mint #' + buyMint + ' • Minted on ' + buyMintDateFormatted + ' • ' + buyRarity + ' • ' + numberWithCommas(buyPrice) + ' ' + buyCurrency + expiredItem + '</option>'
         }
         fetchBuyNFTDropdown += '</select>'
 
