@@ -752,6 +752,7 @@ function getAuctions() {
           buyType = buyCustomNFT[i].type
           buyName = (buyCustomNFT[i].name).substr(2)
           buyMint = buyCustomNFT[i].mint
+          buyItem = buyCustomNFT[i].item
           buyMinDate = buyCustomNFT[i].mint_date
           var date = new Date(buyMinDate * 1000);
           var year = date.getFullYear();
@@ -765,6 +766,7 @@ function getAuctions() {
           });
           buyCurrency = buyPriceRaw[0].quoteSymbol
           buyPrice = (buyPriceRaw[0].price)/(Math.pow(10,formatDecimals(buyCurrency)));
+          buyPriceCustomReal = (buyPriceRaw[0].price)/(Math.pow(10,formatDecimals(buyCurrency)));
           buyCreator = buyPriceRaw[0].creatorAddress
 
           if ((((buyPriceRaw[0].endDate)*1000) - (new Date()).getTime() < 0) && buyCreator != '{{address}}') {
@@ -790,7 +792,7 @@ function getAuctions() {
             expiredItem = ''
           }
 
-          fetchBuyNFTDropdown += '<option value="' + buyCustomNFT[i].id + '" class=" ' + classCreator + ' filter-type filter-type-' + buyType + ' filter-rarity filter-rarity-' + buyRarity + ' filter-currency filter-currency-' + buyCurrency +  ' ' + buyMyitems + '" price="' + buyPriceCustom + '" creatorAddress="' + buyCreator + '">' + buyName + ' • Mint #' + buyMint + ' • Minted on ' + buyMintDateFormatted + ' • ' + buyRarity + ' • ' + numberWithCommas(buyPrice) + ' ' + buyCurrency + expiredItem + '</option>'
+          fetchBuyNFTDropdown += '<option value="' + buyCustomNFT[i].id + '" class=" ' + classCreator + ' filter-type filter-type-' + buyType + ' filter-rarity filter-rarity-' + buyRarity + ' filter-currency filter-currency-' + buyCurrency +  ' ' + buyMyitems + '" priceReal="' + buyPriceCustomReal + '" creatorAddress="' + buyCreator + '" item="' + buyItem + '" mint="' + buyMint + '" rarity="' + buyRarity + '">' + buyName + ' • Mint #' + buyMint + ' • Minted on ' + buyMintDateFormatted + ' • ' + buyRarity + ' • ' + numberWithCommas(buyPrice) + ' ' + buyCurrency + expiredItem + '</option>'
         }
         fetchBuyNFTDropdown += '</select>'
 
@@ -1353,10 +1355,16 @@ function initiateSell() {
         return;
   }
 
-  fetchSellNFTDropdown = '<select multiple style="margin: .5em auto;" id="select-nft">';
+  fetchSellNFTDropdown = '<div id="loader-nftlist-modal" style="display:none;" class="block-loader center"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div><select multiple style="margin: .5em auto;" id="select-nft">';
   //fetchSellNFTDropdown += '<option value="">Select NFT to sell</option>'
   for (i = 0; i < sellCustomNFT.length; i ++) {
-    fetchSellNFTDropdown += '<option value="' + sellCustomNFT[i].id + '" data-image="' + sellCustomNFT[i].image + '" class="filter-type filter-type-' + sellCustomNFT[i].type + ' filter-rarity filter-rarity-' + formatRarity(sellCustomNFT[i].rarity) + '">' + sellCustomNFT[i].name + ' • Mint #' + sellCustomNFT[i].mint + ' • Minted on ' + sellCustomNFT[i].mint_date + ' • ' + formatRarity(sellCustomNFT[i].rarity) + '</option>'
+
+    sellMint = sellCustomNFT[i].mint
+    sellItem = sellCustomNFT[i].item
+    sellRarity = formatRarity(sellCustomNFT[i].rarity)
+
+    fetchSellNFTDropdown += '<option value="' + sellCustomNFT[i].id + '" data-image="' + sellCustomNFT[i].image + '" class="filter-type filter-type-' + sellCustomNFT[i].type + ' filter-rarity filter-rarity-' + formatRarity(sellCustomNFT[i].rarity) + '" item="' + sellItem + '" mint="' + sellMint + '" rarity="' + sellRarity + '">' + sellCustomNFT[i].name + ' • Mint #' + sellCustomNFT[i].mint + ' • Minted on ' + sellCustomNFT[i].mint_date + ' • ' + formatRarity(sellCustomNFT[i].rarity) + '</option>'
+
   }
   fetchSellNFTDropdown += '</select>'
 
@@ -1367,8 +1375,10 @@ function initiateSell() {
     $('#sendSpinner').show();
 
     contentBootbox = '1) Select the NFT(s) you would like to sell:<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
-                  + '<div class="filter-results">Filter by type: <select style="margin-left:1em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="sell-type-filter"><option value="any">Any</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
-                  + 'Filter by rarity: <select style="margin-left:1em;height: 2.5em;text-transform:uppercase;" id="sell-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
+                  + '<div class="filter-results">Type: <select style="margin-left:1em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="sell-type-filter"><option value="any">Any</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
+                  + 'Rarity: <select style="margin-left:1em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="sell-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select>'
+                  + 'Sort by: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="sell-sort"><option value="item">Item</option><option value="mint">Mint #</option><option value="rarity">Rarity</option></select>'
+                  + '<span id="sorting-order-container-modal"><i id="sorting-order-modal-down" onclick="sortTypeModal()" class="fas fa-sort-numeric-down"></i></span></div>'
                   + '<div class="filter-results-count">You have <strong><span id="available-nfts">' + sellCustomNFT.length + '</span> NFTs available</strong> matching these filters.</div>'
                   + fetchSellNFTDropdown
                   + '<div class="filter-results-count" id="filter-results-count">You have selected <strong><span id="selected-nfts">0</span> NFTs </strong> to be sold.</div><br>'
@@ -1484,6 +1494,17 @@ function initiateSell() {
             }
         });
 
+        // On sort by change event
+        $("#sell-sort").change(function () {
+
+          if (document.getElementById("sorting-order-modal-down")) {
+            triggerSort(true);
+          } else {
+            triggerSort(false);
+          }
+
+        });
+
         // On select nft change event
         $("#select-nft").bind("keydown change", function(){
 
@@ -1494,15 +1515,18 @@ function initiateSell() {
         // On filter type change event
         $("#sell-type-filter").change(function () {
 
+          $("#select-nft").hide();
+          $("#loader-nftlist-modal").show();
+
           // on change reset selected values & count
           $("#select-nft").val('');
           document.getElementById("selected-nfts").innerHTML = 0;
 
           // show all type on change start
-          $("#select-nft option.filter-type").show();
+          $("#select-nft option.filter-type").removeAttr('disabled').show();
 
           // show all rarity on change start & reset value
-          $("#select-nft option.filter-rarity").show();
+          $("#select-nft option.filter-rarity").removeAttr('disabled').show();
           $("#sell-rarity-filter").val("any");
 
              var e = document.getElementById("sell-type-filter");
@@ -1517,7 +1541,7 @@ function initiateSell() {
 
             // if any, show all
             if (type == 'any') {
-              $("#select-nft option.filter-type").show();
+              $("#select-nft option.filter-type").removeAttr('disabled').show();
               document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type").length;
             } else if (type == 'part') {
               $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").attr('disabled', 'disabled').hide();
@@ -1526,6 +1550,7 @@ function initiateSell() {
               $("#select-nft option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
               document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length;
             }
+            $("#loader-nftlist-modal").hide();
             if (document.getElementById("available-nfts").innerHTML == '0') {
               $("#select-nft").hide();
               $("#filter-results-count").hide();
@@ -1538,6 +1563,9 @@ function initiateSell() {
 
         // On filter rarity change event
         $("#sell-rarity-filter").change(function () {
+
+          $("#select-nft").hide();
+          $("#loader-nftlist-modal").show();
 
           // on change reset selected values & count
           $("#select-nft").val('');
@@ -1554,7 +1582,7 @@ function initiateSell() {
           // show all on change start
           if (filterSell != 'any') {
             $("#select-nft option:not(.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
-            $("#select-nft option.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).show();
+            $("#select-nft option.filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).removeAttr('disabled').show();
           }
 
              var e = document.getElementById("sell-rarity-filter");
@@ -1582,6 +1610,7 @@ function initiateSell() {
                 document.getElementById("available-nfts").innerHTML = $("#select-nft option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterSell.toLowerCase())).length;
               }
             }
+            $("#loader-nftlist-modal").hide();
             if (document.getElementById("available-nfts").innerHTML == '0') {
               $("#select-nft").hide();
               $("#filter-results-count").hide();
@@ -1668,9 +1697,11 @@ function initiateBuy() {
   $('#sendSpinner').show();
 
   contentBootbox = '1) Select the NFT(s) you would like to buy:<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
-                + '<div class="filter-results">Filter by currency: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-currency-filter"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
-                + 'Filter by type: <select style="margin-left:.5em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="buy-type-filter"><option value="any">Any</option><option value="myItems">My Items</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
-                + 'Filter by rarity: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select></div>'
+                + '<div class="filter-results">Currency: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-currency-filter"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
+                + 'Type: <select style="margin-left:.5em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="buy-type-filter"><option value="any">Any</option><option value="myItems">My Items</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
+                + 'Rarity: <select style="margin-left:.5em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="buy-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select>'
+                + 'Sort by: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-sort"><option value="item">Item</option><option value="price">Price</option><option value="mint">Mint #</option><option value="rarity">Rarity</option></select>'
+                + '<span id="sorting-order-container-modal"><i id="sorting-order-modal-down" onclick="sortTypeModal()" class="fas fa-sort-numeric-down"></i></span></div>'
                 + '<div class="filter-results-count">There are <strong><span id="available-nfts-buy">' + lenAuctionsBuy + '</span> NFTs available</strong> matching these filters.</div>'
                 + fetchBuyNFTDropdown
                 + '<div class="filter-results-count" id="filter-results-count-selected">You have selected <span id="selected-nfts-buy-count"><strong>0 NFTs </strong> to be bought.</span></div><br>'
@@ -1811,8 +1842,22 @@ function initiateBuy() {
 
        });
 
+       // On sort by change event
+       $("#buy-sort").change(function () {
+
+         if (document.getElementById("sorting-order-modal-down")) {
+           triggerSort(true);
+         } else {
+           triggerSort(false);
+         }
+
+       });
+
        // On filter currency change event
        $("#buy-currency-filter").change(function () {
+
+         $("#select-nft-buy").hide();
+         $("#loader-nftlist-modal").show();
 
          // on change reset selected values & count
          $("#select-nft-buy").val('');
@@ -1831,10 +1876,16 @@ function initiateBuy() {
          $("#buy-type-filter").val("any");
          $("#buy-rarity-filter").val("any");
 
+         $("#select-nft-buy").show();
+         $("#loader-nftlist-modal").hide();
+
       });
 
       // On filter type change event
       $("#buy-type-filter").change(function () {
+
+        $("#select-nft-buy").hide();
+        $("#loader-nftlist-modal").show();
 
         // on change reset selected values & count
         $("#select-nft-buy").val('');
@@ -1842,6 +1893,9 @@ function initiateBuy() {
 
         // show all type on change start
         $("#select-nft-buy option.filter-type").removeAttr('disabled').show();
+
+        var e = document.getElementById("buy-currency-filter");
+        currency = e.options[e.selectedIndex].value;
 
         // show all rarity on change start & reset value
         $("#select-nft-buy option.filter-rarity").removeAttr('disabled').show();
@@ -1865,17 +1919,22 @@ function initiateBuy() {
           // if any, show all
           if (type == 'any') {
             $("#select-nft-buy option.filter-type").removeAttr('disabled').show();
-            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type").length;
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type:not(.filter-currency-" + currency + ")").length;
           } else if (type == 'part') {
             $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + "):not(.filter-type.filter-type-Pack)").attr('disabled', 'disabled').hide();
-            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length + $("#select-nft-buy option.filter-type.filter-type-Pack").length;
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ":not(.filter-currency-" + currency + ")").length + $("#select-nft-buy option.filter-type.filter-type-Pack :not(.filter-currency-" + currency + ")").length;
+          } else if (type == 'license') {
+            $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).filter(".filter-currency-" + currency).length;
           } else if (type == 'myItems') {
             $("#select-nft-buy option:not(.filter-" + type + ")").attr('disabled', 'disabled').hide();
-            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).length;
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).filter(".filter-currency-" + currency).length;
           } else {
             $("#select-nft-buy option:not(.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ")").attr('disabled', 'disabled').hide();
-            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase())).length;
+            document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(type.toLowerCase()) + ":not(.filter-currency-" + currency + ")").length;
           }
+          $("#select-nft-buy option:not(.filter-currency.filter-currency-" + currency + ")").attr('disabled', 'disabled').hide();
+          $("#loader-nftlist-modal").hide();
           if (document.getElementById("available-nfts-buy").innerHTML == '0') {
             $("#select-nft-buy").hide();
             $("#filter-results-count-selected").hide();
@@ -1889,12 +1948,18 @@ function initiateBuy() {
       // On filter rarity change event
       $("#buy-rarity-filter").change(function () {
 
+        $("#select-nft-buy").hide();
+        $("#loader-nftlist-modal").show();
+
         // on change reset selected values & count
         $("#select-nft-buy").val('');
         document.getElementById("selected-nfts-buy-count").innerHTML = '<strong>0 NFTs </strong> to be bought.';
 
         // show all type on change start
         $("#select-nft-buy option.filter-type").removeAttr('disabled').show();
+
+        var e = document.getElementById("buy-currency-filter");
+        currency = e.options[e.selectedIndex].value;
 
         // switch back to currency on start
         $("#select-nft-buy option.filter-currency").removeAttr('disabled').show();
@@ -1947,6 +2012,7 @@ function initiateBuy() {
               document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-rarity.filter-rarity-" + capitalizeFirstLetter(rarity.toLowerCase())).filter(".filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).length;
             }
           }
+          $("#loader-nftlist-modal").hide();
           if (document.getElementById("available-nfts-buy").innerHTML == '0') {
             $("#select-nft-buy").hide();
             $("#filter-results-count-selected").hide();
@@ -1958,6 +2024,117 @@ function initiateBuy() {
        });
 
     });
+
+  }
+
+}
+
+// On sort order click
+function sortTypeModal() {
+
+  if (document.getElementById("sorting-order-modal-down")) {
+    document.getElementById("sorting-order-container-modal").innerHTML = '<i id="sorting-order-modal-up" onclick="sortTypeModal()" class="fas fa-sort-numeric-up"></i></span></div>'
+    triggerSort(false)
+  } else {
+    document.getElementById("sorting-order-container-modal").innerHTML = '<i id="sorting-order-modal-down" onclick="sortTypeModal()" class="fas fa-sort-numeric-down"></i></span></div>'
+    triggerSort(true)
+  }
+
+}
+
+function triggerSort(orderAsc) {
+
+  if (orderAsc) {
+
+    if (document.getElementById("buy-sort")) {
+      var e = document.getElementById("buy-sort");
+      var type = e.options[e.selectedIndex].value;
+      var select = $('#select-nft-buy');
+    } else {
+      var e = document.getElementById("sell-sort");
+      var type = e.options[e.selectedIndex].value;
+      var select = $('#select-nft');
+    }
+
+    if (type == 'item') {
+
+      select.html(select.find('option').sort(function(x, y) {
+
+        if (parseFloat($(x).attr("item")) < parseFloat($(y).attr("item"))) return 1;
+        if (parseFloat($(x).attr("item")) > parseFloat($(y).attr("item"))) return -1;
+
+        if (parseFloat($(x).attr("mint")) > parseFloat($(y).attr("mint"))) return 1;
+        if (parseFloat($(x).attr("mint")) < parseFloat($(y).attr("mint"))) return -1;
+
+      }));
+
+    } else if (type == 'price') {
+
+      select.html(select.find('option').sort(function(x, y) {
+        return parseFloat($(x).attr("priceReal")) > parseFloat($(y).attr("priceReal")) ? 1 : -1;
+      }));
+
+    } else if (type == 'mint') {
+
+      select.html(select.find('option').sort(function(x, y) {
+        return parseFloat($(x).attr("mint")) > parseFloat($(y).attr("mint")) ? 1 : -1;
+      }));
+
+    } else if (type == 'rarity') {
+
+      item_order = ["Common","Consumer","Industrial","Professional","Custom","Collector","Unique"];
+
+      select.html(select.find('option').sort(function(x, y) {
+        return item_order.indexOf($(x).attr("rarity")) > item_order.indexOf($(y).attr("rarity")) ? 1 : -1;
+      }));
+
+    }
+
+  } else {
+
+    if (document.getElementById("buy-sort")) {
+      var e = document.getElementById("buy-sort");
+      var type = e.options[e.selectedIndex].value;
+      var select = $('#select-nft-buy');
+    } else {
+      var e = document.getElementById("sell-sort");
+      var type = e.options[e.selectedIndex].value;
+      var select = $('#select-nft');
+    }
+
+    if (type == 'item') {
+
+      select.html(select.find('option').sort(function(x, y) {
+
+        if (parseFloat($(x).attr("item")) > parseFloat($(y).attr("item"))) return 1;
+        if (parseFloat($(x).attr("item")) < parseFloat($(y).attr("item"))) return -1;
+
+        if (parseFloat($(x).attr("mint")) > parseFloat($(y).attr("mint"))) return 1;
+        if (parseFloat($(x).attr("mint")) < parseFloat($(y).attr("mint"))) return -1;
+
+      }));
+
+    } else if (type == 'price') {
+
+      select.html(select.find('option').sort(function(x, y) {
+        return parseFloat($(x).attr("priceReal")) < parseFloat($(y).attr("priceReal")) ? 1 : -1;
+      }));
+
+    } else if (type == 'mint') {
+
+      select.html(select.find('option').sort(function(x, y) {
+        return parseFloat($(x).attr("mint")) < parseFloat($(y).attr("mint")) ? 1 : -1;
+      }));
+
+    } else if (type == 'rarity') {
+
+      item_order = ["Common","Consumer","Industrial","Professional","Custom","Collector","Unique"];
+
+      select.html(select.find('option').sort(function(x, y) {
+        return item_order.indexOf($(x).attr("rarity")) < item_order.indexOf($(y).attr("rarity")) ? 1 : -1;
+      }));
+
+    }
 
   }
 

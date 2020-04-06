@@ -1632,7 +1632,7 @@ option:disabled {
   font-size: 1em;
 }
 
-#sorting-order:hover {
+#sorting-order:hover, #sorting-order-modal-down:hover, #sorting-order-modal-up:hover {
   color: #FFBF31;
   cursor: pointer;
 }
