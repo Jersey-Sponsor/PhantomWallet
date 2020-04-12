@@ -2004,7 +2004,7 @@ function initiateBuy() {
             } else if (filterBuy == 'part') {
               document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).length + $("#select-nft-buy option.filter-type.filter-type-Pack").filter(".filter-currency-" + currency).length;
             } else if (filterBuy == 'myItems') {
-              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + type).filter(".filter-currency-" + currency).length;
+              document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-" + filterBuy).filter(".filter-currency-" + currency).length;
             } else {
               document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-type.filter-type-" + capitalizeFirstLetter(filterBuy.toLowerCase())).filter(".filter-currency-" + currency).length;
             }
