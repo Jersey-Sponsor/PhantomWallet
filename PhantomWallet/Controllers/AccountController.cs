@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using LunarLabs.WebServer.Core;
@@ -22,7 +21,6 @@ using Phantasma.VM;
 using Phantasma.Storage;
 using Phantasma.Pay;
 using Phantasma.Pay.Chains;
-using Phantasma.SDK;
 using Phantasma.Neo.Utils;
 using Phantom.Wallet.Helpers;
 using Phantom.Wallet.Models;
@@ -33,11 +31,6 @@ using Serilog;
 using Serilog.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-using LunarLabs.Parser.JSON;
-using LunarLabs.WebServer.HTTP;
-using LunarLabs.WebSockets;
-
 
 namespace Phantom.Wallet.Controllers
 {
@@ -71,55 +64,6 @@ namespace Phantom.Wallet.Controllers
         public void UpdateConfig(WalletConfigDto cfg)
         {
             WalletConfig = cfg;
-        }
-
-        public static void RunConnector(PhantasmaKeys kp)
-        {
-            var settings = ServerSettings.DefaultSettings();
-            settings.Port = 7080;
-
-            var server = new HTTPServer(settings, ConsoleLogger.Write);
-
-            Console.WriteLine("Starting Phantasma Link connector at port " + settings.Port);
-
-            var api = new PhantasmaAPI(WalletConfig.RpcUrl);
-            var link = new PhantomConnector(kp);
-
-            server.WebSocket("/phantasma", (socket) =>
-            {
-                while (socket.IsOpen)
-                {
-                    var msg = socket.Receive();
-
-                    if (msg.CloseStatus == WebSocketCloseStatus.None)
-                    {
-                        var json = JObject.Parse(Encoding.UTF8.GetString(msg.Bytes));
-
-                        Console.WriteLine("PhantomConnector: " + json);
-
-                        link.Execute(json, (id, root, success) =>
-                        {
-                            root.AddField("id", id);
-                            root.AddField("success", success);
-
-                            var json = JSONWriter.WriteToString(root);
-                            socket.Send(json);
-                        });
-
-                    }
-                }
-            });
-
-            server.Run();
-        }
-
-        public static byte[] SignTransaction(PhantasmaKeys kp, string nexus, string chain, byte[] script)
-        {
-            var tx = new Phantasma.Blockchain.Transaction(nexus,
-                    chain, script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-9-0");
-            tx.Sign(kp);
-
-            return tx.ToByteArray(true);
         }
 
         public List<SendHolding> PrepareSendHoldings()
