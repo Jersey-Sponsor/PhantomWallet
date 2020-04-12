@@ -247,35 +247,6 @@ namespace Phantom.Wallet
                     break;
                 }
 
-                case "getaccount":
-                {
-                    if (keys.Address == null)
-                    {
-                        root = APIUtils.FromAPIResult(new Error() { message = "Login first!"});
-                        callback(id, root, success);
-                    }
-
-                    var result = accountController.GetAccount(keys.Address.ToString()).Result;
-
-                    if (result.GetType() == typeof(ErrorRes))
-                    {
-                        root = APIUtils.FromAPIResult(new Error() { message = result.ToString()});
-                        callback(id, root, success);
-                    }
-
-                    if (result != null)
-                    {
-                        success = true;
-                        root = APIUtils.FromAPIResult(new Invocation() { result = result.ToString()});
-                    }
-                    else
-                    {
-                        root = APIUtils.FromAPIResult(new Error() { message = "Invalid amount of arguments" });
-                    }
-            
-                    break;
-                }
-
                 default:
                     root = APIUtils.FromAPIResult(new Error() { message = "Invalid request type" });
                     break;
@@ -284,6 +255,11 @@ namespace Phantom.Wallet
 
             callback(id, root, success);
 
+        }
+
+        protected Account GetAccount()
+        {
+            return new Account() {};
         }
     }
 }
