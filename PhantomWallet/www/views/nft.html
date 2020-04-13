@@ -535,6 +535,16 @@ function getNFTDetails() {
       }
   }).then(function() {
 
+    packCountA = (datastore.supply).filter(function (el) {
+      return el.item == '33554433';
+    });
+
+    packCountB = (datastore.inventory).filter(function (el) {
+      return el.item == '33554434';
+    });
+
+    totalPackCount = packCountA[0].supply + packCountB[0].supply
+
     $("#nftdetailslist-game").hide();
     $("#nftdetailslist-parts").hide();
     $("#nftdetailslist-vehicles").hide();
@@ -602,11 +612,16 @@ function getNFTDetails() {
         maxSupply = numberWithCommas((datastore.inventory)[i].max_supply);
       }
 
+      circSupply = (datastore.inventory)[i].supply;
+      if (((datastore.inventory)[i].item_info.name_english) == 'Pre-season pack') {
+        circSupply = totalPackCount;
+      }
+
       document.getElementById("tooltip_" + [i]).innerHTML = (datastore.inventory)[i].item_info.description_english;
 
         fetchValuesNFTParts += '<div class="nft-class">'
                           + '<div class="nft-image" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
-                            + '<button class="nft-order circulating">' + numberWithCommas((datastore.inventory)[i].supply) + ' BOUGHT</button>'
+                            + '<button class="nft-order circulating">' + numberWithCommas(circSupply) + ' BOUGHT</button>'
                             + '<button class="nft-order supply">' + maxSupply + '</button>'
                             + '<img src="' + (datastore.inventory)[i].item_info.image_url + '?width=1200" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:20em;">'
                             + '<div class="nft-desc" style="height:8em;">'
