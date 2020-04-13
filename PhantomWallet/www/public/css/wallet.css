@@ -2736,7 +2736,7 @@ input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-
 
 @media (min-width: 768px) {
   .alert-area {
-    width: 350px;
+    width: 550px;
     right: 0;
     margin: 0 auto;
     top: 1em;
