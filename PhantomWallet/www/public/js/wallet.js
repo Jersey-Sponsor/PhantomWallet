@@ -550,17 +550,17 @@ var alertShowMessage = document.querySelector('#alertShowMessage');
 var alertHiddenClose = document.querySelector('#alertHiddenClose');
 var alertMessageBox = document.querySelector('#alertMessageBox');
 var alertbox = new AlertBox('#alert-area', {
-  closeTime: 15000,
+  closeTime: 25000,
   persistent: false,
   hideCloseButton: false
 });
 var alertboxPersistent = new AlertBox('#alert-area', {
-  closeTime: 15000,
+  closeTime: 25000,
   persistent: true,
   hideCloseButton: false
 });
 var alertNoClose = new AlertBox('#alert-area', {
-  closeTime: 15000,
+  closeTime: 25000,
   persistent: false,
   hideCloseButton: true
 });

@@ -1157,7 +1157,7 @@ function refreshAuctions() {
          }, 1000);
 
      })
-     alertbox.show('NFT Marketplace items list update complete... ' + (itemsList.matchingItems).length + ' NFTs loaded!');
+     alertbox.show('NFT Marketplace update complete... ' + (itemsList.matchingItems).length + ' NFTs loaded!');
    }
 
   // init tooltipster button
@@ -1189,7 +1189,7 @@ function refreshAuctions() {
     itemsListInitial = new List('auctions-list', options);
     $("#loader-nftlist").hide();
     $("#container-auctions-list").show();
-    alertbox.show('100 most recent items loaded, updating full NFTs list...');
+    alertbox.show('Last 100 NFTs loaded, starting full NFTs list update...');
     $("#input-search").on("input", function() {
     setTimeout(function(){
         if ((itemsListInitial.matchingItems).length > 1) {
@@ -1699,7 +1699,6 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
          if (returnedData !== "") {
            $('#sendSpinner').hide();
            alertbox.show('Transaction successful!');
-           refreshAuctions();
          } else {
            window.location.replace("/error");
          }
@@ -1844,7 +1843,8 @@ function initiateBuy() {
       document.getElementById("available-nfts-buy").innerHTML = $("#select-nft-buy option.filter-currency-" + currency).length;
 
       // On select nft change event
-      $("#select-nft-buy").bind("keydown change", function(){
+      //$("#select-nft-buy").bind("keydown change", function(){
+      $("#select-nft-buy").bind("change", function(){
 
         totalAmount = 0
         $("#select-nft-buy option:selected[price]").each(function() {
@@ -2189,7 +2189,6 @@ function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
          if (returnedData !== "") {
              $('#sendSpinner').hide();
              alertbox.show('Transaction successful!');
-             refreshAuctions();
          } else {
              window.location.replace("/error");
          }
