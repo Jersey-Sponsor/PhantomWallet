@@ -879,7 +879,7 @@ function getAuctions() {
       ).then(function() {
 
         // start worker
-        var worker = new Worker("../js/LoopWorker.js?36");
+        var worker = new Worker("../js/LoopWorker.js?38");
         worker.postMessage(
           {
             api1: dataAPIMain,
