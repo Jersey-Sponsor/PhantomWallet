@@ -13,7 +13,7 @@
               <div class="category buy-nft" id="buy-nft" style="opacity:0" onclick="initiateBuy()">Buy NFT</div>
               <div class="referral-nft" id="sell-nft-tooltip" style="opacity:0;margin-top:1em;">No fees for seller, 2% fees for buyer!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_fees"></i></div>
             </div>
-            <div class="col-md-6 center container-prize" style="opacity:0;margin-top:-6em;">
+            <div class="col-md-6 center container-prize" style="margin-top:-6em;">
               <h3 style="margin-bottom:0;">Total Items</h3>
               <div class="prizepool" style="display:inline-block;" id="prizepool">XXX NFTs</div><i class="tooltip fas fa-info-circle" id="tooltip-stats-container" style="display:none;margin-left:1em;width:1em;vertical-align:super;" data-tooltip-content="#tooltip_stats"></i>
             </div>
@@ -24,17 +24,17 @@
                 <div id="current-balance-kcal" style="display:inline-block;margin-left:1em;"><img src="img/kcal_logo.png" alt="KCAL" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX KCAL</div>
                 <div id="current-balance-goati" style="display:inline-block;margin-left:1em;"><img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX GOATI</div>
               </div>
-              <div class="wrapper-filters" style="opacity:0">
+              <div class="wrapper-filters">
                 <div>Filter by</div>
                 <div id="nft-category">
-                  <div class="category" id="filter-all-items" onclick="filterCategory(this.id)">All items</div>
+                  <div class="category category-current" id="filter-all-items" onclick="filterCategory(this.id)">All items</div>
                   <div class="category" id="filter-my-items" onclick="filterCategory(this.id)"><i class="fas fa-wallet"></i>My items</div>
                   <div class="category" id="filter-game-access" onclick="filterCategory(this.id)"><i class="fas fa-gamepad"></i>Game Access</div>
                   <div class="category" id="filter-vehicle-parts" onclick="filterCategory(this.id)"><i class="fas fa-wrench"></i>Parts</div>
                   <div class="category" id="filter-vehicles" onclick="filterCategory(this.id)"><i class="fas fa-car"></i>Vehicles</div>
                 </div>
               </div>
-              <div class="wrapper-sorters" style="opacity:0;margin-left:1em;">
+              <div class="wrapper-sorters">
                 <div>Sort by</div>
                 <div id="nft-category">
                   <div class="category sort" id="sort-price" data-sort="priceFilter" onclick="sortCategory(this.id)"><i class="fas fa-dollar-sign"></i>Price</div>
@@ -63,6 +63,14 @@
     </div>
     <div id="container-auctions-list">
       <div class="col-md-12 center" id="auctions-list">
+        <div class="col-md-12 center" id="head-input-search">
+          <div style="margin-top: .5em;margin-bottom:-.7em;">
+            <p>Search for an item</p>
+          </div>
+          <form>
+            <input id="input-search" type="search"placeholder="ITEM" class="search"><div id="count-search" style="display: inline-block;margin-left: 1em;">XXXXX items available</div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -105,22 +113,10 @@ $(document).ready(function() {
   fetchBuyNFTDropdown = '';
 
   initialLoad = 0;
-  itemBought = 0;
+  sortingOrder = 0;
 
   $("#loader-nftlist").show();
   $("#container-auctions-list").hide();
-
-  // set session storage and filter on load
-  localStorage.setItem('marketplace-category-filter', 'filter-all-items');
-  filterSelected = localStorage.getItem('marketplace-category-filter');
-  //localStorage.setItem('marketplace-category-sort', 'sort-price');
-  //selectedMainSort = localStorage.getItem('marketplace-category-sort');
-
-  // pre init filtering
-  selectedMainFilter = localStorage.getItem('marketplace-category-filter');
-
-  // preinit sorting order
-  sortingOrder = 0;
 
   // init get auctions
   getAuctions();
@@ -290,18 +286,43 @@ $(document).ready(function() {
 
     }
 
-  } else {
-    //$("#sell-nft").fadeTo("slow", 1);
-    //$("#sell-nft-tooltip").fadeTo("slow", 1);
   }
 
 });
 
-// On click filtering
 function filterCategory(category) {
 
-  $("#loader-nftlist").show();
-  $("#container-auctions-list").hide();
+  // re init input full
+  document.getElementById("input-search").value = "";
+  if (initialLoad == 0) {
+    itemsListInitial.search();
+    if ((itemsListInitial.matchingItems).length > 1) {
+      fetchValuesCount = (itemsListInitial.matchingItems).length + ' items available';
+    } else {
+      fetchValuesCount = (itemsListInitial.matchingItems).length + ' item available';
+    }
+    $('#count-search').html(fetchValuesCount);
+    // hide pagination if single page
+    if ((itemsListInitial.matchingItems).length <= itemsListInitial.page) {
+      $('.paginationBottom').css('display', 'none');
+    } else {
+      $('.paginationBottom').css('display', 'block');
+    }
+  } else {
+    itemsList.search();
+    if ((itemsList.matchingItems).length > 1) {
+      fetchValuesCount = (itemsList.matchingItems).length + ' items available';
+    } else {
+      fetchValuesCount = (itemsList.matchingItems).length + ' item available';
+    }
+    $('#count-search').html(fetchValuesCount);
+    // hide pagination if single page
+    if ((itemsList.matchingItems).length <= itemsList.page) {
+      $('.paginationBottom').css('display', 'none');
+    } else {
+      $('.paginationBottom').css('display', 'block');
+    }
+  }
 
   var cat1 = document.getElementById("filter-all-items");
   var cat2 = document.getElementById("filter-my-items");
@@ -314,81 +335,244 @@ function filterCategory(category) {
     cat3.classList.remove("category-current");
     cat4.classList.remove("category-current");
     cat5.classList.remove("category-current");
-    localStorage.setItem('marketplace-category-filter', 'filter-all-items');
+    if (initialLoad == 0) {
+      itemsListInitial.filter();
+    } else {
+      itemsList.filter();
+    }
   } else if (category == 'filter-my-items') {
     cat1.classList.remove("category-current");
     cat2.classList.add("category-current");
     cat3.classList.remove("category-current");
     cat4.classList.remove("category-current");
     cat5.classList.remove("category-current");
-    localStorage.setItem('marketplace-category-filter', 'filter-my-items');
+    if (initialLoad == 0) {
+      itemsListInitial.filter(function(item) {
+        if (item.values().creatorAddress == '{{address}}') {
+           return true;
+        } else {
+           return false;
+        }
+      })
+    } else {
+      itemsList.filter(function(item) {
+        if (item.values().creatorAddress == '{{address}}') {
+           return true;
+        } else {
+           return false;
+        }
+      })
+    }
   } else if (category == 'filter-game-access') {
     cat1.classList.remove("category-current");
     cat2.classList.remove("category-current");
     cat3.classList.add("category-current");
     cat4.classList.remove("category-current");
     cat5.classList.remove("category-current");
-    localStorage.setItem('marketplace-category-filter', 'License');
+    if (initialLoad == 0) {
+      itemsListInitial.filter(function(item) {
+        if (item.values().filterBy == 'License') {
+           return true;
+        } else {
+           return false;
+        }
+      })
+    } else {
+      itemsList.filter(function(item) {
+        if (item.values().filterBy == 'License') {
+           return true;
+        } else {
+           return false;
+        }
+      })
+    }
   } else if (category == 'filter-vehicle-parts') {
     cat1.classList.remove("category-current");
     cat2.classList.remove("category-current");
     cat3.classList.remove("category-current");
     cat4.classList.add("category-current");
     cat5.classList.remove("category-current");
-    localStorage.setItem('marketplace-category-filter', 'Part');
+    if (initialLoad == 0) {
+      itemsListInitial.filter(function(item) {
+        if (item.values().filterBy == 'Part') {
+           return true;
+        } else {
+           return false;
+        }
+      })
+    } else {
+      itemsList.filter(function(item) {
+        if (item.values().filterBy == 'Part') {
+           return true;
+        } else {
+           return false;
+        }
+      })
+    }
   } else if (category == 'filter-vehicles') {
     cat1.classList.remove("category-current");
     cat2.classList.remove("category-current");
     cat3.classList.remove("category-current");
     cat4.classList.remove("category-current");
     cat5.classList.add("category-current");
-    localStorage.setItem('marketplace-category-filter', 'Vehicle');
+    if (initialLoad == 0) {
+      itemsListInitial.filter(function(item) {
+        if (item.values().filterBy == 'Vehicle') {
+           return true;
+        } else {
+           return false;
+        }
+      })
+    } else {
+      itemsList.filter(function(item) {
+        if (item.values().filterBy == 'Vehicle') {
+           return true;
+        } else {
+           return false;
+        }
+      })
+    }
   }
-  selectedMainFilter = localStorage.getItem('marketplace-category-filter');
-  // launch refresh auctions once filter has been selected
-  //refreshAuctions();
-  setTimeout(function(){ refreshAuctions(); }, 100);
+
+  if (initialLoad == 0) {
+    if ((itemsListInitial.matchingItems).length > 1) {
+      fetchValuesCount = (itemsListInitial.matchingItems).length + ' items available';
+    } else {
+      fetchValuesCount = (itemsListInitial.matchingItems).length + ' item available';
+    }
+    $('#count-search').html(fetchValuesCount);
+    // hide pagination if single page
+    if ((itemsListInitial.matchingItems).length <= itemsListInitial.page) {
+      $('.paginationBottom').css('display', 'none');
+    } else {
+      $('.paginationBottom').css('display', 'block');
+    }
+  } else {
+    if ((itemsList.matchingItems).length > 1) {
+      fetchValuesCount = (itemsList.matchingItems).length + ' items available';
+    } else {
+      fetchValuesCount = (itemsList.matchingItems).length + ' item available';
+    }
+    $('#count-search').html(fetchValuesCount);
+    // hide pagination if single page
+    if ((itemsList.matchingItems).length <= itemsList.page) {
+      $('.paginationBottom').css('display', 'none');
+    } else {
+      $('.paginationBottom').css('display', 'block');
+    }
+  }
 
 }
 
-// On click sorting
 function sortCategory(category) {
-
-  $("#loader-nftlist").show();
-  $("#container-auctions-list").hide();
 
   $("#sorting-order-container").fadeTo("fast", 1);
   var cat1 = document.getElementById("sort-price");
   var cat2 = document.getElementById("sort-mint-number");
   var cat3 = document.getElementById("sort-rarity");
+
+  if (category == 'sorting-order') {
+
+    if (sortingOrder) {
+      sortingIcon = 'down';
+      order = "desc"
+    } else {
+      sortingIcon = 'up';
+      order = "asc"
+    }
+    sortingOrder = !sortingOrder;
+    document.getElementById("sorting-order-container").innerHTML = '<i id="sorting-order" onclick="sortCategory(this.id)" class="fas fa-2x fa-sort-numeric-' + sortingIcon +'"></i>'
+
+    if (cat1.classList.contains('category-current')) {
+      category = 'sort-price'
+    }
+    if (cat2.classList.contains('category-current')) {
+      category = 'sort-mint-number'
+    }
+    if (cat3.classList.contains('category-current')) {
+      category = 'sort-rarity'
+    }
+
+  }
+
   if (category == 'sort-price') {
     cat1.classList.add("category-current");
     cat2.classList.remove("category-current");
     cat3.classList.remove("category-current");
-    localStorage.setItem('marketplace-category-sort', 'sort-price');
+    if (sortingOrder) {
+      order = "desc"
+    } else {
+      order = "asc"
+    }
+    if (initialLoad == 0) {
+      itemsListInitial.sort(formatSorting('sort-price'), {
+          order: order,
+          sortFunction: function (a, b) {
+              a = parseFloat(a._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
+              b = parseFloat(b._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
+              return a > b ? 1 :
+                     a < b ? -1 : 0;
+          }
+      })
+    } else {
+      itemsList.sort(formatSorting('sort-price'), {
+          order: order,
+          sortFunction: function (a, b) {
+              a = parseFloat(a._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
+              b = parseFloat(b._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
+              return a > b ? 1 :
+                     a < b ? -1 : 0;
+          }
+      })
+    }
   } else if (category == 'sort-mint-number') {
     cat1.classList.remove("category-current");
     cat2.classList.add("category-current");
     cat3.classList.remove("category-current");
-    localStorage.setItem('marketplace-category-sort', 'sort-mint-number');
+    if (sortingOrder) {
+      order = "desc"
+    } else {
+      order = "asc"
+    }
+    if (initialLoad == 0) {
+      itemsListInitial.sort(formatSorting('sort-mint-number'), {
+          order: order
+      })
+    } else {
+      itemsList.sort(formatSorting('sort-mint-number'), {
+          order: order
+      })
+    }
   } else if (category == 'sort-rarity') {
     cat1.classList.remove("category-current");
     cat2.classList.remove("category-current");
     cat3.classList.add("category-current");
-    localStorage.setItem('marketplace-category-sort', 'sort-rarity');
-  } else if (category == 'sorting-order') {
+    item_order = ["COMMON","CONSUMER","INDUSTRIAL","PROFESSIONAL","CUSTOM","COLLECTOR","UNIQUE"];
     if (sortingOrder) {
-      sortingIcon = 'down';
+      order = "desc"
     } else {
-      sortingIcon = 'up';
+      order = "asc"
     }
-    sortingOrder = !sortingOrder;
-    document.getElementById("sorting-order-container").innerHTML = '<i id="sorting-order" onclick="sortCategory(this.id)" class="fas fa-2x fa-sort-numeric-' + sortingIcon +'"></i>'
+    if (initialLoad == 0) {
+      itemsListInitial.sort(formatSorting('sort-rarity'), {
+          order: order,
+          sortFunction: function (a, b) {
+            a = item_order.indexOf(a._values.rarityFilter);
+            b = item_order.indexOf(b._values.rarityFilter);
+            return a - b;
+         }
+      })
+    } else {
+      itemsList.sort(formatSorting('sort-rarity'), {
+          order: order,
+          sortFunction: function (a, b) {
+            a = item_order.indexOf(a._values.rarityFilter);
+            b = item_order.indexOf(b._values.rarityFilter);
+            return a - b;
+         }
+      })
+    }
   }
-  selectedMainSort = category;
-  // launch refresh auctions once sorting has been selected
-  //refreshAuctions();
-  setTimeout(function(){ refreshAuctions(); }, 100);
 
 }
 
@@ -397,8 +581,6 @@ function getStats() {
   $.get('https://neoeconomy.io/json/marketplacetransactions.json',
 
     function (data) {
-
-      //console.log(data)
 
       var now = new Date();
 
@@ -682,7 +864,6 @@ function getAuctions() {
         $.get('https://neoeconomy.io/json/auctionsmarketplace.json',
 
           function (data) {
-            //console.log(data)
             dataAPIMain = data
           }
 
@@ -690,7 +871,6 @@ function getAuctions() {
         $.get('https://neoeconomy.io/json/auctionsmarketplace-goati.json',
 
           function (data) {
-            //console.log(data)
             dataAPIGoati = data
           }
 
@@ -698,9 +878,28 @@ function getAuctions() {
 
       ).then(function() {
 
-        mergedAuctionsFinal = Array.prototype.concat.apply([], dataAPIMain.map(function(res) {
-            return res
-        }));
+        // start worker
+        var worker = new Worker("../js/LoopWorker.js?36");
+        worker.postMessage(
+          {
+            api1: dataAPIMain,
+            api2: dataAPIGoati,
+            currentAddress: '{{address}}'
+          });
+        worker.addEventListener('message', (event) => {
+          if (event.data.fetchBuyNFTDropdown) {
+            fetchBuyNFTDropdown = event.data.fetchBuyNFTDropdown;
+            $(".sell-nft").fadeTo("slow", 1);
+            $(".buy-nft").fadeTo("slow", 1);
+            $(".referral-nft").fadeTo("slow", 1);
+          } else {
+            fetchAuctions = event.data;
+            initialLoad = 1;
+            refreshAuctions();
+          }
+        });
+
+        mergedAuctionsFinal = dataAPIMain
 
         // filter by start date
         mergedAuctionsFinal.sort((a,b) => (a.startDate < b.startDate) ? 1 : ((b.startDate < a.startDate) ? -1 : 0));
@@ -714,380 +913,215 @@ function getAuctions() {
         // filter by start date
         mergedAuctionsFinalNotExpired.sort((a,b) => (a.startDate < b.startDate) ? 1 : ((b.startDate < a.startDate) ? -1 : 0));
 
-        auctionsDetailsAPINFT = mergedAuctionsFinal;
+        // show items count
+        document.getElementById("prizepool").innerHTML = numberWithCommas(mergedAuctionsFinal.length) + ' NFTs';
+        document.getElementById("count-search").innerHTML = mergedAuctionsFinalNotExpired.length + ' items available';
 
         // start marketplace stats
         getStats();
 
-        // init empty pendingItems
-        pendingItems = [];
-
         // start refresh auctions
         refreshAuctions();
-
-        // preload nft list for buying dropdown bootbox
-        buyCustomNFT = dataAPIGoati
-
-        // double sort item & mint
-        buyCustomNFT.sort(function (a, b) {
-
-          if (parseFloat(a.item) < parseFloat(b.item)) return 1;
-          if (parseFloat(a.item) > parseFloat(b.item)) return -1;
-
-          if (parseFloat(a.mint) > parseFloat(b.mint)) return 1;
-          if (parseFloat(a.mint) < parseFloat(b.mint)) return -1;
-
-        });
-
-        countExpired = 0;
-        fetchBuyNFTDropdown = '<select multiple style="margin: .5em auto;" id="select-nft-buy">';
-        //fetchBuyNFTDropdown += '<option value="">Select NFT to sell</option>'
-
-        /*
-        // check difference between APIs
-        console.log(buyCustomNFT)
-        console.log(mergedAuctionsFinal)
-        var res = buyCustomNFT.filter(item1 =>
-        !mergedAuctionsFinal.some(item2 => (item2.tokenId === item1.id)))
-        console.log(res);
-        */
-
-        for (i = 0; i < buyCustomNFT.length; i ++) {
-
-          buyType = buyCustomNFT[i].type
-          buyName = (buyCustomNFT[i].name).substr(2)
-          buyMint = buyCustomNFT[i].mint
-          buyItem = buyCustomNFT[i].item
-          buyMinDate = buyCustomNFT[i].mint_date
-          var date = new Date(buyMinDate * 1000);
-          var year = date.getFullYear();
-          var month = ("0" + (date.getMonth() + 1)).slice(-2)
-          var day = ("0" + (date.getDate())).slice(-2)
-          buyMintDateFormatted = year + "-" + month + "-" + day;
-          buyRarity = formatRarity(buyCustomNFT[i].rarity)
-          buyId = buyCustomNFT[i].id
-          buyPriceRaw = mergedAuctionsFinal.filter(function (el) {
-            return el.tokenId == dataAPIGoati[i].id;
-          });
-          buyCurrency = buyPriceRaw[0].quoteSymbol
-          buyPrice = (buyPriceRaw[0].price)/(Math.pow(10,formatDecimals(buyCurrency)));
-          buyPriceCustomReal = (buyPriceRaw[0].price)/(Math.pow(10,formatDecimals(buyCurrency)));
-          buyCreator = buyPriceRaw[0].creatorAddress
-
-          if ((((buyPriceRaw[0].endDate)*1000) - (new Date()).getTime() < 0) && buyCreator != '{{address}}') {
-            countExpired++
-            continue;
-          }
-
-          if (buyCreator == '{{address}}') {
-            classCreator = "classCreator";
-            buyPriceCustom = 0;
-            buyMyitems = 'filter-myItems';
-          } else {
-            classCreator = '';
-            buyPriceCustom = (buyPriceRaw[0].price)/(Math.pow(10,formatDecimals(buyCurrency)));
-            buyMyitems = '';
-          }
-
-          lenAuctionsBuy = buyCustomNFT.length - countExpired;
-
-          if (((buyPriceRaw[0].endDate)*1000) - (new Date()).getTime() < 0) {
-            expiredItem = ' • Expired'
-          } else {
-            expiredItem = ''
-          }
-
-          fetchBuyNFTDropdown += '<option value="' + buyCustomNFT[i].id + '" class=" ' + classCreator + ' filter-type filter-type-' + buyType + ' filter-rarity filter-rarity-' + buyRarity + ' filter-currency filter-currency-' + buyCurrency +  ' ' + buyMyitems + '" price="' + buyPriceCustom + '"priceReal="' + buyPriceCustomReal + '" creatorAddress="' + buyCreator + '" item="' + buyItem + '" mint="' + buyMint + '" rarity="' + buyRarity + '">' + buyName + ' • Mint #' + buyMint + ' • Minted on ' + buyMintDateFormatted + ' • ' + buyRarity + ' • ' + numberWithCommas(buyPrice) + ' ' + buyCurrency + expiredItem + '</option>'
-        }
-        fetchBuyNFTDropdown += '</select>'
 
   })
 }
 
-// function refresh auctions
 function refreshAuctions() {
 
-  fetchAuctions = '';
-  tooltipAuction = '';
+  if (initialLoad == 0) {
 
-  // start building the search input
-  fetchAuctions += '<div class="col-md-12 center" id="head-input-search">'
-        +    '<div style="margin-top: .5em;margin-bottom:-.7em;">'
-        +      '<p>Search for an item</p>'
-        +    '</div>'
-        +    '<form>'
-        +      '<input id="input-search" type="search"placeholder="ITEM" class="search"><div id="count-search" style="display: inline-block;margin-left: 1em;"></div>'
-        +    '</form>'
-        + '</div>'
+    fetchAuctions = '';
+    tooltipAuction = '';
 
-  fetchAuctions += '<ul class="paginationTop pagination"></ul>'
-  fetchAuctions += '<ul class="list">'
+    // start building the search input
+    fetchAuctions += '<div class="col-md-12 center" id="head-input-search">'
+          +    '<div style="margin-top: .5em;margin-bottom:-.7em;">'
+          +      '<p>Search for an item</p>'
+          +    '</div>'
+          +    '<form>'
+          +      '<input id="input-search" type="search"placeholder="ITEM" class="search"><div id="count-search" style="display: inline-block;margin-left: 1em;"></div>'
+          +    '</form>'
+          + '</div>'
 
-    // start full details
-    for (i = 0, len = lenAuctions; i < lenAuctions; i++) {
+    fetchAuctions += '<ul class="paginationTop pagination"></ul>'
+    fetchAuctions += '<ul class="list">'
 
-      singleDetailsAPINFT = dataAPIGoati.filter(function (el) {
-        return el.id == auctionsDetailsAPINFT[i].tokenId;
-      });
+      // start full details
+      for (i = 0, len = lenAuctions; i < lenAuctions; i++) {
 
-      // hide ended auctions except for self auction
-      if ((((auctionsDetailsAPINFT[i].endDate)*1000) - (new Date()).getTime() < 0) && auctionsDetailsAPINFT[i].creatorAddress != '{{address}}') {
-        continue;
-      }
+        singleDetailsAPINFT = dataAPIGoati.filter(function (el) {
+          return el.id == mergedAuctionsFinal[i].tokenId;
+        });
 
-      // catch all bogus auction count
-      if (!singleDetailsAPINFT[0]) {
-        continue;
-      }
-
-      // only show items based on filter
-      if (selectedMainFilter == singleDetailsAPINFT[0].type || (selectedMainFilter == 'Part' && singleDetailsAPINFT[0].type == 'Pack') || selectedMainFilter == 'filter-all-items' || selectedMainFilter == 'filter-my-items') {
-        // if filter is my items OR everything else if not my items
-        if (auctionsDetailsAPINFT[i].creatorAddress == '{{address}}' || selectedMainFilter !== 'filter-my-items') {
-
-          creatorAddress = auctionsDetailsAPINFT[i].creatorAddress;
-          if (creatorAddress.length > 20) {
-            lastFiveAddr = creatorAddress.substr(creatorAddress.length - 5);
-            firstFiveAddr = creatorAddress.substr(0, 5);
-            addressFormated = firstFiveAddr + '...' + lastFiveAddr;
-          } else {
-            addressFormated = creatorAddress
-          }
-          //startDate = auctionsDetailsAPINFT[i].startDate;
-          endDate = auctionsDetailsAPINFT[i].endDate;
-          quoteSymbol = auctionsDetailsAPINFT[i].quoteSymbol;
-          tokenID = auctionsDetailsAPINFT[i].tokenId;
-          name = (singleDetailsAPINFT[0].name).replace(' • ', '');
-          if (name.length > 29) {
-            nameRaw = name.substr(0, 29) + '..';
-          } else {
-            nameRaw = name;
-          }
-          item = (singleDetailsAPINFT[0].item);
-          priceRaw = (auctionsDetailsAPINFT[i].price)/(Math.pow(10,formatDecimals(quoteSymbol)));
-          price = numberWithCommas(priceRaw);
-
-          pendingItem = pendingItems.filter(function (el) {
-            return el.id == tokenID;
-          });
-
-          pendingClass = ''
-
-          if (pendingItem[0]) {
-            if (tokenID == pendingItem[0].id) {
-              priceFormatted = 'PENDING'
-              cancelClass = 'cancel'
-              pendingClass = '<button class="tooltip nft-order info pending" data-tooltip-content="#tooltip_pending"><i class="fas fa-info" style="width:1em;"></i></button>'
-            } else {
-              if (auctionsDetailsAPINFT[i].creatorAddress == '{{address}}') {
-                priceFormatted = price + ' ' + quoteSymbol + ' - CANCEL'
-                cancelClass = 'cancel'
-              } else {
-                priceFormatted = 'BUY FOR ' + price + ' ' + quoteSymbol
-                cancelClass = ''
-              }
-            }
-          } else {
-            if (auctionsDetailsAPINFT[i].creatorAddress == '{{address}}') {
-              priceFormatted = price + ' ' + quoteSymbol + ' - CANCEL'
-              cancelClass = 'cancel'
-            } else {
-              priceFormatted = 'BUY FOR ' + price + ' ' + quoteSymbol
-              cancelClass = ''
-            }
-          }
-
-          rarity = formatRarity(singleDetailsAPINFT[0].rarity);
-          season = formatSeason(singleDetailsAPINFT[0].season);
-          mintNumber = singleDetailsAPINFT[0].mint;
-          mintDate = singleDetailsAPINFT[0].mint_date;
-          mintLimit = singleDetailsAPINFT[0].mint_limit;
-          if (mintLimit == 0) {
-            mintLimit = 'Unlimited'
-          }
-          image = singleDetailsAPINFT[0].image;
-          url = singleDetailsAPINFT[0].image;
-          type = singleDetailsAPINFT[0].type;
-          if ((singleDetailsAPINFT[0].description).length > 30) {
-            description = '<br>' + singleDetailsAPINFT[0].description;
-          } else {
-            description = singleDetailsAPINFT[0].description;
-          }
-          var date = new Date(mintDate * 1000);
-          var year = date.getFullYear();
-          var month = ("0" + (date.getMonth() + 1)).slice(-2)
-          var day = ("0" + (date.getDate())).slice(-2)
-          mintDateFormatted = year + "-" + month + "-" + day;
-          var timeleft = ((endDate)*1000) - (new Date()).getTime();
-          if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
-            var hoursleft = numberWithCommas(Math.ceil((((timeleft / 1000) / 60)))) + ' MINUTES LEFT';
-          } else {
-            if ((((timeleft / 1000) / 60) / 60) > 96) {
-              var hoursleft = numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60 / 24))) + ' DAYS LEFT';
-            } else if (timeleft > 0){
-              var hoursleft = numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS LEFT';
-            } else {
-              var hoursleft = 'ENDED';
-            }
-          }
-          if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
-            var hoursleftRaw = numberWithCommas(Math.ceil((((timeleft / 1000) / 60)))) + ' minutes';
-          } else {
-            if ((((timeleft / 1000) / 60) / 60) > 96) {
-              var hoursleftRaw = numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60 / 24))) + ' days';
-            } else if (timeleft > 0){
-              var hoursleftRaw =  numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' hours';
-            } else {
-              var hoursleftRaw = 'Ended';
-            }
-          }
-
-          // tooltip construct
-          tooltipAuction = ''
-                      + '<div class="tooltip-container"><br>'
-                      + '• <strong>Item: </strong>' + name + '<br><br>'
-                      + '• <strong>Price: </strong>' + price + ' ' + quoteSymbol + '<br><br>'
-                      + '• <strong>Current owner: </strong><a class="raw-link" href="https://www.22series.com/inventory?#' + creatorAddress + '" target="_blank">' + addressFormated + '</a><br><br>'
-                      + '• <strong>Type: </strong>' + type + '<br><br>'
-                      + '• <strong>Description: </strong>' + description + '<br><br>'
-                      + '• <strong>Sale ends in: </strong>' + hoursleftRaw + '<br><br>'
-                      + '• <strong>Mint number: </strong>#' + mintNumber + '<br><br>'
-                      + '• <strong>Mint date: </strong>' + mintDateFormatted + '<br><br>'
-                      + '• <strong>Rarity: </strong>' + rarity + '<br><br>'
-                      + '• <strong>Season: </strong>' + season + '<br><br>'
-                      + '• <strong>Mint limit: </strong>' + mintLimit + '<br><br>'
-                      + '• <strong>Details: </strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a><br><br>'
-                      + '</div>';
-
-          // auction construct
-          fetchAuctions += '<li><div class="nft-class">'
-            + '<div class="nft-image" style="width:24em;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
-            +   '<button class="nft-order circulating">' + hoursleft + '</button>'
-            +   pendingClass
-            +   '<button class="nft-order supply priceFilter ' + cancelClass + '">' + priceFormatted + '</button>'
-            +   '<img src="' + image + '?width=256" alt="" style="height:12em;padding-top:3em;">'
-            +   '<div class="nft-desc item-filter">'
-            +     '<h3 style="display:inline-block;">' + nameRaw + '</h3><br>'
-            +     '<div style="text-align:center;">'
-            +       '<button class="nft-order price mint-number-filter" >#' + mintNumber + '</button>'
-            +       '<button class="nft-order price">' + mintDateFormatted + '</button>'
-            +       '<button class="nft-order price rarity-' + rarity.toLowerCase() + ' rarityFilter">' + rarity.toUpperCase() + '</button>'
-            +       '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_' + [i] + '">'
-            +         '<i class="fas fa-info" style="width:1em;"></i>'
-            +         '<div class="tooltip_templates"><span id="tooltip_' + i + '">' + tooltipAuction + '</span></div>'
-            +       '</button>'
-            +     '</div>'
-            +   '</div>'
-            + '</div>'
-            +'</div></li>'
-
+        // hide ended auctions
+        if (((mergedAuctionsFinal[i].endDate)*1000) - (new Date()).getTime() < 0) {
+          continue;
         }
 
+        // catch all bogus auction count
+        if (!singleDetailsAPINFT[0]) {
+          continue;
+        }
+
+        creatorAddress = mergedAuctionsFinal[i].creatorAddress;
+        if (creatorAddress.length > 20) {
+          lastFiveAddr = creatorAddress.substr(creatorAddress.length - 5);
+          firstFiveAddr = creatorAddress.substr(0, 5);
+          addressFormated = firstFiveAddr + '...' + lastFiveAddr;
+        } else {
+          addressFormated = creatorAddress
+        }
+        //startDate = mergedAuctionsFinal[i].startDate;
+        endDate = mergedAuctionsFinal[i].endDate;
+        quoteSymbol = mergedAuctionsFinal[i].quoteSymbol;
+        tokenID = mergedAuctionsFinal[i].tokenId;
+        name = (singleDetailsAPINFT[0].name).replace(' • ', '');
+        if (name.length > 29) {
+          nameRaw = name.substr(0, 29) + '..';
+        } else {
+          nameRaw = name;
+        }
+        item = (singleDetailsAPINFT[0].item);
+        priceRaw = (mergedAuctionsFinal[i].price)/(Math.pow(10,formatDecimals(quoteSymbol)));
+        price = numberWithCommas(priceRaw);
+        priceFormatted = ' BUY FOR ' + price + ' ' + quoteSymbol
+
+        type = singleDetailsAPINFT[0].type;
+        rarity = formatRarity(singleDetailsAPINFT[0].rarity);
+        season = formatSeason(singleDetailsAPINFT[0].season);
+        mintNumber = singleDetailsAPINFT[0].mint;
+        mintDate = singleDetailsAPINFT[0].mint_date;
+        mintLimit = singleDetailsAPINFT[0].mint_limit;
+        if (mintLimit == 0) {
+          mintLimit = 'Unlimited'
+        }
+        image = singleDetailsAPINFT[0].image;
+        url = singleDetailsAPINFT[0].image;
+        if ((singleDetailsAPINFT[0].description).length > 30) {
+          description = '<br>' + singleDetailsAPINFT[0].description;
+        } else {
+          description = singleDetailsAPINFT[0].description;
+        }
+        var date = new Date(mintDate * 1000);
+        var year = date.getFullYear();
+        var month = ("0" + (date.getMonth() + 1)).slice(-2)
+        var day = ("0" + (date.getDate())).slice(-2)
+        mintDateFormatted = year + "-" + month + "-" + day;
+        var timeleft = ((endDate)*1000) - (new Date()).getTime();
+        if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
+          var hoursleft = numberWithCommas(Math.ceil((((timeleft / 1000) / 60)))) + ' MINUTES LEFT';
+        } else {
+          if ((((timeleft / 1000) / 60) / 60) > 96) {
+            var hoursleft = numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60 / 24))) + ' DAYS LEFT';
+          } else if (timeleft > 0){
+            var hoursleft = numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS LEFT';
+          } else {
+            var hoursleft = 'ENDED';
+          }
+        }
+        if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
+          var hoursleftRaw = numberWithCommas(Math.ceil((((timeleft / 1000) / 60)))) + ' minutes';
+        } else {
+          if ((((timeleft / 1000) / 60) / 60) > 96) {
+            var hoursleftRaw = numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60 / 24))) + ' days';
+          } else if (timeleft > 0){
+            var hoursleftRaw =  numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' hours';
+          } else {
+            var hoursleftRaw = 'Ended';
+          }
+        }
+
+        // tooltip construct
+        tooltipAuction = ''
+                    + '<div class="tooltip-container"><br>'
+                    + '• <strong>Item: </strong>' + name + '<br><br>'
+                    + '• <strong>Price: </strong>' + price + ' ' + quoteSymbol + '<br><br>'
+                    + '• <strong>Current owner: </strong><a class="raw-link" href="https://www.22series.com/inventory?#' + creatorAddress + '" target="_blank">' + addressFormated + '</a><br><br>'
+                    + '• <strong>Type: </strong>' + type + '<br><br>'
+                    + '• <strong>Description: </strong>' + description + '<br><br>'
+                    + '• <strong>Sale ends in: </strong>' + hoursleftRaw + '<br><br>'
+                    + '• <strong>Mint number: </strong>#' + mintNumber + '<br><br>'
+                    + '• <strong>Mint date: </strong>' + mintDateFormatted + '<br><br>'
+                    + '• <strong>Rarity: </strong>' + rarity + '<br><br>'
+                    + '• <strong>Season: </strong>' + season + '<br><br>'
+                    + '• <strong>Mint limit: </strong>' + mintLimit + '<br><br>'
+                    + '• <strong>Details: </strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a><br><br>'
+                    + '</div>';
+
+        // auction construct
+        fetchAuctions += '<li><div class="nft-class">'
+          + '<div class="nft-image" style="width:24em;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
+          +   '<div style="display:none;" class="creatorAddress">'+creatorAddress+'</div>'
+          +   '<div style="display:none;" class="filterBy">'+type+'</div>'
+          +   '<button class="nft-order circulating">' + hoursleft + '</button>'
+          +   '<button class="nft-order supply priceFilter">' + priceFormatted + '</button>'
+          +   '<img src="' + image + '?width=256" alt="" style="height:12em;padding-top:3em;">'
+          +   '<div class="nft-desc item-filter">'
+          +     '<h3 style="display:inline-block;">' + nameRaw + '</h3><br>'
+          +     '<div style="text-align:center;">'
+          +       '<button class="nft-order price mint-number-filter" >#' + mintNumber + '</button>'
+          +       '<button class="nft-order price">' + mintDateFormatted + '</button>'
+          +       '<button class="nft-order price rarity-' + rarity.toLowerCase() + ' rarityFilter">' + rarity.toUpperCase() + '</button>'
+          +       '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_' + [i] + '">'
+          +         '<i class="fas fa-info" style="width:1em;"></i>'
+          +         '<div class="tooltip_templates"><span id="tooltip_' + i + '">' + tooltipAuction + '</span></div>'
+          +       '</button>'
+          +     '</div>'
+          +   '</div>'
+          + '</div>'
+          +'</div></li>'
+
+          if (i == 99 && initialLoad == 0) {
+            break;
+          }
+
       }
 
-    }
+      // complete ul list for list js
+      fetchAuctions += '</ul>'
+      fetchAuctions += '<ul class="paginationBottom pagination"></ul>'
 
-    // complete ul list for list js
-    fetchAuctions += '</ul>'
-    fetchAuctions += '<ul class="paginationBottom pagination"></ul>'
+    }
 
     // fill auctions
     document.getElementById("auctions-list").innerHTML = fetchAuctions;
 
-    // init sorting custom for initial load
-    if (initialLoad == 0) {
-      //document.getElementById("sort-price").classList.add("category-current");
-    }
-
-    // fill total items container on initial load
-    if (initialLoad == 0) {
-        document.getElementById("prizepool").innerHTML = numberWithCommas(mergedAuctionsFinalNotExpired.length) + ' NFTs';
-    }
-
     // start list js based on item-filter values
-    var options = {
-      valueNames: [ 'item-filter', 'priceFilter', 'mint-number-filter', 'rarityFilter' ],
-      page: 50,
-      pagination: [{
-        name: "paginationTop",
-        paginationClass: "paginationTop",
-        innerWindow: 2,
-        outerWindow: 1
-      }, {
-        innerWindow: 2,
-        name: "paginationBottom",
-        paginationClass: "paginationBottom",
-        outerWindow: 1
-      }]
-    };
-    var itemsList = new List('auctions-list', options);
+    if (initialLoad == 1) {
+      var options = {
+        valueNames: [ 'item-filter', 'priceFilter', 'mint-number-filter', 'rarityFilter', 'filterBy', 'creatorAddress' ],
+        page: 50,
+        pagination: [{
+          name: "paginationTop",
+          paginationClass: "paginationTop",
+          innerWindow: 2,
+          outerWindow: 1
+        }, {
+          innerWindow: 2,
+          name: "paginationBottom",
+          paginationClass: "paginationBottom",
+          outerWindow: 1
+        }]
+      };
+      itemsList = new List('auctions-list', options);
 
-    itemsList.on('updated', function () {
+      itemsList.on('updated', function () {
 
-      if ($('button.tooltip').hasClass("tooltipstered")) {
-        $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
-      }
+        if ($('button.tooltip').hasClass("tooltipstered")) {
+          $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
+        }
 
-      $('button.tooltip').tooltipster({
-        theme: 'tooltipster-light',
-        contentCloning: true,
-        interactive: true,
-        side: 'top'
-      });
+        $('button.tooltip').tooltipster({
+          theme: 'tooltipster-light',
+          contentCloning: true,
+          interactive: true,
+          side: 'top'
+        });
 
     });
 
-    // custom sort for rarity except initial load
-    if (initialLoad == 1 && itemBought == 0) {
-      if (localStorage.getItem('marketplace-category-sort') == 'sort-rarity') {
-
-        item_order = ["COMMON","CONSUMER","INDUSTRIAL","PROFESSIONAL","CUSTOM","COLLECTOR","UNIQUE"];
-
-        if (sortingOrder) {
-          order = "desc"
-        } else {
-          order = "asc"
-        }
-
-        itemsList.sort(formatSorting(localStorage.getItem('marketplace-category-sort')), {
-            order: order,
-            sortFunction: function (a, b) {
-              a = item_order.indexOf(a._values.rarityFilter);
-              b = item_order.indexOf(b._values.rarityFilter);
-              return a - b;
-           }
-        })
-
-      } else if (localStorage.getItem('marketplace-category-sort') == 'sort-price') {
-
-        if (sortingOrder) {
-          order = "desc"
-        } else {
-          order = "asc"
-        }
-
-        itemsList.sort(formatSorting(localStorage.getItem('marketplace-category-sort')), {
-            order: order,
-            sortFunction: function (a, b) {
-                a = parseFloat(a._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
-                b = parseFloat(b._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
-                return a > b ? 1 :
-                       a < b ? -1 : 0;
-            }
-        })
-
-      } else {
-        if (sortingOrder) {
-          order = "desc"
-        } else {
-          order = "asc"
-        }
-
-        itemsList.sort(formatSorting(localStorage.getItem('marketplace-category-sort')), {
-            order: order
-        })
-      }
-    }
+    // initial filter
+    filterCategory('filter-all-items');
 
     // hide pagination if single page
     if ((itemsList.matchingItems).length <= itemsList.page) {
@@ -1095,18 +1129,6 @@ function refreshAuctions() {
     } else {
       $('.paginationBottom').css('display', 'block');
     }
-
-    // init filtering custom for initial load
-    if (initialLoad == 0 && itemBought == 0) {
-      var cat1 = document.getElementById("filter-all-items");
-      cat1.classList.add("category-current");
-      localStorage.setItem('marketplace-category-filter', 'filter-all-items');
-      selectedMainFilter = localStorage.getItem('marketplace-category-filter');
-      initialLoad = 1;
-    }
-
-    // re set itemBought after refreshAuctions post buy
-    itemBought = 0;
 
     // show auctions
     $("#loader-nftlist").hide();
@@ -1116,11 +1138,6 @@ function refreshAuctions() {
     $("#buy-nft").fadeTo("slow", 1);
     $("#sell-nft").fadeTo("slow", 1);
     $("#sell-nft-tooltip").fadeTo("slow", 1);
-
-    // init filters & prizepool
-    $(".wrapper-filters").fadeTo("slow", 1);
-    $(".wrapper-sorters").fadeTo("slow", 1);
-    $(".container-prize").fadeTo("slow", 1);
 
     $("#input-search").on("input", function() {
       setTimeout(function(){
@@ -1139,31 +1156,61 @@ function refreshAuctions() {
           }
          }, 1000);
 
-    })
+     })
+     alertbox.show('NFT Marketplace items list update complete... ' + (itemsList.matchingItems).length + ' NFTs loaded!');
+   }
 
-    // init items count search
-    if ((itemsList.matchingItems).length > 1) {
-      fetchValuesCount = (itemsList.matchingItems).length + ' items available';
-    } else {
-      fetchValuesCount = (itemsList.matchingItems).length + ' item available';
-    }
-    $('#count-search').html(fetchValuesCount);
+  // init tooltipster button
+  if ($('button.tooltip').hasClass("tooltipstered")) {
+    $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
+  }
 
-    // init tooltipster button
-    if ($('button.tooltip').hasClass("tooltipstered")) {
-      $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
-    }
+  $('button.tooltip').tooltipster({
+    theme: 'tooltipster-light',
+    contentCloning: true,
+    interactive: true,
+    side: 'top'
+  });
 
-    $('button.tooltip').tooltipster({
-      theme: 'tooltipster-light',
-      contentCloning: true,
-      interactive: true,
-      side: 'top'
-    });
+  if (initialLoad == 0) {
+    //document.getElementById("count-search").innerHTML = mergedAuctionsFinalNotExpired.length + ' items available';
+    document.getElementById("count-search").innerHTML = '100 items available';
+    // start list js based on item-filter values
+    var options = {
+      valueNames: [ 'item-filter', 'priceFilter', 'mint-number-filter', 'rarityFilter', 'filterBy', 'creatorAddress' ],
+      page: 50,
+      pagination: [{
+        name: "paginationTop",
+        paginationClass: "paginationTop",
+        innerWindow: 2,
+        outerWindow: 1
+      }]
+    };
+    itemsListInitial = new List('auctions-list', options);
+    $("#loader-nftlist").hide();
+    $("#container-auctions-list").show();
+    alertbox.show('100 most recent items loaded, updating full NFTs list...');
+    $("#input-search").on("input", function() {
+    setTimeout(function(){
+        if ((itemsListInitial.matchingItems).length > 1) {
+          fetchValuesCount = (itemsListInitial.matchingItems).length + ' items available';
+        } else {
+          fetchValuesCount = (itemsListInitial.matchingItems).length + ' item available';
+        }
+        $('#count-search').html(fetchValuesCount);
+        // hide pagination if single page
+        if ((itemsListInitial.matchingItems).length <= itemsListInitial.page) {
+          $('.paginationBottom').css('display', 'none');
+        } else {
+          $('.paginationBottom').css('display', 'block');
+        }
+       }, 1000);
+
+  })
+  }
 
 }
 
-// function format season
 function formatSeason(season) {
 
   switch(season)
@@ -1174,7 +1221,6 @@ function formatSeason(season) {
 
 }
 
-// function format rarity
 function formatRarity(rarity) {
 
   switch(rarity)
@@ -1190,7 +1236,6 @@ function formatRarity(rarity) {
 
 }
 
-// function format sorting
 function formatSorting(sorting) {
 
   switch(sorting)
@@ -1203,7 +1248,6 @@ function formatSorting(sorting) {
 
 }
 
-// function format token decimals
 function formatDecimals(symbol) {
 
   switch(symbol)
@@ -1218,7 +1262,6 @@ function formatDecimals(symbol) {
 
 }
 
-// Confirm buy nft
 function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateNFT, creatorAddress) {
 
   if (quoteSymbol == 'SOUL') {
@@ -1325,12 +1368,8 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
              },
              function (returnedData) {
                  if (returnedData !== "") {
-                     pendingItems.push ({
-                         id: idNFT
-                     });
                      $('#sendSpinner').hide();
                      alertbox.show('Transaction successful!');
-                     itemBought = 1;
                      refreshAuctions();
                  } else {
                      window.location.replace("/error");
@@ -1350,7 +1389,6 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
 
 }
 
-// Initiate sell nft
 function initiateSell() {
 
   if (sellCustomNFT.length == 0 || sellCustomNFT.length == null) {
@@ -1364,7 +1402,6 @@ function initiateSell() {
   }
 
   fetchSellNFTDropdown = '<div id="loader-nftlist-modal" style="display:none;" class="block-loader center"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div><select multiple style="margin: .5em auto;" id="select-nft">';
-  //fetchSellNFTDropdown += '<option value="">Select NFT to sell</option>'
   for (i = 0; i < sellCustomNFT.length; i ++) {
 
     sellMint = sellCustomNFT[i].mint
@@ -1413,8 +1450,6 @@ function initiateSell() {
             }
         },
         callback: function(result) {
-
-          //$("#select-id").msDropDown();
 
           if (result) {
 
@@ -1628,15 +1663,12 @@ function initiateSell() {
             }
 
          });
-        // init custom dropdown after bootbox init
-        //$("#select-nft-custom").msDropDown();
       });
 
   }
 
 }
 
-// Confirm sell nft
 function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
 
   var now = new Date();
@@ -1665,14 +1697,8 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
      },
      function (returnedData) {
          if (returnedData !== "") {
-           for (var i = 0, len = nftIdArr.length; i < len; i++) {
-             pendingItems.push ({
-                 id: nftIdArr[i]
-             });
-           }
            $('#sendSpinner').hide();
            alertbox.show('Transaction successful!');
-           itemBought = 1;
            refreshAuctions();
          } else {
            window.location.replace("/error");
@@ -1685,13 +1711,7 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
 
 }
 
-// Initiate buy nft
 function initiateBuy() {
-
-  if (lenAuctionsBuy == 0 || lenAuctionsBuy == null) {
-        bootbox.alert("There are no NFTs available to buy!");
-        return;
-  }
 
   if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
         bootbox.alert("Not enough KCAL available. You need at least 0.1 KCAL to perform a transaction!");
@@ -1710,7 +1730,7 @@ function initiateBuy() {
                 + 'Rarity: <select style="margin-left:.5em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="buy-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select>'
                 + 'Sort by: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-sort"><option value="item">Item</option><option value="price">Price</option><option value="mint">Mint #</option><option value="rarity">Rarity</option></select>'
                 + '<span id="sorting-order-container-modal"><i id="sorting-order-modal-down" onclick="sortTypeModal()" class="fas fa-sort-numeric-down"></i></span></div>'
-                + '<div class="filter-results-count">There are <strong><span id="available-nfts-buy">' + lenAuctionsBuy + '</span> NFTs available</strong> matching these filters.</div>'
+                + '<div class="filter-results-count">There are <strong><span id="available-nfts-buy">' + mergedAuctionsFinal.length + '</span> NFTs available</strong> matching these filters.</div>'
                 + fetchBuyNFTDropdown
                 + '<div class="filter-results-count" id="filter-results-count-selected">You have selected <span id="selected-nfts-buy-count"><strong>0 NFTs </strong> to be bought.</span></div><br>'
                 + '2) Confirm the total amount to be spent:<br><br>'
@@ -1730,8 +1750,6 @@ function initiateBuy() {
           }
       },
       callback: function(result) {
-
-        //$("#select-id").msDropDown();
 
         if (result) {
 
@@ -2037,7 +2055,6 @@ function initiateBuy() {
 
 }
 
-// On sort order click
 function sortTypeModal() {
 
   if (document.getElementById("sorting-order-modal-down")) {
@@ -2148,7 +2165,6 @@ function triggerSort(orderAsc) {
 
 }
 
-// Confirm sell nft
 function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
 
   params = [];
@@ -2171,14 +2187,8 @@ function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
      },
      function (returnedData) {
          if (returnedData !== "") {
-             for (var i = 0, len = nftIdArr.length; i < len; i++) {
-               pendingItems.push ({
-                   id: nftIdArr[i]
-               });
-             }
              $('#sendSpinner').hide();
              alertbox.show('Transaction successful!');
-             itemBought = 1;
              refreshAuctions();
          } else {
              window.location.replace("/error");
