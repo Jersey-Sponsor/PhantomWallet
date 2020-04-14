@@ -1451,77 +1451,86 @@ function initiateSell() {
         },
         callback: function(result) {
 
-          if (result) {
+          nftIdArr = [];
+          bulkdIdNFT = $('#select-nft').val()
+          for (var i = 0; i < bulkdIdNFT.length; i++) {
+            nftIdArr.push ({
+                id: bulkdIdNFT[i]
+            });
+          }
 
-            var e = document.getElementById("sell-currency");
-            sellCurrency = e.options[e.selectedIndex].value;
-            var f = document.getElementById("select-nft");
-            //idNFT = f.options[f.selectedIndex].value;
-            bulkdIdNFT = $('#select-nft').val()
-            var g = document.getElementById("sell-enddate");
-            endDate = g.options[g.selectedIndex].value;
-            results = {};
-            results.fieldname1 = dialog[0].querySelector("[name=sell-amount]").value;
-            sellAmount = results.fieldname1
+          // temp limit to 100 NFTs per tx
+          if (nftIdArr.length > 100) {
 
-            nftIdArr = [];
-            for (var i = 0; i < bulkdIdNFT.length; i++) {
-              nftIdArr.push ({
-                  id: bulkdIdNFT[i]
-              });
-            }
-
-            // second confirm
-            if ($("#select-nft :checked").length > 1) {
-                confirmSecondQty = $("#select-nft :checked").length + ' NFTs'
-                confirmSecondBtn = 'NFTs'
-                confirmSecondDesc = 'NFTs'
-            } else {
-                confirmSecondQty = $("#select-nft :checked").length + ' NFT'
-                confirmSecondBtn = 'NFT'
-                confirmSecondDesc = 'NFT'
-            }
-            if ($("#sell-amount").val() > 0) {
-                confirmSecondCurrency = $("#sell-amount").val() + ' ' + $("#sell-currency").val() + '</strong> each'
-            } else {
-                confirmSecondCurrency = '0 ' + $("#sell-currency").val() + '</strong>'
-            }
-            if ($("#sell-enddate").val() > 1) {
-                confirmSecondDate = $("#sell-enddate").val() + ' days'
-            } else {
-                confirmSecondDate = $("#sell-enddate").val() + ' day'
-            }
-            contentBootboxConfirm = 'You are going to sell <strong>' + confirmSecondQty + '</strong> for <strong>' + confirmSecondCurrency + ', for a duration of <strong>' + confirmSecondDate + '</strong>.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">Your ' + confirmSecondDesc + ' will show up on the marketplace within 3 minutes.</span></i>'
-
-            dialogConfirm = bootbox.confirm({
-                title: "NFT sell confirmation",
-                message: contentBootboxConfirm,
-                buttons: {
-                    cancel: {
-                        label: '<i class="fa fa-times"></i> Cancel',
-                        className:'btn btn-default'
-                    },
-                    confirm: {
-                        label: '<i class="fa fa-check"></i> Confirm & sell ' + confirmSecondBtn,
-                        className:'btn btn-primary sell-confirm'
-                    }
-                },
-                callback: function(result) {
-
-                  if (result) {
-
-                    confirmSellNFT(nftIdArr, sellAmount, sellCurrency, endDate)
-
-                  } else {
-                    confirmSellInitial();
-                  }
-
-                }
-
-              })
+            bootbox.alert("Bulk selling is currently limited to 100 NFTs maximum per transaction!", function(){ confirmSellInitial(); })
 
           } else {
-            $('#sendSpinner').hide();
+
+            if (result) {
+
+              var e = document.getElementById("sell-currency");
+              sellCurrency = e.options[e.selectedIndex].value;
+              var f = document.getElementById("select-nft");
+              //idNFT = f.options[f.selectedIndex].value;
+              var g = document.getElementById("sell-enddate");
+              endDate = g.options[g.selectedIndex].value;
+              results = {};
+              results.fieldname1 = dialog[0].querySelector("[name=sell-amount]").value;
+              sellAmount = results.fieldname1
+
+              // second confirm
+              if ($("#select-nft :checked").length > 1) {
+                  confirmSecondQty = $("#select-nft :checked").length + ' NFTs'
+                  confirmSecondBtn = 'NFTs'
+                  confirmSecondDesc = 'NFTs'
+              } else {
+                  confirmSecondQty = $("#select-nft :checked").length + ' NFT'
+                  confirmSecondBtn = 'NFT'
+                  confirmSecondDesc = 'NFT'
+              }
+              if ($("#sell-amount").val() > 0) {
+                  confirmSecondCurrency = $("#sell-amount").val() + ' ' + $("#sell-currency").val() + '</strong> each'
+              } else {
+                  confirmSecondCurrency = '0 ' + $("#sell-currency").val() + '</strong>'
+              }
+              if ($("#sell-enddate").val() > 1) {
+                  confirmSecondDate = $("#sell-enddate").val() + ' days'
+              } else {
+                  confirmSecondDate = $("#sell-enddate").val() + ' day'
+              }
+              contentBootboxConfirm = 'You are going to sell <strong>' + confirmSecondQty + '</strong> for <strong>' + confirmSecondCurrency + ', for a duration of <strong>' + confirmSecondDate + '</strong>.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">Your ' + confirmSecondDesc + ' will show up on the marketplace within 3 minutes.</span></i>'
+
+              dialogConfirm = bootbox.confirm({
+                  title: "NFT sell confirmation",
+                  message: contentBootboxConfirm,
+                  buttons: {
+                      cancel: {
+                          label: '<i class="fa fa-times"></i> Cancel',
+                          className:'btn btn-default'
+                      },
+                      confirm: {
+                          label: '<i class="fa fa-check"></i> Confirm & sell ' + confirmSecondBtn,
+                          className:'btn btn-primary sell-confirm'
+                      }
+                  },
+                  callback: function(result) {
+
+                    if (result) {
+
+                      confirmSellNFT(nftIdArr, sellAmount, sellCurrency, endDate)
+
+                    } else {
+                      confirmSellInitial();
+                    }
+
+                  }
+
+                })
+
+            } else {
+              $('#sendSpinner').hide();
+            }
+
           }
 
         }
@@ -1750,83 +1759,92 @@ function initiateBuy() {
       },
       callback: function(result) {
 
-        if (result) {
-
-          quoteSymbol = $("#buy-currency-filter").val();
-          bulkdIdNFT = $("#select-nft-buy").val();
-
-          nftIdArr = [];
-          for (var i = 0; i < bulkdIdNFT.length; i++) {
-            nftIdArr.push ({
-                id: bulkdIdNFT[i]
-            });
-          }
-
-          creatorAddress = []
-          $("#select-nft-buy option:selected[creatorAddress]").each(function() {
-                creatorAddress.push ({
-                    id: $(this).attr("creatorAddress")
-                });
+        nftIdArr = [];
+        bulkdIdNFT = $("#select-nft-buy").val();
+        for (var i = 0; i < bulkdIdNFT.length; i++) {
+          nftIdArr.push ({
+              id: bulkdIdNFT[i]
           });
+        }
 
-          priceNFT = []
-          $("#select-nft-buy option:selected[price]").each(function() {
-                priceNFT.push ({
-                    id: $(this).attr("price")
-                });
-          });
+        // temp limit to 100 NFTs per tx
+        if (nftIdArr.length > 100) {
 
-          // second confirm
-          if ($("#select-nft-buy :checked").length > 1) {
-              confirmSecondQty = $("#select-nft-buy :checked").length + ' NFTs'
-              confirmSecondBtn = 'NFTs'
-              confirmSecondDesc = 'NFTs'
-          } else {
-              confirmSecondQty = $("#select-nft-buy :checked").length + ' NFT'
-              confirmSecondBtn = 'NFT'
-              confirmSecondDesc = 'NFT'
-          }
-          // if only cancel items
-          if (totalAmount == 0) {
-            confirmSecondCurrency = ''
-            confirmSecondAction = 'cancel the sale of'
-            confirmSecondBtnAction = ' Confirm & cancel '
-          } else {
-            confirmSecondCurrency = ' for <strong>' + numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and a 2% fee: ' + numberWithCommas(finalFee) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + '</strong>)'
-            confirmSecondAction = 'buy'
-            confirmSecondBtnAction = ' Confirm & buy ';
-          }
-          contentBootboxConfirm = 'You are going to ' + confirmSecondAction + ' <strong>' + confirmSecondQty + '</strong>' + confirmSecondCurrency + '.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">The ' + confirmSecondDesc + ' will show up in your portfolio within 10 seconds.</span></i>'
-
-          dialogConfirm = bootbox.confirm({
-              title: "NFT buy confirmation",
-              message: contentBootboxConfirm,
-              buttons: {
-                  cancel: {
-                      label: '<i class="fa fa-times"></i> Cancel',
-                      className:'btn btn-default'
-                  },
-                  confirm: {
-                      label: '<i class="fa fa-check"></i>' + confirmSecondBtnAction + confirmSecondBtn,
-                      className:'btn btn-primary sell-confirm'
-                  }
-              },
-              callback: function(result) {
-
-                if (result) {
-
-                  confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress)
-
-                } else {
-                  confirmBuyInitial();
-                }
-
-              }
-
-            })
+          bootbox.alert("Bulk buying is currently limited to 100 NFTs maximum per transaction!", function(){ confirmBuyInitial(); })
 
         } else {
-          $('#sendSpinner').hide();
+
+          if (result) {
+
+            quoteSymbol = $("#buy-currency-filter").val();
+
+            creatorAddress = []
+            $("#select-nft-buy option:selected[creatorAddress]").each(function() {
+                  creatorAddress.push ({
+                      id: $(this).attr("creatorAddress")
+                  });
+            });
+
+            priceNFT = []
+            $("#select-nft-buy option:selected[price]").each(function() {
+                  priceNFT.push ({
+                      id: $(this).attr("price")
+                  });
+            });
+
+            // second confirm
+            if ($("#select-nft-buy :checked").length > 1) {
+                confirmSecondQty = $("#select-nft-buy :checked").length + ' NFTs'
+                confirmSecondBtn = 'NFTs'
+                confirmSecondDesc = 'NFTs'
+            } else {
+                confirmSecondQty = $("#select-nft-buy :checked").length + ' NFT'
+                confirmSecondBtn = 'NFT'
+                confirmSecondDesc = 'NFT'
+            }
+            // if only cancel items
+            if (totalAmount == 0) {
+              confirmSecondCurrency = ''
+              confirmSecondAction = 'cancel the sale of'
+              confirmSecondBtnAction = ' Confirm & cancel '
+            } else {
+              confirmSecondCurrency = ' for <strong>' + numberWithCommas(totalAmount) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + ' (and a 2% fee: ' + numberWithCommas(finalFee) + ' ' + ($("#buy-currency-filter").val()).toUpperCase() + '</strong>)'
+              confirmSecondAction = 'buy'
+              confirmSecondBtnAction = ' Confirm & buy ';
+            }
+            contentBootboxConfirm = 'You are going to ' + confirmSecondAction + ' <strong>' + confirmSecondQty + '</strong>' + confirmSecondCurrency + '.<br>Do you want to confirm?<br><br><i><span style="font-size:.7em;">The ' + confirmSecondDesc + ' will show up in your portfolio within 10 seconds.</span></i>'
+
+            dialogConfirm = bootbox.confirm({
+                title: "NFT buy confirmation",
+                message: contentBootboxConfirm,
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> Cancel',
+                        className:'btn btn-default'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i>' + confirmSecondBtnAction + confirmSecondBtn,
+                        className:'btn btn-primary sell-confirm'
+                    }
+                },
+                callback: function(result) {
+
+                  if (result) {
+
+                    confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress)
+
+                  } else {
+                    confirmBuyInitial();
+                  }
+
+                }
+
+              })
+
+          } else {
+            $('#sendSpinner').hide();
+          }
+
         }
 
       }

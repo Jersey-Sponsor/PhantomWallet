@@ -484,6 +484,18 @@
           } else {
             bulkTransfer = false;
           }
+          nftIdArr = []
+
+          var oHandler = $('#select-id').msDropDown();
+          for (i = 0; i < (oHandler[0].selectedOptions.length); i++) {
+            nftIdArr.push ({
+                id: oHandler[0].selectedOptions[i].value
+            });
+          }
+          if (nftIdArr.length > 100) {
+            bootbox.alert("Bulk sending is currently limited to 100 NFTs maximum per transaction!")
+            return;
+          }
         }
 
         $('#sendSpinner').show();
@@ -536,16 +548,6 @@
                     } else {
 
                       if (bulkTransfer) {
-
-                        nftIdArr = []
-
-                        var oHandler = $('#select-id').msDropDown();
-                        for (i = 0; i < (oHandler[0].selectedOptions.length); i++) {
-                          nftIdArr.push ({
-                              id: oHandler[0].selectedOptions[i].value
-                          });
-                        }
-
 
                         $.post('/sendmultiplenft',
                             {
