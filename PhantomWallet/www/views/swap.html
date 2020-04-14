@@ -1093,10 +1093,20 @@
                                 } else {
                                   if ((JSON.parse(returnedDataTX).hash) == null) {
                                     // If hash null (means it worked), returns the tx hash from before
-                                    $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                        document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                                        $("#wrapper-swap-confirm").fadeTo("slow", 1);
-                                    });
+                                    //$('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                    //    document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                    //    $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                    //});
+                                    // temp hack to avoid issue when returned hash empty
+                                    countersettle++;
+                                    if (countersettle <= 5){
+                                      setTimeout(loopSettle, 2000);
+                                    } else {
+                                      $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                          document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful';
+                                          $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                      });
+                                    }
                                   } else {
                                     $('#neopassphrase').val('');
                                     $('#neoprivatekey').val('');
