@@ -1460,7 +1460,7 @@ function initiateSell() {
           }
 
           // temp limit to 100 NFTs per tx
-          if (nftIdArr.length > 100) {
+          if (nftIdArr.length > 100 && result) {
 
             bootbox.alert("Bulk selling is currently limited to 100 NFTs maximum per transaction!", function(){ confirmSellInitial(); })
 
@@ -1768,7 +1768,7 @@ function initiateBuy() {
         }
 
         // temp limit to 100 NFTs per tx
-        if (nftIdArr.length > 100) {
+        if (nftIdArr.length > 100 && result) {
 
           bootbox.alert("Bulk buying is currently limited to 100 NFTs maximum per transaction!", function(){ confirmBuyInitial(); })
 
