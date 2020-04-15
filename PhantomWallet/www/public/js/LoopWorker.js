@@ -219,7 +219,7 @@ function getAuctions() {
                   + '</div>';
 
       // auction contstruct
-      fetchAuctions += '<li><div class="nft-class">'
+      fetchAuctions += '<li><div class="nft-class" tokenID='+tokenID+'>'
         + '<div class="nft-image" style="width:24em;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
         +   '<div style="display:none;" class="creatorAddress">'+creatorAddress+'</div>'
         +   '<div style="display:none;" class="filterBy">'+type+'</div>'

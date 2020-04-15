@@ -879,7 +879,7 @@ function getAuctions() {
       ).then(function() {
 
         // start worker
-        var worker = new Worker("../js/LoopWorker.js?38");
+        var worker = new Worker("../js/LoopWorker.js?44");
         worker.postMessage(
           {
             api1: dataAPIMain,
@@ -922,6 +922,9 @@ function getAuctions() {
 
         // start refresh auctions
         refreshAuctions();
+
+        // init empty pendingItems
+        pendingItems = [];
 
   })
 }
@@ -1049,7 +1052,7 @@ function refreshAuctions() {
                     + '</div>';
 
         // auction construct
-        fetchAuctions += '<li><div class="nft-class">'
+        fetchAuctions += '<li><div class="nft-class" tokenID='+tokenID+'>'
           + '<div class="nft-image" style="width:24em;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
           +   '<div style="display:none;" class="creatorAddress">'+creatorAddress+'</div>'
           +   '<div style="display:none;" class="filterBy">'+type+'</div>'
@@ -1117,6 +1120,9 @@ function refreshAuctions() {
           interactive: true,
           side: 'top'
         });
+
+        // update pending items after search
+        updatePending(false)
 
     });
 
@@ -1370,7 +1376,10 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
                  if (returnedData !== "") {
                      $('#sendSpinner').hide();
                      alertbox.show('Transaction successful!');
-                     refreshAuctions();
+                     pendingItems.push ({
+                        id: idNFT
+                     });
+                     updatePending(false);
                  } else {
                      window.location.replace("/error");
                  }
@@ -1389,6 +1398,24 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
 
 }
 
+function updatePending(isSell) {
+
+  if (isSell) {
+
+    sellCustomNFTFiltered = sellCustomNFT.filter((elem) => !pendingItems.find(({ id }) => elem.id === id.id));
+
+    sellCustomNFT = sellCustomNFTFiltered;
+
+  } else {
+
+    for (var i = 0; i < pendingItems.length; i++) {
+      $("div[tokenid="+(pendingItems[i].id).id+"] .priceFilter").html('PENDING')
+    }
+
+  }
+
+}
+
 function initiateSell() {
 
   if (sellCustomNFT.length == 0 || sellCustomNFT.length == null) {
@@ -1403,6 +1430,7 @@ function initiateSell() {
 
   fetchSellNFTDropdown = '<div id="loader-nftlist-modal" style="display:none;" class="block-loader center"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div><select multiple style="margin: .5em auto;" id="select-nft">';
   for (i = 0; i < sellCustomNFT.length; i ++) {
+
 
     sellMint = sellCustomNFT[i].mint
     sellItem = sellCustomNFT[i].item
@@ -1708,6 +1736,14 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
          if (returnedData !== "") {
            $('#sendSpinner').hide();
            alertbox.show('Transaction successful!');
+           for (var i = 0, len = nftIdArr.length; i < len; i++) {
+              pendingItems.push ({
+                  id: nftIdArr[i]
+              });
+              if (i == len - 1) {
+                updatePending(true);
+              }
+           }
          } else {
            window.location.replace("/error");
          }
@@ -1923,6 +1959,11 @@ function initiateBuy() {
          $("#select-nft-buy").show();
          $("#loader-nftlist-modal").hide();
 
+         // hide pending
+         for (var i = 0; i < pendingItems.length; i++) {
+           $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
+         }
+
       });
 
       // On filter type change event
@@ -1985,6 +2026,10 @@ function initiateBuy() {
           } else {
             $("#select-nft-buy").show();
             $("#filter-results-count-selected").show();
+          }
+
+          for (var i = 0; i < pendingItems.length; i++) {
+            $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
           }
 
        });
@@ -2065,7 +2110,16 @@ function initiateBuy() {
             $("#filter-results-count-selected").show();
           }
 
+          // hide pending
+          for (var i = 0; i < pendingItems.length; i++) {
+            $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
+          }
+
        });
+
+       for (var i = 0; i < pendingItems.length; i++) {
+         $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
+       }
 
     });
 
@@ -2207,6 +2261,14 @@ function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
          if (returnedData !== "") {
              $('#sendSpinner').hide();
              alertbox.show('Transaction successful!');
+             for (var i = 0, len = nftIdArr.length; i < len; i++) {
+                pendingItems.push ({
+                    id: nftIdArr[i]
+                });
+                if (i == len - 1) {
+                  updatePending(false);
+                }
+             }
          } else {
              window.location.replace("/error");
          }
