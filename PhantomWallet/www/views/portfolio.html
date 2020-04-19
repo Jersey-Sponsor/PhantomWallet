@@ -936,7 +936,7 @@ function Unstake() {
                           if ((JSON.parse(returnedDataTX).error) != undefined) {
                               // If .error defined, returns the custom error message
                               $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error) + '. This can only be done 24h after your last stake.';
+                                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error) + '. This can only be done 24h after your last stake/claim.';
                                   $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                               });
                           } else {
