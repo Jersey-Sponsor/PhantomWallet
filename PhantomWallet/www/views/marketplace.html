@@ -879,7 +879,7 @@ function getAuctions() {
       ).then(function() {
 
         // start worker
-        var worker = new Worker("../js/LoopWorker.js?50");
+        var worker = new Worker("../js/LoopWorker.js?51");
         worker.postMessage(
           {
             api1: dataAPIMain,
@@ -1855,18 +1855,30 @@ function initiateBuy() {
             quoteSymbol = $("#buy-currency-filter").val();
 
             creatorAddress = []
-            $("#select-nft-buy option:selected[creatorAddress]").each(function() {
-                  creatorAddress.push ({
-                      id: $(this).attr("creatorAddress")
-                  });
-            });
+            //$("#select-nft-buy option:selected[creatorAddress]").each(function() {
+            //      creatorAddress.push ({
+            //          id: $(this).attr("creatorAddress")
+            //      });
+            //});
+            var p = document.querySelectorAll('#select-nft-buy option:checked[creatorAddress]');
+              for (var i = 0; i < p.length; i++) {
+               creatorAddress.push ({
+                   id: p[i].getAttribute('creatorAddress')
+               });
+            }
 
             priceNFT = []
-            $("#select-nft-buy option:selected[price]").each(function() {
-                  priceNFT.push ({
-                      id: $(this).attr("price")
-                  });
-            });
+            //$("#select-nft-buy option:selected[price]").each(function() {
+            //      priceNFT.push ({
+            //          id: $(this).attr("price")
+            //      });
+            //});
+            var p = document.querySelectorAll('#select-nft-buy option:checked[price]');
+              for (var i = 0; i < p.length; i++) {
+               priceNFT.push ({
+                   id: p[i].getAttribute('price')
+               });
+            }
 
             // second confirm
             if ($("#select-nft-buy :checked").length > 1) {
@@ -1941,9 +1953,13 @@ function initiateBuy() {
       $("#select-nft-buy").bind("change", function(){
 
         totalAmount = 0
-        $("#select-nft-buy option:selected[price]").each(function() {
-            totalAmount += parseFloat($(this).attr("price"))
-        });
+        //$("#select-nft-buy option:selected[price]").each(function() {
+        //    totalAmount += parseFloat($(this).attr("price"))
+        //});
+        var p = document.querySelectorAll('#select-nft-buy option:checked[price]');
+          for (var i = 0; i < p.length; i++) {
+           totalAmount += parseFloat(p[i].getAttribute('price'))
+        }
         buyerFee = 0.02;
         if (roundDown((totalAmount*buyerFee),2) < 0.10) {
           finalFee = 0.1
@@ -2160,6 +2176,8 @@ function initiateBuy() {
        for (var i = 0; i < pendingItems.length; i++) {
          $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
        }
+
+       $("#select-nft-buy").show();
 
     });
 

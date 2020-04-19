@@ -25,7 +25,7 @@ function getBuyDropdown() {
   });
 
   countExpired = 0;
-  fetchBuyNFTDropdown = '<div id="loader-nftlist-modal" style="display:none;" class="block-loader center"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div><select multiple style="margin: .5em auto;" id="select-nft-buy">';
+  fetchBuyNFTDropdown = '<div id="loader-nftlist-modal" style="display:none;" class="block-loader center"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div><select multiple style="margin: .5em auto;" id="select-nft-buy" style="display:none;">';
 
   for (i = 0; i < buyCustomNFT.length; i ++) {
 
