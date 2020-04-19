@@ -914,39 +914,43 @@ namespace Phantom.Wallet.Controllers
               var destinationAddress = Address.FromText("P2KLzxq8cUi47URLZZYcLs54WPVYnknrHWVryUUUqhuhq5K");
               int countPrice = 0;
               int countCreator = 0;
+              int currentFee = 0;
+              decimal finalFee = 0;
               var script = ScriptUtils.BeginScript()
                     .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800*(jsonparam.Count));
 
                     foreach (var id in jsonparam)
                       {
-                          var bigIntAmountID = BigInteger.Parse((string)id["id"]);
-                          var currentCreator = (string)creatorparam[countCreator]["id"];
-                          countCreator++;
-                          if (keyPair.Address.ToString() == currentCreator)
-                          {
-                            paramArray[2] = bigIntAmountID;
-                            script.CallContract(contract, method, paramArray);
-                          }
-                          else
-                          {
-                            var currentPrice = (string)priceparam[countPrice]["id"];
-                            if (((int)decimal.Parse(currentPrice) * 0.02) < 0.1)
-                            {
-                              currentPrice = (0.1m).ToString();
-                            }
-                            else
-                            {
-                              currentPrice = ((int)decimal.Parse(currentPrice) * 0.02).ToString();
-                            }
-                            var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(currentPrice), GetTokenDecimals(quoteSymbol));
-                            countPrice++;
-                            paramArray[2] = bigIntAmountID;
-                            script.CallContract(contract, method, paramArray);
-                            script.TransferTokens(quoteSymbol, keyPair.Address, destinationAddress, bigIntAmount);
-                          }
+                        var bigIntAmountID = BigInteger.Parse((string)id["id"]);
+                        paramArray[2] = bigIntAmountID;
+                        script.CallContract(contract, method, paramArray);
+
+                        var currentCreator = (string)creatorparam[countCreator]["id"];
+                        countCreator++;
+
+                        if (keyPair.Address.ToString() == currentCreator)
+                        {
+                          var currentPrice = (string)priceparam[countPrice]["id"];
+                          currentFee += (int)decimal.Parse(currentPrice);
+                        }
+                        countPrice++;
+
                       }
 
-                    script.SpendGas(keyPair.Address);
+                      finalFee = currentFee * 2 / 100;
+
+                      if (finalFee > (decimal)0 && finalFee < (decimal)0.1)
+                      {
+                        finalFee = 0.1m;
+                      }
+
+                      if (finalFee > 0)
+                      {
+                        var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(finalFee.ToString()), GetTokenDecimals(quoteSymbol));
+                        script.TransferTokens(quoteSymbol, keyPair.Address, destinationAddress, bigIntAmount);
+                      }
+
+                script.SpendGas(keyPair.Address);
 
                 byte[] bscript = script.EndScript();
 
