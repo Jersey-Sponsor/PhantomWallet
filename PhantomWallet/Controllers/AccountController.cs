@@ -914,7 +914,7 @@ namespace Phantom.Wallet.Controllers
               var destinationAddress = Address.FromText("P2KLzxq8cUi47URLZZYcLs54WPVYnknrHWVryUUUqhuhq5K");
               int countPrice = 0;
               int countCreator = 0;
-              int currentFee = 0;
+              decimal currentFee = 0;
               decimal finalFee = 0;
               var script = ScriptUtils.BeginScript()
                     .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800*(jsonparam.Count));
@@ -928,10 +928,10 @@ namespace Phantom.Wallet.Controllers
                         var currentCreator = (string)creatorparam[countCreator]["id"];
                         countCreator++;
 
-                        if (keyPair.Address.ToString() == currentCreator)
+                        if (keyPair.Address.ToString() != currentCreator)
                         {
                           var currentPrice = (string)priceparam[countPrice]["id"];
-                          currentFee += (int)decimal.Parse(currentPrice);
+                          currentFee += decimal.Parse(currentPrice);
                         }
                         countPrice++;
 
