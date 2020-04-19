@@ -25,7 +25,7 @@ function getBuyDropdown() {
   });
 
   countExpired = 0;
-  fetchBuyNFTDropdown = '<select multiple style="margin: .5em auto;" id="select-nft-buy">';
+  fetchBuyNFTDropdown = '<div id="loader-nftlist-modal" style="display:none;" class="block-loader center"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div><select multiple style="margin: .5em auto;" id="select-nft-buy">';
 
   for (i = 0; i < buyCustomNFT.length; i ++) {
 
@@ -95,7 +95,6 @@ function getAuctions() {
 
   // filter by start date
   mergedAuctionsFinalNotExpired.sort((a,b) => (a.startDate < b.startDate) ? 1 : ((b.startDate < a.startDate) ? -1 : 0));
-
 
   // load buy dropdown after merged
   getBuyDropdown();

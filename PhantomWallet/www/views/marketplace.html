@@ -879,7 +879,7 @@ function getAuctions() {
       ).then(function() {
 
         // start worker
-        var worker = new Worker("../js/LoopWorker.js?44");
+        var worker = new Worker("../js/LoopWorker.js?50");
         worker.postMessage(
           {
             api1: dataAPIMain,
@@ -1373,17 +1373,42 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
                  feesymbol: quoteSymbol
              },
              function (returnedData) {
+                 //console.log(returnedData)
+                 $('#sendSpinner').hide();
+                 alertbox.show('Transaction pending...');
+                 pendingItems.push ({
+                    id: idNFT
+                 });
+                 updatePending(false);
                  if (returnedData !== "") {
-                     $('#sendSpinner').hide();
-                     alertbox.show('Transaction successful!');
-                     pendingItems.push ({
-                        id: idNFT
-                     });
-                     updatePending(false);
-                 } else {
-                     window.location.replace("/error");
-                 }
-                 console.log(returnedData);
+                   var counter = 0;
+                   getConfirmations();
+                   function getConfirmations() {
+                         $.get('/tx/' + returnedData,
+                             function (returnedDataTX) {
+                               //console.log(returnedDataTX)
+                               if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                                   counter++;
+                                   if (counter <= 10){
+                                     setTimeout(getConfirmations, 2000);
+                                   } else {
+                                     alertbox.show('Transaction unconfirmed!');
+                                   }
+                               } else if (JSON.parse(returnedDataTX).error) {
+                                   alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                               } else {
+                                 customrestport = '{{rpcurl}}';
+                                 customrestport = customrestport.slice(0,-8) + '7078';
+                                 $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                                     function (returnedDataTX) {
+                                       console.log(JSON.parse(returnedDataTX).hash)
+                                       alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                                     }
+                                 )
+                               }
+                         })
+                   }
+               }
              }).fail(function() {
              $('#sendSpinner').hide();
              console.log("error marketplace");
@@ -1402,14 +1427,14 @@ function updatePending(isSell) {
 
   if (isSell) {
 
-    sellCustomNFTFiltered = sellCustomNFT.filter((elem) => !pendingItems.find(({ id }) => elem.id === id.id));
+    sellCustomNFTFiltered = sellCustomNFT.filter((elem) => !pendingItems.find(({ id }) => elem.id === id));
 
     sellCustomNFT = sellCustomNFTFiltered;
 
   } else {
 
     for (var i = 0; i < pendingItems.length; i++) {
-      $("div[tokenid="+(pendingItems[i].id).id+"] .priceFilter").html('PENDING')
+      $("div[tokenid="+(pendingItems[i].id)+"] .priceFilter").html('PENDING')
     }
 
   }
@@ -1716,38 +1741,53 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
   params[2] = { name: 'quoteSymbol', type: 'String', input: quoteSymbol, info: '' },
   params[3] = { name: 'tokenID', type: 'Number', input: nftIdArr[0].id, info: '' },
   params[4] = { name: 'price', type: 'Number', input: priceNFT*(Math.pow(10,formatDecimals(quoteSymbol))), info: '' },
-  //params[5] = { name: 'endDate', type: 'Timestamp', input: '03/07/2020 00:00:00', info: '' }
   params[5] = { name: 'endDate', type: 'TimestampEpoch', input: endDateFormatted, info: '' }
 
-  //$.post('/contract/tx',
   $.post('/confirmsellnft',
-     /*{
-         chain: 'main',
-         contract: 'market',
-         method: 'SellToken',
-         params: JSON.stringify({
-           params
-         })
-     },*/
      {
          chain: 'main', contract: 'market', method: 'SellToken', params: JSON.stringify({params}), id: JSON.stringify(nftIdArr)
      },
      function (returnedData) {
-         if (returnedData !== "") {
-           $('#sendSpinner').hide();
-           alertbox.show('Transaction successful!');
-           for (var i = 0, len = nftIdArr.length; i < len; i++) {
-              pendingItems.push ({
-                  id: nftIdArr[i]
-              });
-              if (i == len - 1) {
-                updatePending(true);
-              }
-           }
-         } else {
-           window.location.replace("/error");
+         //console.log(returnedData)
+         $('#sendSpinner').hide();
+         alertbox.show('Transaction pending...');
+         for (var i = 0, len = nftIdArr.length; i < len; i++) {
+            pendingItems.push ({
+                id: nftIdArr[i].id
+            });
+            if (i == len - 1) {
+              updatePending(true);
+            }
          }
-         console.log(returnedData);
+         if (returnedData !== "") {
+           var counter = 0;
+           getConfirmations();
+           function getConfirmations() {
+                 $.get('/tx/' + returnedData,
+                     function (returnedDataTX) {
+                       //console.log(returnedDataTX)
+                       if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                           counter++;
+                           if (counter <= 10){
+                             setTimeout(getConfirmations, 2000);
+                           } else {
+                             alertbox.show('Transaction unconfirmed!');
+                           }
+                       } else if (JSON.parse(returnedDataTX).error) {
+                           alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                       } else {
+                         customrestport = '{{rpcurl}}';
+                         customrestport = customrestport.slice(0,-8) + '7078';
+                         $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                             function (returnedDataTX) {
+                               console.log(JSON.parse(returnedDataTX).hash)
+                               alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                             }
+                         )
+                       }
+                 })
+           }
+       }
      }).fail(function() {
      $('#sendSpinner').hide();
      console.log("error marketplace");
@@ -2258,21 +2298,46 @@ function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
          creatorAddress : JSON.stringify(creatorAddress)
      },
      function (returnedData) {
-         if (returnedData !== "") {
-             $('#sendSpinner').hide();
-             alertbox.show('Transaction successful!');
-             for (var i = 0, len = nftIdArr.length; i < len; i++) {
-                pendingItems.push ({
-                    id: nftIdArr[i]
-                });
-                if (i == len - 1) {
-                  updatePending(false);
-                }
-             }
-         } else {
-             window.location.replace("/error");
+         //console.log(returnedData)
+         $('#sendSpinner').hide();
+         alertbox.show('Transaction pending...');
+         for (var i = 0, len = nftIdArr.length; i < len; i++) {
+            pendingItems.push ({
+                id: nftIdArr[i].id
+            });
+            if (i == len - 1) {
+              updatePending(false);
+            }
          }
-         console.log(returnedData);
+         if (returnedData !== "") {
+           var counter = 0;
+           getConfirmations();
+           function getConfirmations() {
+                 $.get('/tx/' + returnedData,
+                     function (returnedDataTX) {
+                       //console.log(returnedDataTX)
+                       if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                           counter++;
+                           if (counter <= 10){
+                             setTimeout(getConfirmations, 2000);
+                           } else {
+                             alertbox.show('Transaction unconfirmed!');
+                           }
+                       } else if (JSON.parse(returnedDataTX).error) {
+                           alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                       } else {
+                         customrestport = '{{rpcurl}}';
+                         customrestport = customrestport.slice(0,-8) + '7078';
+                         $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                             function (returnedDataTX) {
+                               console.log(JSON.parse(returnedDataTX).hash)
+                               alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                             }
+                         )
+                       }
+                 })
+           }
+       }
      }).fail(function() {
      $('#sendSpinner').hide();
      console.log("error marketplace");
