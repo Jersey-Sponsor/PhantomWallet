@@ -119,54 +119,277 @@ $(document).ready(function() {
       document.getElementById("current-balance-goati").innerHTML = '<img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">N/A';
   }
 
+  $.when(
 
-  $.get('https://neoeconomy.io/json/lotteryphantom.json',
+    $.get('https://neoeconomy.io/json/lotteryphantom.json',
 
-    function (data) {
+      function (data) {
+        dataLottery = data
+      }
 
-      ticketsEntries = data.filter(function (el) {
-        return el.address == '{{address}}';
-      });
+    ),
+    $.get('https://neoeconomy.io/json/lotteryphantom-full.json',
 
-      //const unique = [...new Set(data.map(item => item.address))];
-      //console.log(unique)
+      function (data) {
+        dataLotteryFull = data
+      }
 
-      // init lottery tooltip
-      var d = new Date();
-      var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      if (d.getDate() <= 15) {
-        beginningPeriodDay = 01;
-        endPeriodDay = 15;
-        beginningPeriodMonth = months[d.getMonth()];
-        endPeriodMonth = months[d.getMonth()];
+    )
+
+  ).then(function() {
+
+    ticketsEntries = dataLottery.filter(function (el) {
+      return el.address == '{{address}}';
+    });
+
+    //const unique = [...new Set(dataLottery.map(item => item.address))];
+    //console.log(unique)
+
+    // init lottery tooltip
+    var d = new Date();
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    if (d.getDate() <= 15) {
+      beginningPeriodDay = 01;
+      endPeriodDay = 15;
+      beginningPeriodMonth = months[d.getMonth()];
+      endPeriodMonth = months[d.getMonth()];
+    } else {
+      beginningPeriodDay = 15;
+      endPeriodDay = 01;
+      beginningPeriodMonth = months[d.getMonth()];
+      endPeriodMonth = months[d.getMonth() + 1];
+    }
+    beginningPeriod = beginningPeriodMonth + ' ' + beginningPeriodDay;
+    endPeriod = endPeriodMonth + ' ' + endPeriodDay;
+    currentMint = ''
+    if (endPeriodMonth == 'April') {
+      if (beginningPeriodMonth == 'March') {
+        currentMint = '#' + 4
       } else {
-        beginningPeriodDay = 15;
-        endPeriodDay = 01;
-        beginningPeriodMonth = months[d.getMonth()];
-        endPeriodMonth = months[d.getMonth() + 1]
+        currentMint = '#' + 5
       }
-      beginningPeriod = beginningPeriodMonth + ' ' + beginningPeriodDay ;
-      endPeriod = endPeriodMonth + ' ' + endPeriodDay ;
-      document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
-          + '<br><br>You currently have <strong>' + numberWithCommas(ticketsEntries.length) + ' tickets</strong> out of <strong>' + numberWithCommas(data.length) + ' total tickets</strong> (' + ((ticketsEntries.length/data.length)*100).toFixed(2) + '% chance).<br>Lottery tickets count updated twice per day.<br><br>Current lottery period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')'
-          + '<br><br><a href="https://www.22series.com/part_info?id=16777229" target="_blank">NEO Economy Car</a></strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:5em;width:20em;"><div>'
-
-      if (ticketsEntries.length > 0) {
-          document.getElementById("lottery-odds").innerHTML = 'Your current odds: ' + ((ticketsEntries.length/data.length)*100).toFixed(2) + '%'
+    } else if (endPeriodMonth == 'May') {
+      if (beginningPeriodMonth == 'April') {
+        currentMint = '#' + 6
+      } else {
+        currentMint = '#' + 7
       }
+    } else if (endPeriodMonth == 'June') {
+      if (beginningPeriodMonth == 'May') {
+        currentMint = '#' + 8
+      } else {
+        currentMint = '#' + 9
+      }
+    } else if (endPeriodMonth == 'July') {
+      if (beginningPeriodMonth == 'June') {
+        currentMint = '#' + 10
+      } else {
+        currentMint = '#' + 11
+      }
+    } else if (endPeriodMonth == 'August') {
+      if (beginningPeriodMonth == 'July') {
+        currentMint = '#' + 12
+      }
+    }
+    document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
+        + '<br><br>You currently have <strong>' + numberWithCommas(ticketsEntries.length) + ' tickets</strong> out of <strong>' + numberWithCommas(dataLottery.length) + ' total tickets</strong> (' + ((ticketsEntries.length/dataLottery.length)*100).toFixed(2) + '% chance).<br>Lottery tickets count updated twice per day.<br><br>Current lottery period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')'
+        + '<br><br><a href="https://www.22series.com/part_info?id=16777229" target="_blank">NEO Economy Car ' + currentMint + '</a></strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:5em;width:20em;">'
+        + '<br><br><div style="max-width:500px;margin: 0 auto;" id="container-historical-lottery"></div>';
 
-      $('i.tooltip').show();
 
-      // init tooltipster i
-      $('i.tooltip').tooltipster({
-        theme: 'tooltipster-light',
-        contentCloning: true,
-        interactive: true,
-        side: 'right'
-      });
+    if (ticketsEntries.length > 0) {
+        document.getElementById("lottery-odds").innerHTML = 'Your current odds: ' + ((ticketsEntries.length/dataLottery.length)*100).toFixed(2) + '%'
+    }
 
+    var ohlc = [],
+        ohlc2 = [],
+        amount = 0,
+        dataLength = dataLotteryFull.length,
+        i = 0;
+    for (i; i < dataLength; i += 1) {
+
+      amount++
+      currentTime = dataLotteryFull[i].time * 1000
+      if (dataLotteryFull[i-1]) {
+        oldTime = dataLotteryFull[i-1].time * 1000
+      } else {
+        oldTime = 0
+      }
+      var dateCurrent = new Date(currentTime);
+      var monthCurrent = dateCurrent.getDay();
+      var dateOld = new Date(oldTime);
+      var monthOld = dateOld.getDay();
+      if (monthCurrent !== monthOld) {
+        ohlc.push([
+          dataLotteryFull[i].time * 1000,
+          amount
+        ]);
+        amount = 0;
+      }
+      ohlc2.push([
+          dataLotteryFull[i].time * 1000,
+          i+1
+      ]);
 
     }
+
+    ohlc.push([
+      dataLotteryFull[i-1].time * 1000,
+      amount
+    ]);
+
+    Highcharts.setOptions({
+        lang: {
+            rangeSelectorZoom: ''
+        }
+    });
+
+    Highcharts.stockChart('container-historical-lottery', {
+        title: {
+            text: 'Historical Phantom Wallet Lottery Tickets',
+            style: {
+                fontFamily: 'Rubik',
+                color: "#333"
+            }
+        },
+        chart: {
+            backgroundColor: 'transparent',
+            style: {
+                fontFamily: 'Rubik',
+                color: "#333"
+            }
+        },
+        xAxis: {
+          type: 'datetime',
+          labels: {
+            formatter: function() {
+              return Highcharts.dateFormat('%d %b %Y', this.value);
+            },
+            style: {
+                fontFamily: 'Rubik',
+                color: "#333"
+            }
+          }
+        },
+        yAxis: [{
+            gridLineWidth: 0,
+            minorGridLineWidth: 0,
+            labels: {
+                formatter: function() {
+                    return this.axis.defaultLabelFormatter.call(this);
+                },
+                style: {
+                    fontFamily: 'Rubik',
+                    color: "#333"
+                }
+            },
+            min: 0,
+            opposite: false
+        },{
+            labels: {
+                formatter: function() {
+                    return this.axis.defaultLabelFormatter.call(this);
+                },
+                style: {
+                    fontFamily: 'Rubik',
+                    color: "#333",
+                }
+            },
+            opposite: true,
+            min: 0,
+            gridLineWidth: 0,
+            minorGridLineWidth: 0
+        }],
+        navigator: {
+            enabled: false
+        },
+        scrollbar: {
+            enabled: false
+        },
+        rangeSelector: {
+            selected: 0,
+            enabled: false
+        },
+        legend: {
+            enabled: true,
+            itemStyle: {
+              fontFamily: 'Rubik',
+              color: "#333",
+              fontWeight: "Light"
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        },
+        plotOptions: {
+            area: {
+                marker: {
+                    radius: 4
+                },
+                lineWidth: 3,
+                states: {
+                    hover: {
+                        lineWidth: 1
+                    }
+                },
+                threshold: null
+            }
+        },
+        tooltip: {
+            shared: true,
+            split: false,
+            formatter: function() {
+                var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', new Date(this.x));
+                $.each(this.points, function(i, point) {
+                    s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
+                });
+                return s;
+            }
+        },
+        series: [{
+            turboThreshold: 0,
+            type: 'area',
+            name: 'Daily Lottery Tickets',
+            data: ohlc,
+            color: '#17B0E7',
+            fillColor: {
+                linearGradient: {
+                    x1: 1,
+                    y1: 1,
+                    x2: 1,
+                    y2: 1
+                },
+                stops: [
+                    [0, '#333'],
+                    [1, '#333']
+                ]
+            }
+        },{
+            turboThreshold: 0,
+            type: 'area',
+            name: 'Total Lottery Tickets',
+            yAxis: 1,
+            data: ohlc2,
+            color: '#FFBF32',
+            fillOpacity: 0
+        }]
+    });
+
+    $('i.tooltip').show();
+
+    // init tooltipster i
+    $('i.tooltip').tooltipster({
+      theme: 'tooltipster-light',
+      contentCloning: true,
+      interactive: true,
+      side: 'right'
+    });
+
+  }
+
   ).fail(function() {
     $('i.tooltip').hide();
     console.log("error api call");
