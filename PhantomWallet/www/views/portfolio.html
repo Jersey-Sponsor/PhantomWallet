@@ -442,10 +442,14 @@ function cosmicSwapFixed() {
                               window.location.replace("/error");
                             }
                         } else {
-                          //window.location.replace("/waiting/" + returnedData);
                           setTimeout(function() {
                             window.location.replace("/portfolio");
-                          }, 2000);
+                          }, 5000);
+                          // If it works, returns the tx link
+                          $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                              document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                          });
                         }
                   })
             }
@@ -547,7 +551,7 @@ function Claim() {
                   } else {
                     setTimeout(function() {
                       window.location.replace("/portfolio");
-                    }, 2000);
+                    }, 5000);
                     // If it works, returns the tx link
                     $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
                         document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
@@ -710,7 +714,7 @@ function Stake() {
                               }
                               setTimeout(function() {
                                 window.location.replace("/portfolio");
-                              }, 2000);
+                              }, 5000);
                               $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
                                   document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                                   $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
@@ -782,7 +786,7 @@ function Stake() {
                                   setTimeout(getConfirmations, 2000);
                                 }
                                 window.location.replace("/portfolio");
-                              }, 2000);
+                              }, 5000);
                               $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
                                   document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                                   $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
@@ -942,7 +946,7 @@ function Unstake() {
                           } else {
                               setTimeout(function() {
                                 window.location.replace("/portfolio");
-                              }, 2000);
+                              }, 5000);
                               $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
                                   document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                                   $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
@@ -1071,7 +1075,7 @@ function MasterClaim() {
                 } else {
                   setTimeout(function() {
                     window.location.replace("/portfolio");
-                  }, 2000);
+                  }, 5000);
                   $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
                       document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                       $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
