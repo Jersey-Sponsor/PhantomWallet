@@ -163,6 +163,9 @@ function getAuctions() {
       mintLimit = singleDetailsAPINFT[0].mint_limit;
       if (mintLimit == 0) {
         mintLimit = 'Unlimited'
+        mintNumberDetailed = singleDetailsAPINFT[0].mint;
+      } else {
+        mintNumberDetailed = singleDetailsAPINFT[0].mint + '/' + mintLimit;
       }
       image = singleDetailsAPINFT[0].image;
       url = singleDetailsAPINFT[0].image;
@@ -210,10 +213,10 @@ function getAuctions() {
                   + '• <strong>Description: </strong>' + description + '<br><br>'
                   + '• <strong>Sale ends in: </strong>' + hoursleftRaw + '<br><br>'
                   + '• <strong>Mint number: </strong>#' + mintNumber + '<br><br>'
+                  + '• <strong>Mint limit: </strong>' + mintLimit + '<br><br>'
                   + '• <strong>Mint date: </strong>' + mintDateFormatted + '<br><br>'
                   + '• <strong>Rarity: </strong>' + rarity + '<br><br>'
                   + '• <strong>Season: </strong>' + season + '<br><br>'
-                  + '• <strong>Mint limit: </strong>' + mintLimit + '<br><br>'
                   + '• <strong>Details: </strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a><br><br>'
                   + '</div>';
 
@@ -228,7 +231,7 @@ function getAuctions() {
         +   '<div class="nft-desc item-filter">'
         +     '<h3 style="display:inline-block;">' + nameRaw + '</h3><br>'
         +     '<div style="text-align:center;">'
-        +       '<button class="nft-order price mint-number-filter" >#' + mintNumber + '</button>'
+        +       '<button class="nft-order price mint-number-filter" >#' + mintNumberDetailed + '</button>'
         +       '<button class="nft-order price">' + mintDateFormatted + '</button>'
         +       '<button class="nft-order price rarity-' + rarity.toLowerCase() + ' rarityFilter">' + rarity.toUpperCase() + '</button>'
         +       '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_' + [i] + '">'
