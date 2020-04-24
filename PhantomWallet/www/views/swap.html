@@ -845,7 +845,7 @@
                                              if (((returnedDataSettle).hash) == null) {
                                                // If .error defined, returns the custom error message
                                                $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                                   document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful';
+                                                   document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
                                                    $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                                });
                                               } else {
@@ -1083,6 +1083,12 @@
                                             $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                         });
                                       }
+                                  } else if ((JSON.parse(returnedDataTX).error).startsWith('rejected: hash already seen')) {
+                                    $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                        document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
+                                        $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                    });
+                                    setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                   } else {
                                     // If .error defined, returns the custom error message
                                     $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
@@ -1103,9 +1109,10 @@
                                       setTimeout(loopSettle, 2000);
                                     } else {
                                       $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                          document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful';
+                                          document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
                                           $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                       });
+                                      setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                     }
                                   } else {
                                     $('#neopassphrase').val('');
@@ -1118,8 +1125,8 @@
                                         document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
                                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                     });
+                                    setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                   }
-                                  setTimeout(function(){window.location.href = "/portfolio"}, 5000);
 
                                 }
                             }
