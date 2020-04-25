@@ -76,6 +76,8 @@
     <div id="tooltip_b"></div>
 </div>
 
+<div id="alert-area" class="alert-area"></div>
+
 <script>
 
 $(document).ready(function() {
@@ -654,18 +656,47 @@ function redeemPack() {
                   token: 'TTRS', id: JSON.stringify(redeemcustomNFT), dest: addressActionPack, chain: "main" , destChain: "main"
               },
               function (returnedData) {
-                if (returnedData !== "") {
-                    //$('#sendSpinner').hide();
-                    window.location.replace("/waiting/" + returnedData);
-                } else {
-                    //$('#sendSpinner').hide();
-                    window.location.replace("/error");
-                }
-                console.log(returnedData);
+                $('#sendSpinner').hide();
+                alertbox.show('Transaction pending...');
+                $("#redeem-pack-container").hide();
+                  if (returnedData !== "") {
+                    var counter = 0;
+                    getConfirmations();
+                    function getConfirmations() {
+                          $.get('/tx/' + returnedData,
+                              function (returnedDataTX) {
+                                //console.log(returnedDataTX)
+                                if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                                    counter++;
+                                    if (counter <= 10){
+                                      setTimeout(getConfirmations, 2000);
+                                    } else {
+                                      alertbox.show('Transaction unconfirmed!');
+                                    }
+                                } else if (JSON.parse(returnedDataTX).error) {
+                                    alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                                } else {
+                                  customrestport = '{{rpcurl}}';
+                                  customrestport = customrestport.slice(0,-8) + '7078';
+                                  $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                                      function (returnedDataTX) {
+                                        console.log(JSON.parse(returnedDataTX).hash)
+                                        alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                                        setTimeout(function() {
+                                          window.location.replace("/nft");
+                                        }, 5000);
+                                      }
+                                  )
+                                }
+                          })
+                    }
+                  } else {
+                      window.location.replace("/error");
+                  }
               }).fail(function() {
               $('#sendSpinner').hide();
               console.log("error nft");
-          });
+              });
 
         } else {
           $('#sendSpinner').hide();
@@ -1165,17 +1196,46 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
                   token: currencySelected, amount: parseFloat(bidAuction), dest: addressAuctionNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted, donation: isDonation
               },
               function (returnedData) {
-                  //setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
+                $('#sendSpinner').hide();
+                alertbox.show('Transaction pending...');
                   if (returnedData !== "") {
-                      window.location.replace("/waiting/" + returnedData);
+                    var counter = 0;
+                    getConfirmations();
+                    function getConfirmations() {
+                          $.get('/tx/' + returnedData,
+                              function (returnedDataTX) {
+                                //console.log(returnedDataTX)
+                                if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                                    counter++;
+                                    if (counter <= 10){
+                                      setTimeout(getConfirmations, 2000);
+                                    } else {
+                                      alertbox.show('Transaction unconfirmed!');
+                                    }
+                                } else if (JSON.parse(returnedDataTX).error) {
+                                    alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                                } else {
+                                  customrestport = '{{rpcurl}}';
+                                  customrestport = customrestport.slice(0,-8) + '7078';
+                                  $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                                      function (returnedDataTX) {
+                                        console.log(JSON.parse(returnedDataTX).hash)
+                                        alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                                        setTimeout(function() {
+                                          window.location.replace("/nft");
+                                        }, 5000);
+                                      }
+                                  )
+                                }
+                          })
+                    }
                   } else {
                       window.location.replace("/error");
                   }
-                  console.log(returnedData);
               }).fail(function() {
               $('#sendSpinner').hide();
               console.log("error nft");
-          });
+              });
 
         } else {
           $('#sendSpinner').hide();
@@ -1307,17 +1367,46 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
                   token: currencySelected, amount: pbQty*parseFloat(priceNFT), dest: addressNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted, donation: isDonation
               },
               function (returnedData) {
-                  //setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
+                $('#sendSpinner').hide();
+                alertbox.show('Transaction pending...');
                   if (returnedData !== "") {
-                      window.location.replace("/waiting/" + returnedData);
+                    var counter = 0;
+                    getConfirmations();
+                    function getConfirmations() {
+                          $.get('/tx/' + returnedData,
+                              function (returnedDataTX) {
+                                //console.log(returnedDataTX)
+                                if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                                    counter++;
+                                    if (counter <= 10){
+                                      setTimeout(getConfirmations, 2000);
+                                    } else {
+                                      alertbox.show('Transaction unconfirmed!');
+                                    }
+                                } else if (JSON.parse(returnedDataTX).error) {
+                                    alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                                } else {
+                                  customrestport = '{{rpcurl}}';
+                                  customrestport = customrestport.slice(0,-8) + '7078';
+                                  $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                                      function (returnedDataTX) {
+                                        console.log(JSON.parse(returnedDataTX).hash)
+                                        alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                                        setTimeout(function() {
+                                          window.location.replace("/nft");
+                                        }, 5000);
+                                      }
+                                  )
+                                }
+                          })
+                    }
                   } else {
                       window.location.replace("/error");
                   }
-                  console.log(returnedData);
               }).fail(function() {
               $('#sendSpinner').hide();
               console.log("error nft");
-          });
+              });
 
         } else {
             $('#sendSpinner').hide();
