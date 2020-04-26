@@ -1406,13 +1406,20 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
                                    }
                                } else if (JSON.parse(returnedDataTX).error) {
                                    alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                               } else if ((JSON.parse(returnedDataTX).hash) == null) {
+                                   counter++;
+                                   if (counter <= 10){
+                                     setTimeout(getConfirmations, 2000);
+                                   } else {
+                                     alertbox.show('Transaction unconfirmed!');
+                                   }
                                } else {
                                  customrestport = '{{rpcurl}}';
                                  customrestport = customrestport.slice(0,-8) + '7078';
                                  $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
                                      function (returnedDataTX) {
                                        console.log(JSON.parse(returnedDataTX).hash)
-                                       alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                                       alertbox.show('Transaction successful, hash: ' + returnedData);
                                      }
                                  )
                                }
