@@ -880,7 +880,7 @@ function getAuctions() {
       ).then(function() {
 
         // start worker
-        var worker = new Worker("../js/worker.js?58");
+        var worker = new Worker("../js/worker.js?61");
         worker.postMessage(
           {
             api1: dataAPIMain,
@@ -1199,6 +1199,11 @@ function refreshAuctions() {
         name: "paginationTop",
         paginationClass: "paginationTop",
         innerWindow: 2,
+        outerWindow: 1
+      }, {
+        innerWindow: 2,
+        name: "paginationBottom",
+        paginationClass: "paginationBottom",
         outerWindow: 1
       }]
     };

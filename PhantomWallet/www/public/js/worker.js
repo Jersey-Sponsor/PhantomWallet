@@ -227,7 +227,7 @@ function getAuctions() {
         +   '<div style="display:none;" class="filterBy">'+type+'</div>'
         +   '<button class="nft-order circulating">' + hoursleft + '</button>'
         +   '<button class="nft-order supply priceFilter">' + priceFormatted + '</button>'
-        +   '<img src="' + image + '?width=256" alt="" style="height:12em;padding-top:3em;">'
+        +   '<img class="lazyload" data-src="' + image + '?width=256" alt="" style="height:12em;padding-top:3em;">'
         +   '<div class="nft-desc item-filter">'
         +     '<h3 style="display:inline-block;">' + nameRaw + '</h3><br>'
         +     '<div style="text-align:center;">'
