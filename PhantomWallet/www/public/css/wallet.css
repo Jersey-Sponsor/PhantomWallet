@@ -354,6 +354,13 @@
   }
 }
 
+@media screen and (min-width: 1700px) and (max-width: 1950px) {
+  #mainhistorytable .col-1, #mainhistorytable .col-3 {
+      max-width: 4em;
+      overflow: hidden;
+  }
+}
+
 @media screen and (min-width: 1350px) and (max-width: 1700px) {
 
   .nav-pills li {
@@ -1140,7 +1147,7 @@ ul.nav.nav-pills {
 
 .public-address {
     color: #7C95AB;
-    font-size: 20px;
+    font-size: 18px;
     text-align: center;
     padding: 10px;
     line-height: 1.5em;

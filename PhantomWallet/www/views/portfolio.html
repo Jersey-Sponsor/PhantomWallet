@@ -52,7 +52,19 @@
                               {{#if Symbol == 'GOATI'}}
                                 <td class="col-6 aligned-row"><img class="token-icon" src="img/goati_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                                 {{#else}}
-                                <td class="col-6 aligned-row"><img class="token-icon" src="img/token_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                                {{#if Symbol == 'USDT'}}
+                                  <td class="col-6 aligned-row"><img class="token-icon" src="img/goati_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                                  {{#else}}
+                                  {{#if Symbol == 'ETH'}}
+                                    <td class="col-6 aligned-row"><img class="token-icon" src="img/eth_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                                    {{#else}}
+                                    {{#if Symbol == 'DAI'}}
+                                      <td class="col-6 aligned-row"><img class="token-icon" src="img/dai_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                                      {{#else}}
+                                      <td class="col-6 aligned-row"><img class="token-icon" src="img/token_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                                      {{/if}}
+                                    {{/if}}
+                                  {{/if}}
                                 {{/if}}
                               {{/if}}
                             {{/if}}

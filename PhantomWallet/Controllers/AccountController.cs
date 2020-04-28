@@ -756,6 +756,43 @@ namespace Phantom.Wallet.Controllers
                 return new ErrorRes { error = ex.Message };
             }
         }
+/*
+        public async Task<object> InvokeSettleTxETH(EthKeys ethKeys, PhantasmaKeys phantasmaKeys, string txHash, string symbol)
+        {
+            try
+            {
+                Hash ethTxHash = Hash.Parse(txHash);
+                var transcodedAddress = Address.FromKey(ethKeys);
+
+                var script = ScriptUtils.BeginScript()
+                    .CallContract("interop", "SettleTransaction", transcodedAddress, EthWallet.EthPlatform, EthWallet.EthPlatform, ethTxHash)
+                    .CallContract("swap", "SwapFee", transcodedAddress, symbol, UnitConversion.ToBigInteger(0.1m, DomainSettings.FuelTokenDecimals))
+                    .TransferBalance(symbol, transcodedAddress, phantasmaKeys.Address)
+                    .AllowGas(transcodedAddress, Address.Null, MinimumFee, 800)
+                    .SpendGas(transcodedAddress)
+                    .EndScript();
+
+                var nexusName = WalletConfig.Network;
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-9-7");
+
+                tx.Sign(neoKeys);
+
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                Log.Information("txResult: " + txResult);
+                return txResult;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return new ErrorRes { error = rpcEx.RpcError.Message };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Exception occurred: {ex.Message}");
+                return new ErrorRes { error = ex.Message };
+            }
+        }
+*/
 
         public async Task<object> InvokeContractTxGeneric(
                 PhantasmaKeys keyPair, string chain, string contract, string method, object[] paramArray)
@@ -826,8 +863,8 @@ namespace Phantom.Wallet.Controllers
         {
             try
             {
-                var bigIntAmount = 10000000000;
-                string symbol = "KCAL";
+                var bigIntAmount = 100000000;
+                string symbol = "SOUL";
                 var destinationAddress = Address.FromText("P2K61GfcUbfWqCur644iLECZ62NAefuKgBkB6FrpMsqYHv6");
                 var script = ScriptUtils.BeginScript()
                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)

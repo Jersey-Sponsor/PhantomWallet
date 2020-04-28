@@ -396,17 +396,21 @@ function toggleSwap() {
       $('#wrapper-pending-confirm').show();
     }
   }
-  $('#neoaddresslink').val('');
   $('#neohash').val('');
   $('#neoamount').val('');
   $('#neoaddress').val('');
   $('#neopassphrase').val('');
   $('#neoprivatekey').val('');
-  $('#neopending').val('');
+  $('#ethhash').val('');
+  $('#ethamount').val('');
+  $('#ethaddress').val('');
+  $('#ethprivatekey').val('');
+  $('#addresspending').val('');
   document.getElementById("wrapper-pendingswap-confirm").innerHTML = '';
   document.getElementById("wrapper-swapaddress-confirm").innerHTML = '';
   document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = '';
   $("#step-3").hide();
+  $("#step-23").hide();
   $('#phantasmaamount').val('');
   $(".cosmic-calc").fadeTo("slow", 0);
   $(".cosmic-calc-title").fadeTo("slow", 0);
@@ -417,43 +421,55 @@ function toggleSwap() {
 
 // function toggle neo/phantasma chains
 function toggleChains() {
+
+  swapType = parseFloat($("#select-chain-swap").val())
+
+  $("#neotophantasma").hide()
+  $("#phantasmatoneo").hide()
+  $("#ethtophantasma").hide()
+  $("#phantasmatoeth").hide()
   $("#wrapper-swap-confirm").fadeTo(1, 0);
-  if ($('#neotophantasma').css('display') === 'none')
-    {
-      $('#neotophantasma').show();
-      $('#phantasmatoneo').hide();
-      $('#wrapper-pending-confirm').hide();
-      $(".fa-sync-chains").addClass("fa-spin");
-      document.getElementById("chainswapdesc").innerHTML = 'From NEO Blockchain to Phantasma Blockchain';
-      setTimeout(function() {
-        $(".fa-sync-chains").removeClass("fa-spin");
-      }, 1000);
-    }
-    else
-    {
-      $('#neotophantasma').hide();
-      $('#phantasmatoneo').show();
-      if ($('#step-error-reverse').css('display') === 'none')
-        {
-          $('#wrapper-pending-confirm').show();
-        }
-      $(".fa-sync-chains").addClass("fa-spin");
-      document.getElementById("chainswapdesc").innerHTML = 'From Phantasma Blockchain to NEO Blockchain';
-      setTimeout(function() {
-        $(".fa-sync-chains").removeClass("fa-spin");
-      }, 1000);
-    }
-    $('#neoaddresslink').val('');
-    $('#neohash').val('');
-    $('#neoamount').val('');
-    $('#neoaddress').val('');
-    $('#neopassphrase').val('');
-    $('#neoprivatekey').val('');
-    $('#neopending').val('');
-    document.getElementById("wrapper-pendingswap-confirm").innerHTML = '';
-    document.getElementById("wrapper-swapaddress-confirm").innerHTML = '';
-    document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = '';
-    $("#step-3").hide();
+  $('#neohash').val('');
+  $('#neoamount').val('');
+  $('#neoaddress').val('');
+  $('#neopassphrase').val('');
+  $('#neoprivatekey').val('');
+  $('#addresspending').val('');
+  $('#ethhash').val('');
+  $('#ethamount').val('');
+  $('#ethaddress').val('');
+  $('#neoprivatekey').val('')
+  document.getElementById("wrapper-pendingswap-confirm").innerHTML = '';
+  document.getElementById("wrapper-swapaddress-confirm").innerHTML = '';
+  document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = '';
+
+  switch(swapType) {
+
+    case 1: // From NEO Blockchain to Phantasma Blockchain
+      $("#neotophantasma").show();
+      $("#loader-interopaddress").hide();
+      break;
+
+    case 2: // From Phantasma Blockchain to NEO Blockchain
+      $("#phantasmatoneo").show();
+      break;
+
+    case 3: // From ETH Blockchain to Phantasma Blockchain
+      $("#ethtophantasma").show();
+      $("#loader-interopaddressETH").hide();
+      break;
+
+    case 4: // From Phantasma Blockchain to ETH Blockchain
+      $("#phantasmatoeth").show();
+      break;
+
+    default:
+      $("#neotophantasma").show()
+      $("#loader-interopaddress").hide();;
+      break;
+
+  }
+
 }
 
 // function toggle private key / encrypted key
