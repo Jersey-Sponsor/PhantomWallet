@@ -88,6 +88,13 @@
 
 }
 
+@media screen and (min-width: 1700px) and (max-width: 1950px) {
+  #mainhistorytable .col-1, #mainhistorytable .col-3 {
+      max-width: 4em;
+      overflow: hidden;
+  }
+}
+
 @media screen and (max-width: 1350px) {
 
   .nav-pills li {
