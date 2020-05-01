@@ -1,20 +1,17 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using LunarLabs.WebServer.HTTP;
 using LunarLabs.WebServer.Templates;
-using Phantasma.Blockchain.Contracts;
 using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.Numerics;
-//using Phantasma.Ethereum;
+using Phantasma.Ethereum;
 using Phantom.Wallet.Controllers;
 using Phantom.Wallet.Helpers;
 using Phantom.Wallet.DTOs;
 using Phantom.Wallet.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Serilog;
 using Serilog.Core;
 
@@ -1133,7 +1130,7 @@ namespace Phantom.Wallet
             }
             return null;
         }
-/*
+
         private object RouteInvokeSettleTxETH(HTTPRequest request)
         {
             var txHash = request.GetVariable("txHash");
@@ -1144,9 +1141,9 @@ namespace Phantom.Wallet
             InvalidateCache(phantasmaKeys.Address);
             if (context["holdings"] is Holding[] balance)
             {
-                Phantasma.Ethereum.KeyPair ethKeys;
+                EthereumKey ethKeys;
 
-                ethKeys = Phantasma.Ethereum.KeyPair.FromWIF(ethKey);
+                ethKeys = EthereumKey.FromWIF(ethKey);
 
                 var result = AccountController.InvokeSettleTx(ethKeys, phantasmaKeys, txHash, assetSymbol).Result;
                 ResetSessionSendFields(request);
@@ -1154,7 +1151,7 @@ namespace Phantom.Wallet
             }
             return null;
         }
-*/
+
         private object RouteConvertAddress(HTTPRequest request)
         {
             var neoKey = request.GetVariable("neoKey");
@@ -1175,21 +1172,21 @@ namespace Phantom.Wallet
             return result;
 
         }
-/*
+
         private object RouteConvertAddressETH(HTTPRequest request)
         {
             var ethKey = request.GetVariable("ethKey");
             var context = InitContext(request);
 
-            Phantasma.Ethereum.KeyPair ethKeys;
+            EthereumKey ethKeys;
 
-            ethKeys = Phantasma.Ethereum.KeyPair.FromWIF(ethKey);
+            ethKeys = EthereumKey.FromWIF(ethKey);
 
             var result = $"{ethKeys.ToString()}";
             return result;
 
         }
-*/
+
         private object RouteRegisterName(HTTPRequest request)
         {
             var name = request.GetVariable("name");

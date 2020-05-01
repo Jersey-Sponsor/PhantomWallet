@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using LunarLabs.WebServer.Core;
 using Phantasma.Blockchain.Contracts;
-using Phantasma.Blockchain;
 using Phantasma.Core.Types;
 using Phantasma.Cryptography;
 using Phantasma.Domain;
-using Phantasma.Neo.Cryptography;
 using Phantasma.Neo.Core;
 using Phantasma.Numerics;
 using Phantasma.RpcClient.Client;
@@ -18,17 +15,15 @@ using Phantasma.RpcClient.DTOs;
 using Phantasma.RpcClient.Interfaces;
 using Phantasma.VM.Utils;
 using Phantasma.VM;
+using Phantasma.Ethereum;
 using Phantasma.Storage;
-using Phantasma.Pay;
 using Phantasma.Pay.Chains;
-using Phantasma.Neo.Utils;
 using Phantom.Wallet.Helpers;
 using Phantom.Wallet.Models;
 using TokenFlags = Phantasma.RpcClient.DTOs.TokenFlags;
 using Transaction = Phantom.Wallet.Models.Transaction;
 using Phantom.Wallet.DTOs;
 using Serilog;
-using Serilog.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -707,6 +702,42 @@ namespace Phantom.Wallet.Controllers
                 tx.Sign(keyPair);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                return txResult;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return new ErrorRes { error = rpcEx.RpcError.Message };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Exception occurred: {ex.Message}");
+                return new ErrorRes { error = ex.Message };
+            }
+        }
+
+        public async Task<object> InvokeSettleTx(EthereumKey ethKeys, PhantasmaKeys phantasmaKeys, string txHash, string symbol)
+        {
+            try
+            {
+                Hash neoTxHash = Hash.Parse(txHash);
+                var transcodedAddress = Address.FromKey(ethKeys);
+
+                var script = ScriptUtils.BeginScript()
+                    .CallContract("interop", "SettleTransaction", transcodedAddress, NeoWallet.NeoPlatform, NeoWallet.NeoPlatform, neoTxHash)
+                    .CallContract("swap", "SwapFee", transcodedAddress, symbol, UnitConversion.ToBigInteger(0.1m, DomainSettings.FuelTokenDecimals))
+                    .TransferBalance(symbol, transcodedAddress, phantasmaKeys.Address)
+                    .AllowGas(transcodedAddress, Address.Null, MinimumFee, 800)
+                    .SpendGas(transcodedAddress)
+                    .EndScript();
+
+                var nexusName = WalletConfig.Network;
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-9-7");
+
+                tx.Sign(ethKeys);
+
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                Log.Information("txResult: " + txResult);
                 return txResult;
             }
             catch (RpcResponseException rpcEx)
