@@ -23,6 +23,7 @@
                 <div id="current-balance-soul" style="display:inline-block;"><img src="img/soul_logo.png" alt="SOUL" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX SOUL</div>
                 <div id="current-balance-kcal" style="display:inline-block;margin-left:1em;"><img src="img/kcal_logo.png" alt="KCAL" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX KCAL</div>
                 <div id="current-balance-goati" style="display:inline-block;margin-left:1em;"><img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX GOATI</div>
+                <div id="current-balance-gas" style="display:inline-block;margin-left:1em;"><img src="img/gas_logo.png" alt="GAS" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX GAS</div>
               </div>
               <div class="wrapper-filters">
                 <div>Filter by</div>
@@ -133,6 +134,7 @@ $(document).ready(function() {
   loadedKCALbalance = 0;
   loadedSOULbalance = 0;
   loadedGOATIbalance = 0;
+  loadedGASbalance = 0;
 
   {{#each holdings}}
     if ('{{Symbol}}' == 'KCAL') {
@@ -147,6 +149,10 @@ $(document).ready(function() {
       loadedGOATIbalance = '{{Amount}}';
       document.getElementById("current-balance-goati").innerHTML = '<img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">' + numberWithCommas(loadedGOATIbalance) + ' GOATI';
     }
+    if ('{{Symbol}}' == 'GAS') {
+      loadedGASbalance = '{{Amount}}';
+      document.getElementById("current-balance-gas").innerHTML = '<img src="img/gas_logo.png" alt="GAS" title="Available Balance" style="margin-right:1em;width:2.5em;">' + numberWithCommas(loadedGASbalance) + ' GAS';
+    }
   {{/each}}
 
   if (loadedKCALbalance == 0) {
@@ -157,6 +163,9 @@ $(document).ready(function() {
   }
   if (loadedGOATIbalance == 0) {
       document.getElementById("current-balance-goati").innerHTML = '<img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">N/A';
+  }
+  if (loadedGASbalance == 0) {
+      document.getElementById("current-balance-gas").innerHTML = '<img src="img/gas_logo.png" alt="GAS" title="Available Balance" style="margin-right:1em;width:2.5em;">N/A';
   }
 
   // preload nft list for selling dropdown bootbox
@@ -509,8 +518,8 @@ function sortCategory(category) {
       itemsListInitial.sort(formatSorting('sort-price'), {
           order: order,
           sortFunction: function (a, b) {
-              a = parseFloat(a._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
-              b = parseFloat(b._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
+              a = parseFloat(a._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI','').replace('GAS',''));
+              b = parseFloat(b._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI','').replace('GAS',''));
               return a > b ? 1 :
                      a < b ? -1 : 0;
           }
@@ -519,8 +528,8 @@ function sortCategory(category) {
       itemsList.sort(formatSorting('sort-price'), {
           order: order,
           sortFunction: function (a, b) {
-              a = parseFloat(a._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
-              b = parseFloat(b._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI',''));
+              a = parseFloat(a._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI','').replace('GAS',''));
+              b = parseFloat(b._values.priceFilter.toString().replace(' - CANCEL','').replace(',','').replace('BUY FOR','').replace('SOUL','').replace('KCAL','').replace('GOATI','').replace('GAS',''));
               return a > b ? 1 :
                      a < b ? -1 : 0;
           }
@@ -579,21 +588,44 @@ function sortCategory(category) {
 
 function getStats() {
 
-  $.get('https://marketplace.ghostdevs.com/json/marketplacetransactions.json',
+  $.when(
 
-    function (data) {
+    $.get('https://marketplace.ghostdevs.com/json/marketplacetransactions.json',
+
+      function (data) {
+        dataAll = data
+      }
+
+    ),
+    $.get('https://marketplace.ghostdevs.com/json/marketplacetransactionsdaily.json',
+
+      function (data) {
+        dataDaily = data
+      }
+
+    )
+
+  ).then(function() {
 
       var now = new Date();
 
-      totalUniqueUsers = [...new Set(data.map(item => item.address))].length;
-      totalUsers = data.length;
+      totalSales = parseFloat(dataDaily[dataDaily.length - 1].totalValueGAS) + parseFloat(dataDaily[dataDaily.length - 1].totalValueGOATI) + parseFloat(dataDaily[dataDaily.length - 1].totalValueKCAL) + parseFloat(dataDaily[dataDaily.length - 1].totalValueSOUL)
+      totalSales = '$' + (totalSales.toFixed(0));
+
+      totalSalesLastDay = parseFloat(dataDaily[dataDaily.length - 1].currentValueGAS) + parseFloat(dataDaily[dataDaily.length - 1].currentValueGOATI) + parseFloat(dataDaily[dataDaily.length - 1].currentValueKCAL) + parseFloat(dataDaily[dataDaily.length - 1].currentValueSOUL)
+      totalSalesBeforeLastDay = parseFloat(dataDaily[dataDaily.length - 2].currentValueGAS) + parseFloat(dataDaily[dataDaily.length - 2].currentValueGOATI) + parseFloat(dataDaily[dataDaily.length - 2].currentValueKCAL) + parseFloat(dataDaily[dataDaily.length - 2].currentValueSOUL)
+      totalSalesLastDayFormatted = '$' + (totalSalesLastDay.toFixed(0));
+
+
+      totalUniqueUsers = [...new Set(dataAll.map(item => item.address))].length;
+      totalUsers = dataAll.length;
 
       totalItems = mergedAuctionsFinal.length
       totalItemsOnSale = mergedAuctionsFinalNotExpired.length
       totalItemsExpired = (mergedAuctionsFinal.length) - (mergedAuctionsFinalNotExpired.length)
 
       currentDay = (now.getTime())/1000;
-      startingDay = data[0].time;
+      startingDay = dataAll[0].time;
       daysElapsed = (currentDay - startingDay) / 60 / 60 / 24;
       txPerDay = (totalUsers/daysElapsed).toFixed(2);
 
@@ -602,20 +634,20 @@ function getStats() {
       tempUsersArray = []
       tempUsersBeforeArray = []
       for (var i = 0; i < totalUsers; i++) {
-        if (data[i].time > (currentDay - 86400)) {
+        if (dataAll[i].time > (currentDay - 86400)) {
           totalUsersLastDay++
           tempUsersArray.push({
-              time: data[i].time,
-              hash: data[i].hash,
-              address: data[i].address
+              time: dataAll[i].time,
+              hash: dataAll[i].hash,
+              address: dataAll[i].address
           });
         }
-        if ((data[i].time > (currentDay - (86400*2))) && (data[i].time < (currentDay - (86400)))) {
+        if ((dataAll[i].time > (currentDay - (86400*2))) && (dataAll[i].time < (currentDay - (86400)))) {
           totalUsersBeforeLastDay++
           tempUsersBeforeArray.push({
-              time: data[i].time,
-              hash: data[i].hash,
-              address: data[i].address
+              time: dataAll[i].time,
+              hash: dataAll[i].hash,
+              address: dataAll[i].address
           });
         }
       }
@@ -626,9 +658,9 @@ function getStats() {
         totalUsersLastDayChange = '+' + (((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
       } else {
         if (totalUsersBeforeLastDay > 0) {
-          totalUsersLastDayChange = (((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+            totalUsersLastDayChange = (((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
         } else {
-          totalUsersLastDayChange = '';
+            totalUsersLastDayChange = '';
         }
       }
 
@@ -636,9 +668,19 @@ function getStats() {
         totalUniqueUsersLastDayChange = '+' + (((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
       } else {
         if (totalUniqueUsersBeforeLastDay > 0) {
-          totalUniqueUsersLastDayChange = (((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+            totalUniqueUsersLastDayChange = (((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
         } else {
-          totalUniqueUsersLastDayChange = '';
+            totalUniqueUsersLastDayChange = '';
+        }
+      }
+
+      if ((((totalSalesLastDay/totalSalesBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
+        totalSalesLastDayChange = '+' + (((totalSalesLastDay/totalSalesBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+      } else {
+        if (totalUniqueUsersBeforeLastDay > 0) {
+            totalSalesLastDayChange = (((totalSalesLastDay/totalSalesBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+        } else {
+            totalSalesLastDayChange = '';
         }
       }
 
@@ -658,6 +700,14 @@ function getStats() {
         totalUniqueUsersLastDayChangeClass = 'red'
       }
 
+      if ((((totalSalesLastDay/totalSalesBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
+        totalSalesLastDayChangeClass = '#3e8700'
+      } else if ((((totalSalesLastDay/totalSalesBeforeLastDay) * 100).toFixed(2) - 100) == 0.00) {
+        totalSalesLastDayChangeClass = 'blue'
+      } else {
+        totalSalesLastDayChangeClass = 'red'
+      }
+
       dataTooltipStats = ''
         + '<div class="center" style="font-size:.9;margin-top:1em;">'
         + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">TOTAL ITEMS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItems) + '<span></span></span></div>'
@@ -665,29 +715,30 @@ function getStats() {
         + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">ITEMS EXPIRED</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsExpired) + '<span></span></span></div><br>'
         + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">TOTAL TRANSACTIONS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsers) + '<span></span></span></div>'
         + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">TOTAL USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsers) + '<span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">AVERAGE TX PER DAY</span><br><span style="font-size: 1.5em;">' + numberWithCommas(txPerDay) + '<span></span></span></div><br>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">TOTAL SALES</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalSales) + '<span></span></span></div><br>'
+        //+ '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">AVERAGE TX PER DAY</span><br><span style="font-size: 1.5em;">' + numberWithCommas(txPerDay) + '<span></span></span></div>'
         + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">24H TRANSACTIONS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUsersLastDayChangeClass + '">' + totalUsersLastDayChange + '</span><span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">24H USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUniqueUsersLastDayChangeClass + '">' + totalUniqueUsersLastDayChange + '</span><span></span></span></div><br>'
-        + '<div style="margin-bottom:1em;display:inline-block;"><div id="container-tx-historical" style="height: 320px;width: 400px;z-index:999; margin: 0 auto"></div></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">24H USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUniqueUsersLastDayChangeClass + '">' + totalUniqueUsersLastDayChange + '</span><span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span class="span-stats">24H SALES</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalSalesLastDayFormatted) + ' <span style="font-size:.8em;color:' + totalSalesLastDayChangeClass + '">' + totalSalesLastDayChange + '</span><span></span></span></div><br>'
+        + '<div style="margin-bottom:1em;display:inline-block;"><div id="container-tx-historical" style="height: 320px;width: 350px;z-index:999; margin: 0 auto"></div></div><div style="margin-bottom:1em;display:inline-block;"><div id="container-tx-historical-volume" style="height: 320px;width: 350px;z-index:999; margin: 0 auto"></div></div>'
         + '</div>';
 
       document.getElementById("tooltip_stats").innerHTML = dataTooltipStats;
 
-      $.getJSON('https://marketplace.ghostdevs.com/json/marketplacetransactionsdaily.json', function(data) {
-
           var ohlc = [],
               ohlc2 = [],
-              dataLength = data.length,
+              dataLength = dataDaily.length,
               i = 0,
               amountTotal = 0;
           for (i; i < dataLength; i += 1) {
+            if (i <= 8) {continue;}
               ohlc.push([
-                  data[i].time * 1000,
-                  parseFloat(data[i].amount),
+                  dataDaily[i].time * 1000,
+                  parseFloat(dataDaily[i].amount),
               ]);
-              amountTotal += parseFloat(data[i].amount)
+              amountTotal += parseFloat(dataDaily[i].amount)
               ohlc2.push([
-                  data[i].time * 1000,
+                  dataDaily[i].time * 1000,
                   amountTotal
               ]);
           }
@@ -830,6 +881,160 @@ function getStats() {
               }]
           });
 
+          var ohlc = [],
+              ohlc2 = [],
+              dataLength = dataDaily.length,
+              i = 0;
+          for (i; i < dataLength; i += 1) {
+            if (i <= 8) {continue;}
+              ohlc.push([
+                  dataDaily[i].time * 1000,
+                  parseFloat(dataDaily[i].currentValueGAS) + parseFloat(dataDaily[i].currentValueGOATI) + parseFloat(dataDaily[i].currentValueKCAL) + parseFloat(dataDaily[i].currentValueSOUL),
+              ]);
+              ohlc2.push([
+                  dataDaily[i].time * 1000,
+                  parseFloat(dataDaily[i].totalValueGAS) + parseFloat(dataDaily[i].totalValueGOATI) + parseFloat(dataDaily[i].totalValueKCAL) + parseFloat(dataDaily[i].totalValueSOUL),
+              ]);
+          }
+
+          Highcharts.setOptions({
+              lang: {
+                  rangeSelectorZoom: ''
+              }
+          });
+
+          Highcharts.stockChart('container-tx-historical-volume', {
+              title: {
+                  text: 'Historical Marketplace Sales',
+                  style: {
+                      fontFamily: 'Rubik',
+                      color: "#333"
+                  }
+              },
+              chart: {
+                  backgroundColor: 'transparent',
+                  style: {
+                      fontFamily: 'Rubik',
+                      color: "#333"
+                  }
+              },
+              xAxis: {
+                type: 'datetime',
+                labels: {
+                  formatter: function() {
+                    return Highcharts.dateFormat('%d %b %Y', this.value);
+                  },
+                  style: {
+                      fontFamily: 'Rubik',
+                      color: "#333"
+                  }
+                }
+              },
+              yAxis: [{
+                  gridLineWidth: 0,
+                  minorGridLineWidth: 0,
+                  labels: {
+                      formatter: function() {
+                          return '$' + this.axis.defaultLabelFormatter.call(this);
+                      },
+                      style: {
+                          fontFamily: 'Rubik',
+                          color: "#333"
+                      }
+                  },
+                  min: 0,
+                  opposite: false
+              },{
+                  labels: {
+                      formatter: function() {
+                          return '$' + this.axis.defaultLabelFormatter.call(this);
+                      },
+                      style: {
+                          fontFamily: 'Rubik',
+                          color: "#333",
+                      }
+                  },
+                  opposite: true,
+                  min: 0,
+                  gridLineWidth: 0,
+                  minorGridLineWidth: 0
+              }],
+              navigator: {
+                  enabled: false
+              },
+              scrollbar: {
+                  enabled: false
+              },
+              rangeSelector: {
+                  selected: 0,
+                  enabled: false
+              },
+              legend: {
+                  enabled: true,
+                  itemStyle: {
+                    fontFamily: 'Rubik',
+                    color: "#333",
+                    fontWeight: "Light"
+                  }
+              },
+              credits: {
+                  enabled: false
+              },
+              exporting: {
+                  enabled: false
+              },
+              plotOptions: {
+                  area: {
+                      marker: {
+                          radius: 4
+                      },
+                      lineWidth: 3,
+                      states: {
+                          hover: {
+                              lineWidth: 1
+                          }
+                      },
+                      threshold: null
+                  }
+              },
+              tooltip: {
+                  shared: true,
+                  split: false,
+                  formatter: function() {
+                      var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', new Date(this.x));
+                      $.each(this.points, function(i, point) {
+                          s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
+                      });
+                      return s;
+                  }
+              },
+              series: [{
+                  type: 'area',
+                  name: 'Daily Sales',
+                  data: ohlc,
+                  color: '#17B0E7',
+                  fillColor: {
+                      linearGradient: {
+                          x1: 1,
+                          y1: 1,
+                          x2: 1,
+                          y2: 1
+                      },
+                      stops: [
+                          [0, '#333'],
+                          [1, '#333']
+                      ]
+                  }
+              },{
+                  type: 'area',
+                  name: 'Total Sales',
+                  yAxis: 1,
+                  data: ohlc2,
+                  color: '#FFBF32',
+                  fillOpacity: 0
+              }]
+          });
+
           // add timeout to handle bug safari & IE
           setTimeout(function(){
 
@@ -845,16 +1050,11 @@ function getStats() {
 
           }, 1000);
 
-      }).fail(function() {
-        $('i#tooltip-stats-container').hide();
-        console.log("error api call");
-      });
-
     }
   ).fail(function() {
-    $('i#tooltip-stats-container').hide();
-    console.log("error api call");
+        console.log("error api call");
   });
+
 
 }
 
@@ -1176,18 +1376,6 @@ function refreshAuctions() {
      alertbox.show('NFT Marketplace update complete... ' + (itemsList.matchingItems).length + ' NFTs loaded!');
    }
 
-  // init tooltipster button
-  if ($('button.tooltip').hasClass("tooltipstered")) {
-    $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
-  }
-
-  $('button.tooltip').tooltipster({
-    theme: 'tooltipster-light',
-    contentCloning: true,
-    interactive: true,
-    side: 'top'
-  });
-
   if (initialLoad == 0) {
     //document.getElementById("count-search").innerHTML = mergedAuctionsFinalNotExpired.length + ' items available';
     document.getElementById("count-search").innerHTML = '100 items available';
@@ -1228,6 +1416,17 @@ function refreshAuctions() {
        }, 1000);
 
   })
+  // init tooltipster button
+  if ($('button.tooltip').hasClass("tooltipstered")) {
+    $('button.tooltip.nft-order.info.tooltipstered').tooltipster('destroy');
+  }
+
+  $('button.tooltip').tooltipster({
+    theme: 'tooltipster-light',
+    contentCloning: true,
+    interactive: true,
+    side: 'top'
+  });
   }
 
 }
@@ -1313,6 +1512,17 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
 
       if (parseFloat(loadedGOATIbalance) < (parseFloat(priceNFT))*1.02) {
             bootbox.alert('Not enough GOATI available. You need ' + numberWithCommas(Math.ceil((parseFloat(priceNFT)*1.02) - parseFloat(loadedGOATIbalance))) + ' more GOATI to buy this NFT!');
+            return;
+      }
+
+    }
+
+  } else if (quoteSymbol == 'GAS') {
+
+    if (creatorAddress !== '{{address}}') {
+
+      if (parseFloat(loadedGASbalance) < (parseFloat(priceNFT))*1.02) {
+            bootbox.alert('Not enough GAS available. You need ' + numberWithCommas(Math.ceil((parseFloat(priceNFT)*1.02) - parseFloat(loadedGASbalance))) + ' more GAS to buy this NFT!');
             return;
       }
 
@@ -1504,7 +1714,7 @@ function initiateSell() {
                   + '<div class="filter-results-count" id="filter-results-count">You have selected <strong><span id="selected-nfts">0</span> NFTs </strong> to be sold.</div><br>'
                   + '2) Specify amount, currency and duration of your sale:<br><br>'
                   + '<div class="center"><input type="text" class="form-control" name="sell-amount" style="width:60%;display:inline-block" id="sell-amount">'
-                  + '<select style="margin-left:2em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="sell-currency"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
+                  + '<select style="margin-left:2em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="sell-currency"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option><option value="GAS">GAS</option></select>'
                   + '<select style="margin-left:2em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="sell-enddate">'
                   + '<option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option><option value="5">5 days</option><option value="6">6 days</option><option value="7">7 days</option><option value="8">8 days</option><option value="9">9 days</option><option value="10">10 days</option>'
                   + '<option value="11">11 days</option><option value="12">12 days</option><option value="13">13 days</option><option value="14">14 days</option><option value="15">15 days</option><option value="16">16 days</option><option value="17">17 days</option><option value="18">18 days</option><option value="19">19 days</option><option value="20">20 days</option>'
@@ -1831,7 +2041,7 @@ function initiateBuy() {
   $('#sendSpinner').show();
 
   contentBootbox = '1) Select the NFT(s) you would like to buy:<br><i><span style="font-size:.7em;">You can select multiple NFT(s) by pressing shift/control.</span></i><br><br>'
-                + '<div class="filter-results">Currency: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-currency-filter"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option></select>'
+                + '<div class="filter-results">Currency: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-currency-filter"><option value="SOUL">SOUL</option><option value="KCAL">KCAL</option><option value="GOATI">GOATI</option><option value="GAS">GAS</option></select>'
                 + 'Type: <select style="margin-left:.5em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;display:inline-block;" id="buy-type-filter"><option value="any">Any</option><option value="myItems">My Items</option><option value="license">Game Access</option><option value="part">Vehicle Parts</option><option value="vehicle">Vehicles</option></select>'
                 + 'Rarity: <select style="margin-left:.5em;margin-right:1em;display:inline-block;height: 2.5em;text-transform:uppercase;" id="buy-rarity-filter"><option value="any">Any</option><option value="consumer">Consumer</option><option value="industrial">Industrial</option><option value="professional">Professional</option><option value="custom">Custom</option><option value="collector">Collector</option><option value="unique">Unique</option></select>'
                 + 'Sort by: <select style="margin-left:.5em;margin-right:1em;height: 2.5em;text-transform:uppercase;" id="buy-sort"><option value="item">Item</option><option value="price">Price</option><option value="mint">Mint #</option><option value="rarity">Rarity</option></select>'
@@ -2034,8 +2244,14 @@ function initiateBuy() {
          $("#buy-type-filter").val("any");
          $("#buy-rarity-filter").val("any");
 
-         $("#select-nft-buy").show();
          $("#loader-nftlist-modal").hide();
+         if (document.getElementById("available-nfts-buy").innerHTML == '0') {
+           $("#select-nft-buy").hide();
+           $("#filter-results-count-selected").hide();
+         } else {
+           $("#select-nft-buy").show();
+           $("#filter-results-count-selected").show();
+         }
 
          // hide pending
          for (var i = 0; i < pendingItems.length; i++) {

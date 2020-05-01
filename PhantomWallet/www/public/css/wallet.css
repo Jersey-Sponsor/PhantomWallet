@@ -2606,11 +2606,11 @@ input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-
     color: #ddd;
 }
 
-.dark-mode-tooltip #container-tx-historical .highcharts-area-series text tspan, .dark-mode-tooltip #container-historical-lottery .highcharts-area-series text tspan {
+.dark-mode-tooltip #container-tx-historical .highcharts-area-series text tspan, .dark-mode-tooltip #container-tx-historical-volume .highcharts-area-series text tspan, .dark-mode-tooltip #container-historical-lottery .highcharts-area-series text tspan {
     fill: #fff !important;
 }
 
-.dark-mode-tooltip #container-tx-historical .highcharts-series-0 .highcharts-area, .dark-mode-tooltip #container-tx-historical .highcharts-series-1 .highcharts-area, .dark-mode-tooltip #container-historical-lottery .highcharts-series-0 .highcharts-area, .dark-mode-tooltip #container-historical-lottery .highcharts-series-1 .highcharts-area {
+.dark-mode-tooltip #container-tx-historical .highcharts-series-0 .highcharts-area, .dark-mode-tooltip #container-tx-historical .highcharts-series-1 .highcharts-area, .dark-mode-tooltip #container-tx-historical-volume .highcharts-series-0 .highcharts-area, .dark-mode-tooltip #container-tx-historical-volume .highcharts-series-1 .highcharts-area, .dark-mode-tooltip #container-historical-lottery .highcharts-series-0 .highcharts-area, .dark-mode-tooltip #container-historical-lottery .highcharts-series-1 .highcharts-area {
     fill: transparent !important;
 }
 
