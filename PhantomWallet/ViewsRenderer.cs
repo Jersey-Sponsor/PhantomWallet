@@ -227,7 +227,7 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/convert", RouteConvertAddress);
 
-            //TemplateEngine.Server.Post("/converteth", RouteConvertAddressETH);
+            TemplateEngine.Server.Post("/converteth", RouteConvertAddressETH);
 
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
 
@@ -1130,7 +1130,7 @@ namespace Phantom.Wallet
             }
             return null;
         }
-
+/*
         private object RouteInvokeSettleTxETH(HTTPRequest request)
         {
             var txHash = request.GetVariable("txHash");
@@ -1151,7 +1151,7 @@ namespace Phantom.Wallet
             }
             return null;
         }
-
+*/
         private object RouteConvertAddress(HTTPRequest request)
         {
             var neoKey = request.GetVariable("neoKey");

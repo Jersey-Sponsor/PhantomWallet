@@ -119,7 +119,7 @@
                   <div class="col-md-12">
                       <div>
                           <h4 class="control-label" style="margin-bottom: 0;">Step 2) Sign with your ETH wallet</h4>
-                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
+                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key (WIF)</div>
                           <input type="password" class="form-control parameters-swap-input" id="ethprivatekey" style="text-align:center;" placeholder="Enter ETH key">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapPendingETH()" id="ethcheckbutton">CHECK PENDING SWAPS</button>
                           <div id="wrapper-swapaddressfail-confirm" style="opacity:0;text-align:center;"></div>
@@ -1454,8 +1454,8 @@
       fetchValuesPending = '';
       isFirstSwap = true;
 
-      if (ethkey.length != 64) {
-          bootbox.alert("Please insert a valid private key!");
+      if (ethkey.length !== 52) {
+          bootbox.alert("Please insert a valid private key (WIF)!");
           return;
       }
 
