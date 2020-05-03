@@ -1631,7 +1631,7 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
                                } else {
                                  customrestport = '{{rpcurl}}';
                                  customrestport = customrestport.slice(0,-8) + '7078';
-                                 $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                                 $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                                      function (returnedDataTX) {
                                        console.log(JSON.parse(returnedDataTX).hash)
                                        alertbox.show('Transaction successful, hash: ' + returnedData);
@@ -2010,7 +2010,7 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
                        } else {
                          customrestport = '{{rpcurl}}';
                          customrestport = customrestport.slice(0,-8) + '7078';
-                         $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                         $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                              function (returnedDataTX) {
                                console.log(JSON.parse(returnedDataTX).hash)
                                alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
@@ -2584,7 +2584,7 @@ function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
                        } else {
                          customrestport = '{{rpcurl}}';
                          customrestport = customrestport.slice(0,-8) + '7078';
-                         $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                         $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                              function (returnedDataTX) {
                                console.log(JSON.parse(returnedDataTX).hash)
                                alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);

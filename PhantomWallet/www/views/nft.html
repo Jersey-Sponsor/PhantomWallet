@@ -678,7 +678,7 @@ function redeemPack() {
                                 } else {
                                   customrestport = '{{rpcurl}}';
                                   customrestport = customrestport.slice(0,-8) + '7078';
-                                  $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                                  $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                                       function (returnedDataTX) {
                                         console.log(JSON.parse(returnedDataTX).hash)
                                         alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
@@ -1224,7 +1224,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
                                 } else {
                                   customrestport = '{{rpcurl}}';
                                   customrestport = customrestport.slice(0,-8) + '7078';
-                                  $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                                  $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                                       function (returnedDataTX) {
                                         console.log(JSON.parse(returnedDataTX).hash)
                                         alertbox.show('Transaction successful, hash: ' + returnedData);
@@ -1395,7 +1395,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
                                 } else {
                                   customrestport = '{{rpcurl}}';
                                   customrestport = customrestport.slice(0,-8) + '7078';
-                                  $.get(customrestport + '/api//getTransaction?hashText=' + returnedData,
+                                  $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                                       function (returnedDataTX) {
                                         console.log(JSON.parse(returnedDataTX).hash)
                                         alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
