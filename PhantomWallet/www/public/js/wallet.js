@@ -69,8 +69,12 @@ function RegisterName() {
                     bootbox.alert("Name can not be empty");
                     return;
                 }
+                if (!isNaN(name.charAt(0))) {
+                    bootbox.alert("Name must not start by a number");
+                    return;
+                }
                 if (name.length < 4 || name.length > 15) {
-                    bootbox.alert("Name must be bigger than 4 letters and less than 15");
+                    bootbox.alert("Name must be bigger than 3 letters and less than 16");
                     return;
                 }
                 if (name == 'anonymous' || name == 'genesis') {
@@ -104,7 +108,6 @@ function RegisterName() {
                         $('#nameSpinner').hide();
                         if (returnedData !== "") {
                             window.location.replace("/waiting/" + returnedData);
-                            console.log("error");
                         } else {
                             window.location.replace("/error");
                         }
