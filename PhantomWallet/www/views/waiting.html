@@ -26,7 +26,18 @@
             function(returnedData) {
         				console.log('confirmations: ', returnedData);
                         if (returnedData === 'confirmed') {
-                            window.location.replace("/history");
+                          customrestport = '{{rpcurl}}';
+                          customrestport = customrestport.slice(0,-8) + '7078';
+                          $.get(customrestport + '/api/getTransaction?hashText={{confirmingTxHash}}',
+                              function (returnedDataTX) {
+                                console.log(JSON.parse(returnedDataTX))
+                                if (JSON.parse(returnedDataTX).error != undefined && JSON.parse(returnedDataTX).error != 'pending') {
+                                  window.location.replace("/error/?customerror=" + JSON.parse(returnedDataTX).error);
+                                } else {
+                                  window.location.replace("/history");
+                                }
+                              }
+                          )
                         } else if (returnedData === 'settling') {
                             $('#waitingText').text('Waiting for transaction settling confirmation');
                             setTimeout(getConfirmations, 2000);
