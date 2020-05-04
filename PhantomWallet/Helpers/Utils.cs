@@ -493,6 +493,15 @@ namespace Phantom.Wallet.Helpers
                 case "GAS":
                     baseticker = "gas";
                     break;
+                case "USDT":
+                    baseticker = "tether";
+                    break;
+                case "ETH":
+                    baseticker = "ethereum";
+                    break;
+                case "DAI":
+                    baseticker = "dai";
+                    break;
                 default:
                     baseticker = "phantasma";
                     break;

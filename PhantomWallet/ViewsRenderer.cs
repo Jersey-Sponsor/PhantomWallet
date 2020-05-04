@@ -1,19 +1,17 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using LunarLabs.WebServer.HTTP;
 using LunarLabs.WebServer.Templates;
-using Phantasma.Blockchain.Contracts;
 using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.Numerics;
+using Phantasma.Ethereum;
 using Phantom.Wallet.Controllers;
 using Phantom.Wallet.Helpers;
 using Phantom.Wallet.DTOs;
 using Phantom.Wallet.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Serilog;
 using Serilog.Core;
 
@@ -225,7 +223,11 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/settle/tx", RouteInvokeSettleTx);
 
+            //TemplateEngine.Server.Post("/settleeth/tx", RouteInvokeSettleTxETH);
+
             TemplateEngine.Server.Post("/convert", RouteConvertAddress);
+
+            TemplateEngine.Server.Post("/converteth", RouteConvertAddressETH);
 
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
 
@@ -1128,7 +1130,28 @@ namespace Phantom.Wallet
             }
             return null;
         }
+/*
+        private object RouteInvokeSettleTxETH(HTTPRequest request)
+        {
+            var txHash = request.GetVariable("txHash");
+            var ethKey = request.GetVariable("ethKey");
+            var assetSymbol = request.GetVariable("assetSymbol");
+            var context = InitContext(request);
+            var phantasmaKeys = GetLoginKey(request);
+            InvalidateCache(phantasmaKeys.Address);
+            if (context["holdings"] is Holding[] balance)
+            {
+                EthereumKey ethKeys;
 
+                ethKeys = EthereumKey.FromWIF(ethKey);
+
+                var result = AccountController.InvokeSettleTx(ethKeys, phantasmaKeys, txHash, assetSymbol).Result;
+                ResetSessionSendFields(request);
+                return result;
+            }
+            return null;
+        }
+*/
         private object RouteConvertAddress(HTTPRequest request)
         {
             var neoKey = request.GetVariable("neoKey");
@@ -1146,6 +1169,20 @@ namespace Phantom.Wallet
                 neoKeys = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
             }
             var result = $"{neoKeys.ToString()}";
+            return result;
+
+        }
+
+        private object RouteConvertAddressETH(HTTPRequest request)
+        {
+            var ethKey = request.GetVariable("ethKey");
+            var context = InitContext(request);
+
+            EthereumKey ethKeys;
+
+            ethKeys = EthereumKey.FromWIF(ethKey);
+
+            var result = $"{ethKeys.ToString()}";
             return result;
 
         }
