@@ -612,9 +612,9 @@ function getStats() {
       totalSales = parseFloat(dataDaily[dataDaily.length - 1].totalValueGAS) + parseFloat(dataDaily[dataDaily.length - 1].totalValueGOATI) + parseFloat(dataDaily[dataDaily.length - 1].totalValueKCAL) + parseFloat(dataDaily[dataDaily.length - 1].totalValueSOUL)
       totalSales = '$' + (totalSales.toFixed(0));
 
-      totalSalesLastDay = parseFloat(dataDaily[dataDaily.length - 1].currentValueGAS) + parseFloat(dataDaily[dataDaily.length - 1].currentValueGOATI) + parseFloat(dataDaily[dataDaily.length - 1].currentValueKCAL) + parseFloat(dataDaily[dataDaily.length - 1].currentValueSOUL)
-      totalSalesBeforeLastDay = parseFloat(dataDaily[dataDaily.length - 2].currentValueGAS) + parseFloat(dataDaily[dataDaily.length - 2].currentValueGOATI) + parseFloat(dataDaily[dataDaily.length - 2].currentValueKCAL) + parseFloat(dataDaily[dataDaily.length - 2].currentValueSOUL)
-      totalSalesLastDayFormatted = '$' + (totalSalesLastDay.toFixed(0));
+      //totalSalesLastDay = parseFloat(dataDaily[dataDaily.length - 1].currentValueGAS) + parseFloat(dataDaily[dataDaily.length - 1].currentValueGOATI) + parseFloat(dataDaily[dataDaily.length - 1].currentValueKCAL) + parseFloat(dataDaily[dataDaily.length - 1].currentValueSOUL)
+      //totalSalesBeforeLastDay = parseFloat(dataDaily[dataDaily.length - 2].currentValueGAS) + parseFloat(dataDaily[dataDaily.length - 2].currentValueGOATI) + parseFloat(dataDaily[dataDaily.length - 2].currentValueKCAL) + parseFloat(dataDaily[dataDaily.length - 2].currentValueSOUL)
+      //totalSalesLastDayFormatted = '$' + (totalSalesLastDay.toFixed(0));
 
 
       totalUniqueUsers = [...new Set(dataAll.map(item => item.address))].length;
@@ -631,11 +631,14 @@ function getStats() {
 
       totalUsersLastDay = 0
       totalUsersBeforeLastDay = 0
+      currentValueLastDay = 0
+      currentValueBeforeLastDay = 0
       tempUsersArray = []
       tempUsersBeforeArray = []
       for (var i = 0; i < totalUsers; i++) {
         if (dataAll[i].time > (currentDay - 86400)) {
           totalUsersLastDay++
+          currentValueLastDay += dataAll[i].value
           tempUsersArray.push({
               time: dataAll[i].time,
               hash: dataAll[i].hash,
@@ -644,6 +647,7 @@ function getStats() {
         }
         if ((dataAll[i].time > (currentDay - (86400*2))) && (dataAll[i].time < (currentDay - (86400)))) {
           totalUsersBeforeLastDay++
+          currentValueBeforeLastDay += dataAll[i].value
           tempUsersBeforeArray.push({
               time: dataAll[i].time,
               hash: dataAll[i].hash,
@@ -651,6 +655,11 @@ function getStats() {
           });
         }
       }
+
+      totalSalesLastDay = currentValueLastDay
+      totalSalesBeforeLastDay = currentValueBeforeLastDay
+      totalSalesLastDayFormatted = '$' + (totalSalesLastDay.toFixed(0));
+
       totalUniqueUsersLastDay = [...new Set(tempUsersArray.map(item => item.address))].length;
       totalUniqueUsersBeforeLastDay = [...new Set(tempUsersBeforeArray.map(item => item.address))].length;
 
