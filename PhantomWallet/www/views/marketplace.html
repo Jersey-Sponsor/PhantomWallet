@@ -247,7 +247,7 @@ $(document).ready(function() {
           var date = new Date(mint_date * 1000);
           var year = date.getFullYear();
           var month = ("0" + (date.getMonth() + 1)).slice(-2)
-          var day = ("0" + (date.getDate() + 1)).slice(-2)
+          var day = ("0" + (date.getDate())).slice(-2)
           mintDateFormatted = year + "-" + month + "-" + day;
         }
         sellCustomNFT.push({
