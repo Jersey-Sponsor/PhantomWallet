@@ -1642,8 +1642,13 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
                                  customrestport = customrestport.slice(0,-8) + '7078';
                                  $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                                      function (returnedDataTX) {
-                                       console.log(JSON.parse(returnedDataTX).hash)
-                                       alertbox.show('Transaction successful, hash: ' + returnedData);
+                                       if (JSON.parse(returnedDataTX).error) {
+                                         console.log(JSON.parse(returnedDataTX).hash)
+                                         alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                                       } else {
+                                         console.log(JSON.parse(returnedDataTX).hash)
+                                         alertbox.show('Transaction successful, hash: ' + returnedData);
+                                       }
                                      }
                                  )
                                }
@@ -2021,8 +2026,13 @@ function confirmSellNFT(nftIdArr, priceNFT, quoteSymbol, endDate) {
                          customrestport = customrestport.slice(0,-8) + '7078';
                          $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                              function (returnedDataTX) {
-                               console.log(JSON.parse(returnedDataTX).hash)
-                               alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                               if (JSON.parse(returnedDataTX).error) {
+                                 console.log(JSON.parse(returnedDataTX).hash)
+                                 alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                               } else {
+                                 console.log(JSON.parse(returnedDataTX).hash)
+                                 alertbox.show('Transaction successful, hash: ' + returnedData);
+                               }
                              }
                          )
                        }
@@ -2264,7 +2274,7 @@ function initiateBuy() {
 
          // hide pending
          for (var i = 0; i < pendingItems.length; i++) {
-           $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
+           $("#select-nft-buy option[value="+(pendingItems[i].id)+"]").css('display','none')
          }
 
       });
@@ -2332,7 +2342,7 @@ function initiateBuy() {
           }
 
           for (var i = 0; i < pendingItems.length; i++) {
-            $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
+            $("#select-nft-buy option[value="+(pendingItems[i].id)+"]").css('display','none')
           }
 
        });
@@ -2415,13 +2425,13 @@ function initiateBuy() {
 
           // hide pending
           for (var i = 0; i < pendingItems.length; i++) {
-            $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
+            $("#select-nft-buy option[value="+(pendingItems[i].id)+"]").css('display','none')
           }
 
        });
 
        for (var i = 0; i < pendingItems.length; i++) {
-         $("#select-nft-buy option[value="+(pendingItems[i].id).id+"]").css('display','none')
+         $("#select-nft-buy option[value="+(pendingItems[i].id)+"]").css('display','none')
        }
 
        $("#select-nft-buy").show();
@@ -2595,8 +2605,13 @@ function confirmBuyNFTModal(quoteSymbol, nftIdArr, priceNFT, creatorAddress) {
                          customrestport = customrestport.slice(0,-8) + '7078';
                          $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                              function (returnedDataTX) {
-                               console.log(JSON.parse(returnedDataTX).hash)
-                               alertbox.show('Transaction successful, hash: ' + JSON.parse(returnedDataTX).hash);
+                               if (JSON.parse(returnedDataTX).error) {
+                                 console.log(JSON.parse(returnedDataTX).hash)
+                                 alertbox.show('Transaction ' + JSON.parse(returnedDataTX).error);
+                               } else {
+                                 console.log(JSON.parse(returnedDataTX).hash)
+                                 alertbox.show('Transaction successful, hash: ' + returnedData);
+                               }
                              }
                          )
                        }
