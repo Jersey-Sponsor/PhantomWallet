@@ -506,16 +506,19 @@ function getRedeemPack() {
       }
       fetchRedeemDropdown += '</select>'
 
-      if (redeemcustomNFT.length != 0) {
-        if (document.getElementById("redeem-pack")) {
-          document.getElementById("redeem-pack").innerHTML = redeemcustomNFT.length + ' packs available. Click here to redeem!'
-          $('#redeem-pack-container').show();
-        } else {}
-      } else {
-        if (document.getElementById("redeem-pack")) {
-          document.getElementById("redeem-pack").innerHTML = 'No pack available to redeem.'
-          $('#redeem-pack-container').show();
-        } else {}
+      if (document.getElementById("redeem-pack")) {
+
+        if (redeemcustomNFT.length != 0 ) {
+            document.getElementById("redeem-pack").innerHTML = redeemcustomNFT.length + ' packs available. Click here to redeem!'
+            $('#redeem-pack-container').show();
+        } else if (redeemcustomNFT.length == 1 ) {
+            document.getElementById("redeem-pack").innerHTML = redeemcustomNFT.length + ' pack available. Click here to redeem!'
+            $('#redeem-pack-container').show();
+        } else {
+            document.getElementById("redeem-pack").innerHTML = 'No pack available to redeem.'
+            $('#redeem-pack-container').show();
+        }
+
       }
 
     })
