@@ -473,7 +473,7 @@ function cosmicSwapFixed() {
                                     window.location.replace("/portfolio");
                                   }, 5000);
                                   $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                                      document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                                      document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + (JSON.parse(returnedDataTX).hash) + '" target="_blank" title="View Transaction">' + (JSON.parse(returnedDataTX).hash) + '</a>';
                                       $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                                   });
                                 }
@@ -589,7 +589,7 @@ function Claim() {
                           window.location.replace("/portfolio");
                         }, 5000);
                         $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + (JSON.parse(returnedDataTX).hash) + '" target="_blank" title="View Transaction">' + (JSON.parse(returnedDataTX).hash) + '</a>';
                             $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                         });
                       }
@@ -755,7 +755,7 @@ function Stake() {
                                     window.location.replace("/portfolio");
                                   }, 5000);
                                   $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                                      document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                                      document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + (JSON.parse(returnedDataTX).hash) + '" target="_blank" title="View Transaction">' + (JSON.parse(returnedDataTX).hash) + '</a>';
                                       $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                                   });
                                 }
@@ -830,7 +830,7 @@ function Stake() {
                                     window.location.replace("/portfolio");
                                   }, 5000);
                                   $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                                      document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                                      document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + (JSON.parse(returnedDataTX).hash) + '" target="_blank" title="View Transaction">' + (JSON.parse(returnedDataTX).hash) + '</a>';
                                       $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                                   });
                                 }
@@ -998,7 +998,7 @@ function Unstake() {
                                   window.location.replace("/portfolio");
                                 }, 5000);
                                 $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + (JSON.parse(returnedDataTX).hash) + '" target="_blank" title="View Transaction">' + (JSON.parse(returnedDataTX).hash) + '</a>';
                                     $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                                 });
                               }
@@ -1135,7 +1135,7 @@ function MasterClaim() {
                           window.location.replace("/portfolio");
                         }, 5000);
                         $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + (JSON.parse(returnedDataTX).hash) + '" target="_blank" title="View Transaction">' + (JSON.parse(returnedDataTX).hash) + '</a>';
                             $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                         });
                       }
