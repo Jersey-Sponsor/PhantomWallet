@@ -1,8 +1,11 @@
 <h3 class="tab-title" id="main-nft-tab">NFT Sales</h3>
 
 <div class="row setup-content nft" id="nft">
+  <div id="loader-nftlist" class="block-loader center">
+    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
   <div id="sendSpinner" class="loading">Loading&#8230;</div>
-    <div class="col-xs-12">
+    <div class="col-xs-12" style="display:none;">
         <div class="col-md-12">
 
             <div style="text-align:center;" id="main-logo">
@@ -38,9 +41,6 @@
                 </div>
               </div>
               <div style="font-size:1.15em;"><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:1em;">Enter the bi-monthly lottery to win a custom NFT vehicle for 5 SOUL!</span><span id="lottery-odds"></span><i class="tooltip fas fa-info-circle" style="width:1em;margin-left:1em;" data-tooltip-content="#tooltip_lottery"></i></div>
-              <div id="loader-nftlist" class="block-loader center">
-                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-              </div>
               <div id="nftdetailslist-game" style="margin:1em;">
               </div>
               <div id="nftdetailslist-parts" style="margin:1em;">
