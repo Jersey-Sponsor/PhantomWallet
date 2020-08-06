@@ -1071,14 +1071,14 @@ function getAuctions() {
 
       $.when(
 
-        $.get('https://marketplace.ghostdevs.com/json/auctionsmarketplace.json',
+        $.get('https://seed.neoeconomy.io/phantasma/auctionsmarketplace.json',
 
           function (data) {
             dataAPIMain = data
           }
 
         ),
-        $.get('https://marketplace.ghostdevs.com/json/auctionsmarketplace-goati.json',
+        $.get('https://seed.neoeconomy.io/phantasma/auctionsmarketplace-goati.json',
 
           function (data) {
             dataAPIGoati = data
