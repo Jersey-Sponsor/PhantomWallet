@@ -229,6 +229,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/converteth", RouteConvertAddressETH);
 
+            TemplateEngine.Server.Post("/convertethHEX", RouteConvertAddressETHHEX);
+
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
 
             TemplateEngine.Server.Post("/contract/tx", RouteInvokeContractTx);
@@ -1181,6 +1183,21 @@ namespace Phantom.Wallet
             EthereumKey ethKeys;
 
             ethKeys = EthereumKey.FromWIF(ethKey);
+
+            var result = $"{ethKeys.ToString()}";
+            return result;
+
+        }
+
+        private object RouteConvertAddressETHHEX(HTTPRequest request)
+        {
+            var ethKey = request.GetVariable("ethKey");
+            var context = InitContext(request);
+
+            EthereumKey ethKeys;
+
+            var ethKeysConverted = Nethereum.Hex.HexConvertors.Extensions.HexByteConvertorExtensions.HexToByteArray(ethKey);
+            ethKeys = new EthereumKey(ethKeysConverted);
 
             var result = $"{ethKeys.ToString()}";
             return result;

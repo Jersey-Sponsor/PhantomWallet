@@ -119,10 +119,10 @@
                   <div class="col-md-12">
                       <div>
                           <h4 class="control-label" style="margin-bottom: 0;">Step 2) Sign with your ETH wallet</h4>
-                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key (WIF)</div>
+                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key (WIF or HEX)</div>
                           <input type="password" class="form-control parameters-swap-input" id="ethprivatekey" style="text-align:center;" placeholder="Enter ETH key">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapPendingETH()" id="ethcheckbutton">CHECK PENDING SWAPS</button>
-                          <div id="wrapper-swapaddressfail-confirm" style="opacity:0;text-align:center;"></div>
+                          <div id="wrapper-swapaddressfail-confirmeth" style="opacity:0;text-align:center;"></div>
                       </div>
                   </div>
               </div>
@@ -1443,8 +1443,8 @@
     function swapPendingETH() {
 
       $("#wrapper-swap-confirm").fadeTo("slow", 0);
-      $("#wrapper-swapaddress-confirm").fadeTo("slow", 0);
-      $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 0);
+      $("#wrapper-swapaddress-confirmeth").fadeTo("slow", 0);
+      $("#wrapper-swapaddressfail-confirmeth").fadeTo("slow", 0);
       $("#ethtophantasmabutton").fadeTo("slow", 0);
       $("#step-23").fadeTo("slow", 0);
 
@@ -1454,19 +1454,35 @@
       fetchValuesPending = '';
       isFirstSwap = true;
 
-      if (ethkey.length !== 52) {
-          bootbox.alert("Please insert a valid private key (WIF)!");
+      if (ethkey.length < 52 || ethkey.length > 64 || (ethkey.length > 52 && ethkey.length < 64)) {
+          bootbox.alert("Please insert a valid private key (WIF or HEX)!");
           return;
       }
 
+      if (ethkey.length === 64) {
+        convertURL = '/convertethHEX'
+      } else {
+        convertURL = '/converteth'
+      }
+
       $('#sendSpinner').show();
-      $.post('/converteth',
+      $.post(convertURL,
          {
              ethKey: ethkey
          },
          function (returnedData) {
            //console.log(returnedData)
            currentaddress = returnedData;
+
+           // TEMP TO REMOVE
+           $('#sendSpinner').hide();
+           $('#wrapper-swapaddressfail-confirmeth').fadeTo("fast", 0, function() {
+               document.getElementById("wrapper-swapaddressfail-confirmeth").innerHTML = 'No pending swaps for ' + currentaddress + '.<br>If you just sent something, try again in 10 minutes.';
+               $("#wrapper-swapaddressfail-confirmeth").fadeTo("slow", 1);
+           });
+           return;
+           // TEMP TO REMOVE
+
            $.get(customrestport + '/api/getSwapsForAddress',
              {
                  account: currentaddress
@@ -1514,26 +1530,26 @@
                  }
                  if (txhash == '') {
                    $('#sendSpinner').hide();
-                   $('#wrapper-swapaddressfail-confirm').fadeTo("fast", 0, function() {
-                       document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = 'No pending swaps for ' + currentaddress + '.<br>If you just sent something, try again in 20 seconds.';
-                       $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 1);
+                   $('#wrapper-swapaddressfail-confirmeth').fadeTo("fast", 0, function() {
+                       document.getElementById("wrapper-swapaddressfail-confirmeth").innerHTML = 'No pending swaps for ' + currentaddress + '.<br>If you just sent something, try again in 20 seconds.';
+                       $("#wrapper-swapaddressfail-confirmeth").fadeTo("slow", 1);
                    });
                  }
              }).fail(function(e) {
                $('#sendSpinner').hide();
                console.log(e)
-               $('#wrapper-swapaddressfail-confirm').fadeTo("fast", 0, function() {
-                   document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = e;
-                   $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 1);
+               $('#wrapper-swapaddressfail-confirmeth').fadeTo("fast", 0, function() {
+                   document.getElementById("wrapper-swapaddressfail-confirmeth").innerHTML = e;
+                   $("#wrapper-swapaddressfail-confirmeth").fadeTo("slow", 1);
                });
              })
 
        }).fail(function(e) {
          $('#sendSpinner').hide();
          console.log(e)
-         $('#wrapper-swapaddressfail-confirm').fadeTo("fast", 0, function() {
-             document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = 'Could not convert keys.';
-             $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 1);
+         $('#wrapper-swapaddressfail-confirmeth').fadeTo("fast", 0, function() {
+             document.getElementById("wrapper-swapaddressfail-confirmeth").innerHTML = 'Could not convert keys.';
+             $("#wrapper-swapaddressfail-confirmeth").fadeTo("slow", 1);
          });
        })
 
