@@ -1196,8 +1196,10 @@ namespace Phantom.Wallet
 
             EthereumKey ethKeys;
 
-            var ethKeysConverted = Nethereum.Hex.HexConvertors.Extensions.HexByteConvertorExtensions.HexToByteArray(ethKey);
-            ethKeys = new EthereumKey(ethKeysConverted);
+            // var ethKeysConverted = Nethereum.Hex.HexConvertors.Extensions.HexByteConvertorExtensions.HexToByteArray(ethKey);
+            // ethKeys = new EthereumKey(ethKeysConverted);
+
+            ethKeys = EthereumKey.FromWIF(ethKey);
 
             var result = $"{ethKeys.ToString()}";
             return result;
