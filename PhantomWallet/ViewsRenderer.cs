@@ -223,7 +223,7 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/settle/tx", RouteInvokeSettleTx);
 
-            //TemplateEngine.Server.Post("/settleeth/tx", RouteInvokeSettleTxETH);
+            TemplateEngine.Server.Post("/settleeth", RouteInvokeSettleTxETH);
 
             TemplateEngine.Server.Post("/convert", RouteConvertAddress);
 
@@ -1115,6 +1115,7 @@ namespace Phantom.Wallet
             InvalidateCache(phantasmaKeys.Address);
             if (context["holdings"] is Holding[] balance)
             {
+
                 Phantasma.Neo.Core.NeoKeys neoKeys;
 
                 if (string.IsNullOrEmpty(neoPassphrase))
@@ -1132,7 +1133,7 @@ namespace Phantom.Wallet
             }
             return null;
         }
-/*
+
         private object RouteInvokeSettleTxETH(HTTPRequest request)
         {
             var txHash = request.GetVariable("txHash");
@@ -1145,15 +1146,17 @@ namespace Phantom.Wallet
             {
                 EthereumKey ethKeys;
 
-                ethKeys = EthereumKey.FromWIF(ethKey);
+                var priv = Base16.Decode(ethKey);
+                var tempKey = new PhantasmaKeys(priv);
+                ethKeys = EthereumKey.FromWIF(tempKey.ToWIF());
 
-                var result = AccountController.InvokeSettleTx(ethKeys, phantasmaKeys, txHash, assetSymbol).Result;
+                var result = AccountController.InvokeSettleTxETH(ethKeys, phantasmaKeys, txHash, assetSymbol).Result;
                 ResetSessionSendFields(request);
                 return result;
             }
             return null;
         }
-*/
+
         private object RouteConvertAddress(HTTPRequest request)
         {
             var neoKey = request.GetVariable("neoKey");
@@ -1199,7 +1202,9 @@ namespace Phantom.Wallet
             // var ethKeysConverted = Nethereum.Hex.HexConvertors.Extensions.HexByteConvertorExtensions.HexToByteArray(ethKey);
             // ethKeys = new EthereumKey(ethKeysConverted);
 
-            ethKeys = EthereumKey.FromWIF(ethKey);
+            var bytes = Base16.Decode(ethKey);
+            var temp = new PhantasmaKeys(bytes);
+            ethKeys = EthereumKey.FromWIF(temp.ToWIF());
 
             var result = $"{ethKeys.ToString()}";
             return result;

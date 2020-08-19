@@ -11,7 +11,7 @@
       <span style="margin:1em;display:inline-block;" id="chainswap" class="highlighted">Chain Swap</span>
     </div>
     <div id="chainswapdiv" class="container" style="margin-top:0">
-      <select id="select-chain-swap" style="display:none;"><option value="1">From NEO Blockchain to Phantasma Blockchain</option><option value="2">From Phantasma Blockchain to NEO Blockchain</option><option value="3" disabled>From ETH Blockchain to Phantasma Blockchain</option><option value="4" disabled>From Phantasma Blockchain to ETH Blockchain</option></select>
+      <select id="select-chain-swap" style="display:none;"><option value="1">From NEO Blockchain to Phantasma Blockchain</option><option value="2">From Phantasma Blockchain to NEO Blockchain</option><option value="3" >From ETH Blockchain to Phantasma Blockchain</option><option value="4" >From Phantasma Blockchain to ETH Blockchain</option></select>
       <div id="neotophantasma">
           <div class="row setup-content" id="step-1" style="display:none;">
               <div class="col-xs-12">
@@ -934,7 +934,7 @@
                   },
                   function (returnedData) {
                     if (returnedData !== "") {
-                        //console.log(returnedData)
+                        console.log(returnedData)
                         $('#sendSpinner').hide();
                         document.getElementById("wrapper-swap-confirm").innerHTML = '<div class="loader" style="position:initial;"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-text" style="margin-top:1.5em;position:initial;" id="waitingText">Waiting for transaction confirmations<div class="loader-dots"></div></div></div>';
                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
@@ -1455,7 +1455,7 @@
       isFirstSwap = true;
 
       if (ethkey.length < 52 || ethkey.length > 64 || (ethkey.length > 52 && ethkey.length < 64)) {
-          bootbox.alert("Please insert a valid private key (WIF or HEX)!");
+          bootbox.alert("Please insert a valid private key (WIF or HEX)! " + ethkey);
           return;
       }
 
@@ -1474,38 +1474,31 @@
            //console.log(returnedData)
            currentaddress = returnedData;
 
-           // TEMP TO REMOVE
-           $('#sendSpinner').hide();
-           $('#wrapper-swapaddressfail-confirmeth').fadeTo("fast", 0, function() {
-               document.getElementById("wrapper-swapaddressfail-confirmeth").innerHTML = 'No pending swaps for ' + currentaddress + '.<br>If you just sent something, try again in 10 minutes.';
-               $("#wrapper-swapaddressfail-confirmeth").fadeTo("slow", 1);
-           });
-           return;
-           // TEMP TO REMOVE
-
            $.get(customrestport + '/api/getSwapsForAddress',
              {
                  account: currentaddress
              },
                function (returnedDataPending) {
-                 //console.log(returnedDataPending)
+                 console.log(returnedDataPending)
                  if ((typeof returnedDataPending) == 'string') {
                    returnedDataPending = JSON.parse(returnedDataPending);
                  }
+                 console.log(returnedDataPending.length)
                  for ( var i = 0; i < returnedDataPending.length; i++ ) {
-                     if (returnedDataPending[i].destinationHash == 'pending' && returnedDataPending[i].sourceChain == 'eth') {
+                     if (returnedDataPending[i].destinationHash == 'pending' && returnedDataPending[i].sourceChain == 'ethereum') {
 
                        txhash = returnedDataPending[i].sourceHash;
+                        console.log(txhash)
                        last10TX = txhash.substr(txhash.length - 10);
                        first10TX = txhash.substr(0, 10);
                        partialTX = first10TX + '...' + last10TX;
                        assetsymbol = returnedDataPending[i].symbol
                        if (returnedDataPending[i].symbol == 'USDT') {
-                         decimals = Math.pow(10,8);
+                         decimals = Math.pow(10, 6);
                        } else if (returnedDataPending[i].symbol == 'DAI') {
-                         decimals = Math.pow(10,16);
+                         decimals = Math.pow(10, 18);
                        } else if (returnedDataPending[i].symbol == 'ETH') {
-                         decimals = Math.pow(10,16);
+                         decimals = Math.pow(10, 18);
                        }
                        valueSwap = (returnedDataPending[i].value)/decimals;
                        if (isFirstSwap) {
@@ -1745,14 +1738,14 @@
               loopSettle();
               function loopSettle() {
 
-              $.post('/settleeth/tx',
+              $.post('/settleeth',
                  {
                      txHash: txhashToProcess,
                      ethKey: ethkey,
                      assetSymbol: assetsymbolToProcessETH
                  },
                  function (returnedData) {
-                   //console.log(returnedData)
+                   console.log(returnedData)
                    if (returnedData !== "") {
                      $('#sendSpinner').hide();
                      // If /settle/tx works, call /tx/hash in a loop to check if the tx worked

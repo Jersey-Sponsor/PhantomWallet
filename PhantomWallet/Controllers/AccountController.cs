@@ -715,7 +715,7 @@ namespace Phantom.Wallet.Controllers
                 return new ErrorRes { error = ex.Message };
             }
         }
-/*
+
         public async Task<object> InvokeSettleTxETH(EthereumKey ethKeys, PhantasmaKeys phantasmaKeys, string txHash, string symbol)
         {
             try
@@ -724,7 +724,7 @@ namespace Phantom.Wallet.Controllers
                 var transcodedAddress = Address.FromKey(ethKeys);
 
                 var script = ScriptUtils.BeginScript()
-                    .CallContract("interop", "SettleTransaction", transcodedAddress, NeoWallet.NeoPlatform, NeoWallet.NeoPlatform, ethTxHash)
+                    .CallContract("interop", "SettleTransaction", transcodedAddress, EthereumWallet.EthereumPlatform, EthereumWallet.EthereumPlatform, ethTxHash)
                     .CallContract("swap", "SwapFee", transcodedAddress, symbol, UnitConversion.ToBigInteger(0.1m, DomainSettings.FuelTokenDecimals))
                     .TransferBalance(symbol, transcodedAddress, phantasmaKeys.Address)
                     .AllowGas(transcodedAddress, Address.Null, MinimumFee, 800)
@@ -737,7 +737,6 @@ namespace Phantom.Wallet.Controllers
                 tx.Sign(ethKeys);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
-                Log.Information("txResult: " + txResult);
                 return txResult;
             }
             catch (RpcResponseException rpcEx)
@@ -751,7 +750,7 @@ namespace Phantom.Wallet.Controllers
                 return new ErrorRes { error = ex.Message };
             }
         }
-*/
+
         public async Task<object> InvokeSettleTx(NeoKeys neoKeys, PhantasmaKeys phantasmaKeys, string txHash, string symbol)
         {
             try
