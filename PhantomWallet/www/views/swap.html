@@ -132,7 +132,7 @@
                   <div class="col-md-12">
                       <div>
                           <h4 class="control-label">Step 3) Validate pending swaps</h4>
-                          <div id="wrapper-swapaddress-confirm" style="opacity:0;text-align:center;"></div>
+                          <div id="wrapper-swapaddress-confirmeth" style="opacity:0;text-align:center;"></div>
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapETHToPhantasma()" id="ethtophantasmabutton" style="opacity:0;">PROCESS LAST SWAP</button>
                       </div>
                   </div>
@@ -295,7 +295,7 @@
         }
 
         customrestport = '{{rpcurl}}';
-        customrestport = customrestport.slice(0,-8) + '7078';
+        customrestport = customrestport.slice(0,-8) + '7094';
         $.get(customrestport + '/api/getPlatforms',
             function (returnedDataPlatforms) {
               //console.log(returnedDataPlatforms)
@@ -1170,6 +1170,7 @@
                       fungible: 'True', token: token, amount: amount, dest: target_address_eth, chain: 'main' , destChain: 'main', isName: isName
                   },
                   function (returnedData) {
+                    console.log(returnedData)
                     if (returnedData !== "") {
                         //console.log(returnedData)
                         $('#sendSpinner').hide();
@@ -1219,7 +1220,7 @@
                                        // If it works, settle tx
                                        $.get(customrestport + '/api/settleSwap',
                                          {
-                                             sourcePlatform: 'phantasma', destPlatform: 'eth', hashText: returnedData
+                                             sourcePlatform: 'phantasma', destPlatform: 'ethereum', hashText: returnedData
                                          },
                                          function (returnedDataSettle) {
                                            //console.log(returnedDataSettle)
@@ -1265,7 +1266,7 @@
                                        // If it works, settle tx
                                        $.get(customrestport + '/api/settleSwap',
                                          {
-                                             sourcePlatform: 'phantasma', destPlatform: 'eth', hashText: JSON.parse(returnedDataTX).hash
+                                             sourcePlatform: 'phantasma', destPlatform: 'ethereum', hashText: JSON.parse(returnedDataTX).hash
                                          },
                                          function (returnedDataSettle) {
                                            //console.log(returnedDataSettle)
@@ -1486,9 +1487,10 @@
                  console.log(returnedDataPending.length)
                  for ( var i = 0; i < returnedDataPending.length; i++ ) {
                      if (returnedDataPending[i].destinationHash == 'pending' && returnedDataPending[i].sourceChain == 'ethereum') {
+                       console.log('in1')
 
                        txhash = returnedDataPending[i].sourceHash;
-                        console.log(txhash)
+                       console.log(txhash)
                        last10TX = txhash.substr(txhash.length - 10);
                        first10TX = txhash.substr(0, 10);
                        partialTX = first10TX + '...' + last10TX;
@@ -1501,20 +1503,23 @@
                          decimals = Math.pow(10, 18);
                        }
                        valueSwap = (returnedDataPending[i].value)/decimals;
+                       console.log(assetsymbol)
+                       console.log(decimals)
+                       console.log(valueSwap)
                        if (isFirstSwap) {
-                          fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:11em;background-color: #337ab7!important;color: #fff!important;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://etherscan.io/tx/' + txhash + '" style="color:#17B0E7" target="_blank">' + partialTX + '</a></span><br>' + '<span style="font-size:.7em;">' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
+                          fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:11em;background-color: #337ab7!important;color: #fff!important;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://etherscan.io/tx/0x' + txhash + '" style="color:#17B0E7" target="_blank">' + partialTX + '</a></span><br>' + '<span style="font-size:.7em;">' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
                           isFirstSwap = false;
                           assetsymbolToProcessETH = assetsymbol
                           txhashToProcess = txhash;
                           valueSwapToProcess = valueSwap
                        } else {
-                          fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:11em;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://etherscan.io/tx/' + txhash + '" target="_blank">' + partialTX + '</a></span><br>' + '<span style="font-size:.7em;">' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
+                          fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:11em;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://etherscan.io/tx/0x' + txhash + '" target="_blank">' + partialTX + '</a></span><br>' + '<span style="font-size:.7em;">' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
                        }
                        $('#sendSpinner').hide();
-                       $('#wrapper-swapaddress-confirm').fadeTo("fast", 0, function() {
-                           //document.getElementById("wrapper-swapaddress-confirm").innerHTML = 'Transaction: <a href="https://etherscan.io/tx/' + txhash + '" target="_blank">' + partialTX + '</a><br>Pending swap: ' + numberWithCommas(valueSwap) + ' ' + assetsymbol;
-                           document.getElementById("wrapper-swapaddress-confirm").innerHTML = fetchValuesPending;
-                           $("#wrapper-swapaddress-confirm").fadeTo("slow", 1);
+                       $('#wrapper-swapaddress-confirmeth').fadeTo("fast", 0, function() {
+                           //document.getElementById("wrapper-swapaddress-confirm").innerHTML = 'Transaction: <a href="https://etherscan.io/tx/0x' + txhash + '" target="_blank">' + partialTX + '</a><br>Pending swap: ' + numberWithCommas(valueSwap) + ' ' + assetsymbol;
+                           document.getElementById("wrapper-swapaddress-confirmeth").innerHTML = fetchValuesPending;
+                           $("#wrapper-swapaddress-confirmeth").fadeTo("slow", 1);
                            $("#step-23").fadeTo("slow", 1);
                            $('#ethtophantasmabutton').fadeTo("slow", 1);
                        });

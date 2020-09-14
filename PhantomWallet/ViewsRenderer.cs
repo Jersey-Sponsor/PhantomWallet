@@ -1146,9 +1146,7 @@ namespace Phantom.Wallet
             {
                 EthereumKey ethKeys;
 
-                var priv = Base16.Decode(ethKey);
-                var tempKey = new PhantasmaKeys(priv);
-                ethKeys = EthereumKey.FromWIF(tempKey.ToWIF());
+                ethKeys = EthereumKey.FromWIF(ethKey);
 
                 var result = AccountController.InvokeSettleTxETH(ethKeys, phantasmaKeys, txHash, assetSymbol).Result;
                 ResetSessionSendFields(request);
@@ -1198,9 +1196,6 @@ namespace Phantom.Wallet
             var context = InitContext(request);
 
             EthereumKey ethKeys;
-
-            // var ethKeysConverted = Nethereum.Hex.HexConvertors.Extensions.HexByteConvertorExtensions.HexToByteArray(ethKey);
-            // ethKeys = new EthereumKey(ethKeysConverted);
 
             var bytes = Base16.Decode(ethKey);
             var temp = new PhantasmaKeys(bytes);

@@ -90,7 +90,19 @@
                       {{#if Symbol == 'NEO'}}
                         <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{PriceFormated}}</td>
                       {{#else}}
-                        <td class="col-3" id="{{Symbol}}-price">N/A</td>
+                        {{#if Symbol == 'ETH'}}
+                          <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{PriceFormated}}</td>
+                        {{#else}}
+                          {{#if Symbol == 'DAI'}}
+                            <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{PriceFormated}}</td>
+                          {{#else}}
+                            {{#if Symbol == 'USDT'}}
+                              <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{PriceFormated}}</td>
+                            {{#else}}
+                              <td class="col-3" id="{{Symbol}}-price">N/A</td>
+                            {{/if}}
+                          {{/if}}
+                        {{/if}}
                       {{/if}}
                       {{/if}}
                       {{/if}}
@@ -1260,11 +1272,11 @@ function GetSoulmastersDetails() {
   var params3 = [];
   var d = new Date();
 
-  if (d.getMonth().toString().length < 2) {
+  if ((d.getMonth() + 2).toString().length < 2) {
     customMonth = '0' + parseFloat(d.getMonth() + 2);
-  } else if (d.getMonth() == '10') {
+  } else if (d.getMonth() + 2 == '10') {
     customMonth = 12
-  } else if (d.getMonth() == '11') {
+  } else if (d.getMonth() + 2 == '11') {
     customMonth = '01'
   }
 
