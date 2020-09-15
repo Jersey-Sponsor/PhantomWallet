@@ -259,7 +259,7 @@
           formatedAmount = numberWithCommas('{{Amount}}');
           tokenBox.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmount}));
         }
-        if ('{{Symbol}}' == 'USDT' || '{{Symbol}}' == 'ETH' || '{{Symbol}}' == 'DAI') {
+        if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'KCAL' || '{{Symbol}}' == 'USDT' || '{{Symbol}}' == 'ETH' || '{{Symbol}}' == 'DAI') {
           formatedAmount = numberWithCommas('{{Amount}}');
           tokenBoxETH.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmount}));
         }
@@ -1172,7 +1172,7 @@
                   function (returnedData) {
                     console.log(returnedData)
                     if (returnedData !== "") {
-                        //console.log(returnedData)
+                        console.log(returnedData)
                         $('#sendSpinner').hide();
                         document.getElementById("wrapper-swap-confirm").innerHTML = '<div class="loader" style="position:initial;"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-text" style="margin-top:1.5em;position:initial;" id="waitingText">Waiting for transaction confirmations<div class="loader-dots"></div></div></div>';
                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
@@ -1480,17 +1480,13 @@
                  account: currentaddress
              },
                function (returnedDataPending) {
-                 console.log(returnedDataPending)
                  if ((typeof returnedDataPending) == 'string') {
                    returnedDataPending = JSON.parse(returnedDataPending);
                  }
-                 console.log(returnedDataPending.length)
                  for ( var i = 0; i < returnedDataPending.length; i++ ) {
                      if (returnedDataPending[i].destinationHash == 'pending' && returnedDataPending[i].sourceChain == 'ethereum') {
-                       console.log('in1')
 
                        txhash = returnedDataPending[i].sourceHash;
-                       console.log(txhash)
                        last10TX = txhash.substr(txhash.length - 10);
                        first10TX = txhash.substr(0, 10);
                        partialTX = first10TX + '...' + last10TX;
@@ -1501,11 +1497,12 @@
                          decimals = Math.pow(10, 18);
                        } else if (returnedDataPending[i].symbol == 'ETH') {
                          decimals = Math.pow(10, 18);
+                       } else if (returnedDataPending[i].symbol == 'SOUL') {
+                         decimals = Math.pow(10, 8);
+                       } else if (returnedDataPending[i].symbol == 'KCAL') {
+                         decimals = Math.pow(10, 10);
                        }
                        valueSwap = (returnedDataPending[i].value)/decimals;
-                       console.log(assetsymbol)
-                       console.log(decimals)
-                       console.log(valueSwap)
                        if (isFirstSwap) {
                           fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:11em;background-color: #337ab7!important;color: #fff!important;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://etherscan.io/tx/0x' + txhash + '" style="color:#17B0E7" target="_blank">' + partialTX + '</a></span><br>' + '<span style="font-size:.7em;">' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
                           isFirstSwap = false;
@@ -1529,7 +1526,7 @@
                  if (txhash == '') {
                    $('#sendSpinner').hide();
                    $('#wrapper-swapaddressfail-confirmeth').fadeTo("fast", 0, function() {
-                       document.getElementById("wrapper-swapaddressfail-confirmeth").innerHTML = 'No pending swaps for ' + currentaddress + '.<br>If you just sent something, try again in 20 seconds.';
+                       document.getElementById("wrapper-swapaddressfail-confirmeth").innerHTML = 'No pending swaps for ' + currentaddress + '.<br>If you just sent something, try again after 12 block confirmations.';
                        $("#wrapper-swapaddressfail-confirmeth").fadeTo("slow", 1);
                    });
                  }
@@ -1720,6 +1717,13 @@
 
       $("#wrapper-swap-confirm").fadeTo(1, 0);
 
+      if (ethkey.length === 64) {
+        settleURL = '/settleethHEX'
+      } else {
+        settleURL = '/settleeth'
+      }
+
+
       $('#sendSpinner').show();
       bootbox.confirm({
           title: "Swap confirmation",
@@ -1743,14 +1747,14 @@
               loopSettle();
               function loopSettle() {
 
-              $.post('/settleeth',
+              $.post(settleURL,
                  {
                      txHash: txhashToProcess,
                      ethKey: ethkey,
                      assetSymbol: assetsymbolToProcessETH
                  },
                  function (returnedData) {
-                   console.log(returnedData)
+                   //console.log(returnedData)
                    if (returnedData !== "") {
                      $('#sendSpinner').hide();
                      // If /settle/tx works, call /tx/hash in a loop to check if the tx worked

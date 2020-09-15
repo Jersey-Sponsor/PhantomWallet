@@ -473,6 +473,21 @@ namespace Phantom.Wallet.Controllers
                          .SpendGas(keyPair.Address)
                          .EndScript();
                    }
+                   else if (addressTo.StartsWith("0x"))
+                   {
+                     addressTo = addressTo.Substring(2);
+                     var scriptHash = Phantasma.Ethereum.Hex.HexConvertors.Extensions.HexByteConvertorExtensions.HexToByteArray(addressTo);
+                     var pubKey = new byte[33];
+                     Phantasma.Core.Utils.ByteArrayUtils.CopyBytes(scriptHash, 0, pubKey, 0, scriptHash.Length);
+                     var addressEth = Address.FromInterop(2/*Ethereum*/, pubKey);
+
+                     Log.Information("Transfer to " + addressEth);
+                     script = ScriptUtils.BeginScript()
+                         .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                         .TransferTokens(symbol, keyPair.Address, addressEth, bigIntAmount)
+                         .SpendGas(keyPair.Address)
+                         .EndScript();
+                   }
                    else
                    {
                      if (isName) {
@@ -723,24 +738,21 @@ namespace Phantom.Wallet.Controllers
                 Hash ethTxHash = Hash.Parse(txHash);
                 var transcodedAddress = Address.FromKey(ethKeys);
 
-                Log.Error($"transcodedAddress {transcodedAddress}");
-                Log.Error($"EthereumWallet.EthereumPlatform {EthereumWallet.EthereumPlatform}");
-                Log.Error($"ethTxHash {ethTxHash}");
-                Log.Error($"phantasmaKeys.Address {phantasmaKeys.Address}");
-                Log.Error($"symbol {symbol}");
-
                 var script = ScriptUtils.BeginScript()
                     .CallContract("interop", "SettleTransaction", transcodedAddress, EthereumWallet.EthereumPlatform, EthereumWallet.EthereumPlatform, ethTxHash)
                     .CallContract("swap", "SwapFee", transcodedAddress, symbol, UnitConversion.ToBigInteger(0.1m, DomainSettings.FuelTokenDecimals))
-                    .TransferBalance(symbol, transcodedAddress, phantasmaKeys.Address)
                     .AllowGas(transcodedAddress, Address.Null, MinimumFee, 800)
+                    .TransferBalance(symbol, transcodedAddress, phantasmaKeys.Address)
                     .SpendGas(transcodedAddress)
                     .EndScript();
 
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-1-0-0");
 
-                tx.Sign(ethKeys);
+                tx.Sign(ethKeys, (message, prikey, pubkey) =>
+                {
+                    return Phantasma.Neo.Utils.CryptoUtils.Sign(message, prikey, pubkey, Phantasma.Cryptography.ECC.ECDsaCurve.Secp256k1);
+                });
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
                 return txResult;
@@ -753,7 +765,6 @@ namespace Phantom.Wallet.Controllers
             catch (Exception ex)
             {
                 Log.Error($"Exception occurred: {ex.Message}");
-                Log.Error($"Exception occurred: {ex}");
                 return new ErrorRes { error = ex.Message };
             }
         }

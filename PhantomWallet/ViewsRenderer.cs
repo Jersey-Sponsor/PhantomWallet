@@ -225,6 +225,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/settleeth", RouteInvokeSettleTxETH);
 
+            TemplateEngine.Server.Post("/settleethHEX", RouteInvokeSettleTxETHHEX);
+
             TemplateEngine.Server.Post("/convert", RouteConvertAddress);
 
             TemplateEngine.Server.Post("/converteth", RouteConvertAddressETH);
@@ -1147,6 +1149,29 @@ namespace Phantom.Wallet
                 EthereumKey ethKeys;
 
                 ethKeys = EthereumKey.FromWIF(ethKey);
+
+                var result = AccountController.InvokeSettleTxETH(ethKeys, phantasmaKeys, txHash, assetSymbol).Result;
+                ResetSessionSendFields(request);
+                return result;
+            }
+            return null;
+        }
+
+        private object RouteInvokeSettleTxETHHEX(HTTPRequest request)
+        {
+            var txHash = request.GetVariable("txHash");
+            var ethKey = request.GetVariable("ethKey");
+            var assetSymbol = request.GetVariable("assetSymbol");
+            var context = InitContext(request);
+            var phantasmaKeys = GetLoginKey(request);
+            InvalidateCache(phantasmaKeys.Address);
+            if (context["holdings"] is Holding[] balance)
+            {
+                EthereumKey ethKeys;
+
+                var bytes = Base16.Decode(ethKey);
+                var temp = new PhantasmaKeys(bytes);
+                ethKeys = EthereumKey.FromWIF(temp.ToWIF());
 
                 var result = AccountController.InvokeSettleTxETH(ethKeys, phantasmaKeys, txHash, assetSymbol).Result;
                 ResetSessionSendFields(request);

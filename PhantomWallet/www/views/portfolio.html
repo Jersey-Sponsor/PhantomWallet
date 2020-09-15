@@ -472,7 +472,7 @@ function cosmicSwapFixed() {
                           });
                         } else {
                           customrestport = '{{rpcurl}}';
-                          customrestport = customrestport.slice(0,-8) + '7078';
+                          customrestport = customrestport.slice(0,-8) + '7094';
                           $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                               function (returnedDataTX) {
                                 if (JSON.parse(returnedDataTX).error) {
@@ -588,7 +588,7 @@ function Claim() {
                 });
               } else {
                 customrestport = '{{rpcurl}}';
-                customrestport = customrestport.slice(0,-8) + '7078';
+                customrestport = customrestport.slice(0,-8) + '7094';
                 $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                     function (returnedDataTX) {
                       if (JSON.parse(returnedDataTX).error) {
@@ -754,7 +754,7 @@ function Stake() {
                           });
                         } else {
                           customrestport = '{{rpcurl}}';
-                          customrestport = customrestport.slice(0,-8) + '7078';
+                          customrestport = customrestport.slice(0,-8) + '7094';
                           $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                               function (returnedDataTX) {
                                 if (JSON.parse(returnedDataTX).error) {
@@ -829,7 +829,7 @@ function Stake() {
                           });
                         } else {
                           customrestport = '{{rpcurl}}';
-                          customrestport = customrestport.slice(0,-8) + '7078';
+                          customrestport = customrestport.slice(0,-8) + '7094';
                           $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                               function (returnedDataTX) {
                                 if (JSON.parse(returnedDataTX).error) {
@@ -997,7 +997,7 @@ function Unstake() {
                         });
                       } else {
                         customrestport = '{{rpcurl}}';
-                        customrestport = customrestport.slice(0,-8) + '7078';
+                        customrestport = customrestport.slice(0,-8) + '7094';
                         $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                             function (returnedDataTX) {
                               if (JSON.parse(returnedDataTX).error) {
@@ -1134,7 +1134,7 @@ function MasterClaim() {
                 });
               } else {
                 customrestport = '{{rpcurl}}';
-                customrestport = customrestport.slice(0,-8) + '7078';
+                customrestport = customrestport.slice(0,-8) + '7094';
                 $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                     function (returnedDataTX) {
                       if (JSON.parse(returnedDataTX).error) {
@@ -1691,7 +1691,7 @@ function GetPieChart(changedamount) {
       stakesPrice = currentsoulprice * stakesFormatted;
       // loop over holdings to build value total
       {{#each holdings}}
-        if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'KCAL' || '{{Symbol}}' == 'GOATI' || '{{Symbol}}' == 'GAS' || '{{Symbol}}' == 'NEO') {
+        if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'KCAL' || '{{Symbol}}' == 'GOATI' || '{{Symbol}}' == 'GAS' || '{{Symbol}}' == 'NEO' || '{{Symbol}}' == 'ETH' || '{{Symbol}}' == 'DAI' || '{{Symbol}}' == 'USDT') {
           valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
           valueTOTALWithoutStakes += parseInt(('{{Price}}').replace(/,/g, ''));
         }
@@ -1701,7 +1701,7 @@ function GetPieChart(changedamount) {
       }
       // loop over holdings to build array for pie data
       {{#each holdings}}
-        if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'KCAL' || '{{Symbol}}' == 'GOATI' || '{{Symbol}}' == 'GAS' || '{{Symbol}}' == 'GAS') {
+        if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'KCAL' || '{{Symbol}}' == 'GOATI' || '{{Symbol}}' == 'GAS' || '{{Symbol}}' == 'NEO' || '{{Symbol}}' == 'ETH' || '{{Symbol}}' == 'DAI' || '{{Symbol}}' == 'USDT') {
           arraygraph.push({name: "{{Symbol}}", y: ({{Price}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
         }
       {{/each}}
@@ -1718,9 +1718,9 @@ function GetPieChart(changedamount) {
         currentsoulamount = 0;
       }
       if ((valueTOTALWithoutStakes/currentsoulprice) < currentsoulamount) {
-        document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas(currentsoulamount) + ' SOUL';
+         document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas(currentsoulamount) + ' SOUL';
       } else {
-        document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas((valueTOTALWithoutStakes/currentsoulprice).toFixed(0)) + ' SOUL';
+         document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas((valueTOTALWithoutStakes/currentsoulprice).toFixed(0)) + ' SOUL';
       }
 
     Highcharts.chart('container-pie', {
