@@ -472,7 +472,7 @@ function cosmicSwapFixed() {
                           });
                         } else {
                           customrestport = '{{rpcurl}}';
-                          customrestport = customrestport.slice(0,-8) + '7094';
+                          customrestport = customrestport.slice(0,-8) + '7078';
                           $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                               function (returnedDataTX) {
                                 if (JSON.parse(returnedDataTX).error) {
@@ -588,7 +588,7 @@ function Claim() {
                 });
               } else {
                 customrestport = '{{rpcurl}}';
-                customrestport = customrestport.slice(0,-8) + '7094';
+                customrestport = customrestport.slice(0,-8) + '7078';
                 $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                     function (returnedDataTX) {
                       if (JSON.parse(returnedDataTX).error) {
@@ -754,7 +754,7 @@ function Stake() {
                           });
                         } else {
                           customrestport = '{{rpcurl}}';
-                          customrestport = customrestport.slice(0,-8) + '7094';
+                          customrestport = customrestport.slice(0,-8) + '7078';
                           $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                               function (returnedDataTX) {
                                 if (JSON.parse(returnedDataTX).error) {
@@ -829,7 +829,7 @@ function Stake() {
                           });
                         } else {
                           customrestport = '{{rpcurl}}';
-                          customrestport = customrestport.slice(0,-8) + '7094';
+                          customrestport = customrestport.slice(0,-8) + '7078';
                           $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                               function (returnedDataTX) {
                                 if (JSON.parse(returnedDataTX).error) {
@@ -997,7 +997,7 @@ function Unstake() {
                         });
                       } else {
                         customrestport = '{{rpcurl}}';
-                        customrestport = customrestport.slice(0,-8) + '7094';
+                        customrestport = customrestport.slice(0,-8) + '7078';
                         $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                             function (returnedDataTX) {
                               if (JSON.parse(returnedDataTX).error) {
@@ -1134,7 +1134,7 @@ function MasterClaim() {
                 });
               } else {
                 customrestport = '{{rpcurl}}';
-                customrestport = customrestport.slice(0,-8) + '7094';
+                customrestport = customrestport.slice(0,-8) + '7078';
                 $.get(customrestport + '/api/getTransaction?hashText=' + returnedData,
                     function (returnedDataTX) {
                       if (JSON.parse(returnedDataTX).error) {

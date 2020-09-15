@@ -295,7 +295,7 @@
         }
 
         customrestport = '{{rpcurl}}';
-        customrestport = customrestport.slice(0,-8) + '7094';
+        customrestport = customrestport.slice(0,-8) + '7078';
         $.get(customrestport + '/api/getPlatforms',
             function (returnedDataPlatforms) {
               //console.log(returnedDataPlatforms)
@@ -1172,7 +1172,7 @@
                   function (returnedData) {
                     console.log(returnedData)
                     if (returnedData !== "") {
-                        console.log(returnedData)
+                        //console.log(returnedData)
                         $('#sendSpinner').hide();
                         document.getElementById("wrapper-swap-confirm").innerHTML = '<div class="loader" style="position:initial;"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-text" style="margin-top:1.5em;position:initial;" id="waitingText">Waiting for transaction confirmations<div class="loader-dots"></div></div></div>';
                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
