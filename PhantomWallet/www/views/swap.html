@@ -1636,6 +1636,12 @@
                                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                     });
                                     setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                  } else if ((JSON.parse(returnedDataTX).error).startsWith('Error occurred when trying to send rpc requests(s)')) {
+                                    $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                        document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
+                                        $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                    });
+                                    setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                   } else {
                                     // If .error defined, returns the custom error message
                                     $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
@@ -1800,6 +1806,12 @@
                                         });
                                       }
                                   } else if ((JSON.parse(returnedDataTX).error).startsWith('rejected: hash already seen')) {
+                                    $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                        document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
+                                        $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                    });
+                                    setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                  } else if ((JSON.parse(returnedDataTX).error).startsWith('Error occurred when trying to send rpc requests(s)')) {
                                     $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
                                         document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
                                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
