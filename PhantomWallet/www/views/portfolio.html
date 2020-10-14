@@ -1272,11 +1272,29 @@ function GetSoulmastersDetails() {
   var params3 = [];
   var d = new Date();
 
-  if ((d.getMonth() + 2).toString().length < 2) {
-    customMonth = '0' + parseFloat(d.getMonth() + 2);
-  } else if (d.getMonth() + 2 == '10') {
-    customMonth = 12
-  } else if (d.getMonth() + 2 == '11') {
+  if (d.getMonth() == '0') {
+    customMonth = '02'
+  } else if (d.getMonth() == '1') {
+    customMonth = '03'
+  } else if (d.getMonth() == '2') {
+    customMonth = '04'
+  } else if (d.getMonth() == '3') {
+    customMonth = '05'
+  } else if (d.getMonth() == '4') {
+    customMonth = '06'
+  } else if (d.getMonth() == '5') {
+    customMonth = '07'
+  } else if (d.getMonth() == '6') {
+    customMonth = '08'
+  } else if (d.getMonth() == '7') {
+    customMonth = '09'
+  } else if (d.getMonth() == '8') {
+    customMonth = '10'
+  } else if (d.getMonth() == '9') {
+    customMonth = '11'
+  } else if (d.getMonth() == '10') {
+    customMonth = '12'
+  } else if (d.getMonth() == '11') {
     customMonth = '01'
   }
 
@@ -1317,7 +1335,7 @@ function GetSoulmastersDetails() {
         }),
 
         // build params for contract call
-        params3[0] = { name: 'claimDate', type: 'Timestamp', input: customMonth + '/02/2020 00:00:00', info: '' },
+        params3[0] = { name: 'claimDate', type: 'Timestamp', input: customMonth + '/02/' + d.getFullYear() + ' 00:00:00', info: '' },
 
         $.post('/contract',
            {
