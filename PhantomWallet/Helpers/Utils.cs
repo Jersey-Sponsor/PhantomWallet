@@ -485,7 +485,7 @@ namespace Phantom.Wallet.Helpers
                     baseticker = "phantasma";
                     break;
                 case "KCAL":
-                    baseticker = "phantasma";
+                    baseticker = "phantasma-energy";
                     break;
                 case "NEO":
                     baseticker = "neo";
@@ -517,14 +517,8 @@ namespace Phantom.Wallet.Helpers
                 }
                 var root = JSONReader.ReadFromString(json);
 
-                // hack for kcal price 1/5 soul & goati .10
-                if (ticker == "KCAL")
-                {
-                  root = root["phantasma"];
-                  var price = root.GetDecimal(currrency.ToLower())/5;
-                  return price;
-                }
-                else if (ticker == "GOATI") {
+                // hack for goati price .10
+                if (ticker == "GOATI") {
                   var price = 0.10m;
                   return price;
                 }
