@@ -947,7 +947,13 @@
                              function (returnedDataTX) {
                                //console.log(returnedDataTX)
                                //console.log(JSON.parse(returnedDataTX).error)
-                               if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                               if ((JSON.parse(returnedDataTX).hash) == null) {
+                                 $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                     document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
+                                     $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                 });
+                                 setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                               } else if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                    counter++;
                                    if (counter <= 15){
                                      setTimeout(getConfirmations, 2000);
@@ -1185,7 +1191,13 @@
                              function (returnedDataTX) {
                                //console.log(returnedDataTX)
                                //console.log(JSON.parse(returnedDataTX).error)
-                               if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                               if ((JSON.parse(returnedDataTX).hash) == null) {
+                                 $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                     document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
+                                     $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                 });
+                                 setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                               } else if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                    counter++;
                                    if (counter <= 15){
                                      setTimeout(getConfirmations, 2000);
@@ -1597,8 +1609,14 @@
 
                       $.get('/tx/' + returnedData,
                           function (returnedDataTX) {
-                            //console.log(returnedDataTX)
-                            if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                            console.log(returnedDataTX)
+                            if ((returnedDataTX).hash == null) {
+                              $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
+                                  $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                              });
+                              setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                            } else if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                 counter++;
                                 if (counter <= 15){
                                   setTimeout(getConfirmations, 2000);
@@ -1773,7 +1791,13 @@
                       $.get('/tx/' + returnedData,
                           function (returnedDataTX) {
                             //console.log(returnedDataTX)
-                            if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                            if ((JSON.parse(returnedDataTX).hash) == null) {
+                              $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful.';
+                                  $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                              });
+                              setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                            } else if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                 counter++;
                                 if (counter <= 15){
                                   setTimeout(getConfirmations, 2000);
